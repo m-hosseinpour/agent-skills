@@ -1,0 +1,14 @@
+# Install artifacts (npx skills inside this repo)
+.claude/
+.agents/
+skills-lock.json
+
+# Runtime files from the brainstorming skill
+.brainstorm/
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+node_modules/
+__pycache__/
+*.pyc
