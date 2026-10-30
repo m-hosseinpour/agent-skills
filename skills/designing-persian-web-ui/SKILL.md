@@ -1,11 +1,11 @@
 ---
-name: designing-web-ui
-description: Use when building or changing any web interface — a page, a component, a layout, dark mode, UI copy, or an existing UI that needs work or reads as templated — including Persian/RTL apps, and before calling UI work done.
+name: designing-persian-web-ui
+description: Use when building or changing a Persian (Farsi) or right-to-left web interface — a page, a component, a layout, dark mode, UI copy, direction, numerals, or an existing RTL UI that needs work — and before calling Persian UI work done.
 ---
 
-# Designing Web UI
+# Designing Persian Web UI
 
-The owner's taste for web interfaces. It is the default for any web UI in any project: **a project's own design language wins, but "no design language at all" is not an option.**
+Taste for Persian and right-to-left web interfaces. It applies on top of a project's own design language: **the project's language wins, but "no design language at all" is not an option.**
 
 ## Start from the subject, not from a template
 
@@ -51,9 +51,21 @@ Design mobile-first; a phone is the common case, not the fallback. Every page wo
 
 ## Typography — set a real scale and load what you name
 
-Load every font family the CSS names; a `font-family` naming a font that is never loaded is a silent bug that falls back to a system font. Build a type scale with real contrast — the number that matters visibly larger than headings, headings clearly larger than body, not everything at 1rem. For Persian text, load a real Persian font such as Vazirmatn and use generous line height (roughly 1.7–1.9). Consider tabular figures so numeric columns align.
+Load every font family the CSS names; a `font-family` naming a font that is never loaded is a silent bug that falls back to a system font. Build a type scale with real contrast — the number that matters visibly larger than headings, headings clearly larger than body, not everything at 1rem. Consider tabular figures so numeric columns align.
 
 Choose the family for the subject rather than reaching for the same one every time: one family, or two that are clearly distinct. When type is itself the visual element, its treatment is part of the design, not a neutral vehicle.
+
+## Persian and right-to-left
+
+**Direction is a layout decision, made once.** Set `dir="rtl"` on the document (and `lang="fa"`) and let the layout follow it. Use logical properties — `margin-inline-start`, `padding-inline`, `inset-inline-start`, `border-start-start-radius` — instead of `left`/`right`, so one stylesheet serves both directions. Flex and grid rows already follow direction: `flex-direction: row-reverse` to fake RTL breaks the moment a component is reused in an LTR context.
+
+**Mirror what points, not what is real.** Chevrons, back/next arrows and progress direction flip; play buttons, clocks, checkmarks, brand logos and sliders from 0 to 100 keep their orientation.
+
+**Text and numbers need deliberate handling.** Persian digits are a product decision — pick one and keep it: Latin digits in data, tables and code fields, Persian digits in prose when the product speaks Persian. Either way use tabular figures so columns line up. Wrap LTR runs inside a sentence (URLs, English names, code, email addresses) in `<bdi>` or `dir="ltr"`, otherwise trailing punctuation jumps to the wrong end.
+
+**The typography has to be Persian, not a Latin font with Persian glyphs.** Load a real Persian face — Vazirmatn is the safe default — and set line height generously, roughly 1.7–1.9; Latin defaults are too tight for Persian ascenders and descenders. Use the half-space (U+200C) in words that need it rather than a full space, and check that headings do not break mid-phrase when they wrap.
+
+Check the result with real Persian content — Latin placeholder text hides every one of these problems.
 
 ## Color and motion
 
@@ -65,7 +77,7 @@ Motion is subtle and fast (150–250ms on hover, focus, open/close), clarifies r
 
 Load it at phone width, run the real flow end to end, and confirm responsive and dark-mode behaviour. **A desktop screenshot proves nothing about the phone.** Where you can, look at the rendered result and critique it: a broken layout, a flat hierarchy and a font that silently fell back all look different in a picture than in the source.
 
-When the owner says a UI feels plain, the fix is usually more type-scale contrast, a real focal point and better spacing — not more colors.
+When the user says a UI feels plain, the fix is usually more type-scale contrast, a real focal point and better spacing — not more colors.
 
 ---
 

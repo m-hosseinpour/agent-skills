@@ -48,7 +48,7 @@ Give the reviewer the source path, the two document paths, the user's terminolog
 - **C. Team text:** practical for estimation; related topics grouped at concept level rather than a miniature copy of all source sections; actual plain-text content in the file and chat code block (no `#` headings, `**` bold, italics, tables, inline backticks or Markdown links; simple hyphen and numbered lists are allowed); main technology explained in its own opening paragraph without parentheses or origin disclaimers; only user-selected definitions; acceptance meaning preserved; avoid unnecessary repetition. Length is advisory, not a pass/fail threshold. Markdown in the team text is a format defect, not an out-of-scope style preference.
 - **D. Developer guide:** standalone, with no references to unavailable source files or commentary about the splitting process. Reusing an already complete source is valid; do not require rewriting or adding material to justify a separate guide.
 
-Out of scope, and say so in the brief: writing style, spelling, half-spaces, reformatting, and checking external technical facts. If a fact looks wrong, list it under "unverified" in one line and do not research it.
+Out of scope, and say so in the brief: writing style, spelling, character spacing, reformatting, and checking external technical facts. If a fact looks wrong, list it under "unverified" in one line and do not research it.
 
 **Output:** report only real problems, grouped by check letter, each with the quoted phrase and a one-line fix. Skip what is fine. No preamble, no restating the documents, end with a one-line verdict.
 

@@ -34,7 +34,7 @@ Installs are symlinks by default, so there is one copy on disk; `--copy` puts a 
 | --- | --- |
 | [brainstorming](skills/brainstorming/SKILL.md) | the goal, constraints, or approach are unclear and need to become a design the user can correct before building |
 | [curating-global-instructions](skills/curating-global-instructions/SKILL.md) | deciding what belongs in the always-loaded global instruction file, or reorganizing it as it grows |
-| [designing-web-ui](skills/designing-web-ui/SKILL.md) | building or changing any web interface, including Persian/RTL apps, and before calling UI work done |
+| [designing-persian-web-ui](skills/designing-persian-web-ui/SKILL.md) | building or changing a Persian (Farsi) or right-to-left web interface — direction, layout, numerals, UI copy — and before calling Persian UI work done |
 | [dispatching-parallel-agents](skills/dispatching-parallel-agents/SKILL.md) | planning two or more subagents that will run at the same time |
 | [reviewing-code-changes](skills/reviewing-code-changes/SKILL.md) | reviewing a diff, branch, or merge request before merge, or giving an independent second opinion |
 | [splitting-task-descriptions](skills/splitting-task-descriptions/SKILL.md) | a long task description needs a concise team-facing version plus a full developer guide |
@@ -82,7 +82,7 @@ Several skills started from someone else's work, and a few still carry it. Full 
 
 **wshobson/agents** ([MIT](https://github.com/wshobson/agents), © 2024 Seth Hobson) — the language traps in `reviewing-code-changes/references/patterns.md` adapt its `code-review-excellence` skill.
 
-**anthropics/skills** ([Apache 2.0](https://github.com/anthropics/skills/blob/main/skills/frontend-design/LICENSE.txt)) — `designing-web-ui` is my own skill, but its anti-default guidance and copywriting section follow the `frontend-design` skill.
+**anthropics/skills** ([Apache 2.0](https://github.com/anthropics/skills/blob/main/skills/frontend-design/LICENSE.txt)) — `designing-persian-web-ui` is my own skill, but its anti-default guidance and copywriting section follow the `frontend-design` skill.
 
 ## License
 
