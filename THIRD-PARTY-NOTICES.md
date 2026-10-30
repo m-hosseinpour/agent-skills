@@ -126,7 +126,7 @@ SOFTWARE.
 
 Source: <https://github.com/anthropics/skills/tree/main/skills/frontend-design>
 
-`skills/designing-web-ui/SKILL.md` follows the anti-default guidance and copywriting section of that skill, paraphrased.
+`skills/designing-persian-web-ui/SKILL.md` follows the anti-default guidance and copywriting section of that skill, paraphrased.
 
 ```
 
