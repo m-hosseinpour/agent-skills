@@ -10,6 +10,9 @@ Cloning is not required. Ask for one skill, a few, or all of them, per project o
 # see what is here, without installing
 npx skills add m-hosseinpour/agent-skills --list
 
+# choose the skills and agents interactively
+npx skills add m-hosseinpour/agent-skills
+
 # one skill, into this project, for OpenCode
 npx skills add m-hosseinpour/agent-skills --skill reviewing-code-changes -a opencode
 
