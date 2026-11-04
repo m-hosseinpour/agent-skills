@@ -23,7 +23,7 @@ questions only the author can answer.
 - You must review it and do not yet understand it — understand first, then judge with
   `reviewing-code-changes`
 
-**Not for:** deciding whether it is ready to merge (`reviewing-code-changes`). This skill's walkthrough is for understanding a change; use a review report only when the task is to assess findings for the author.
+**Not for:** deciding whether it is ready to merge (`reviewing-code-changes`), or turning existing review findings into an author-facing report (`writing-code-review-reports`). This skill's document is a walkthrough for understanding a change, not a review verdict.
 
 ## 1. Get the intent before the diff
 

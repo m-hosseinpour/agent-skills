@@ -2,8 +2,8 @@
 
 The structural pass: correctness asks "does it work?", this asks "is the codebase better for it?".
 
-Run it after the shape and before the line-by-line read. A structural finding discovered late makes
-every line comment you already wrote wasted work.
+Use it during the shape assessment, before the detail pass. A structural finding may change which
+details deserve attention. Severity follows `SKILL.md`: explain concrete risk or cost, not just the signal.
 
 ## The question that comes first
 
@@ -17,11 +17,11 @@ Stop at "this could be cleaner" and you have written a nit. Say instead: *this w
 simpler shape — here it is.* Only claim that when you can sketch the simpler shape. Otherwise you are
 asking the author to do your thinking.
 
-## Signals worth blocking on
+## Signals to investigate
 
 | Signal | Why it matters |
 |---|---|
-| A file crosses 1,000 lines in this diff | Past that size, navigation cost grows faster than content; splitting later is harder than not letting it grow |
+| A file crosses 1,000 lines in this diff | A prompt to inspect navigation and mixed responsibilities, not proof of a defect |
 | A special case bolted onto an unrelated flow | The next special case goes in the same place; the flow becomes unreadable one exception at a time |
 | A thin wrapper that only forwards | Every reader pays the indirection; nobody is repaid |
 | Feature logic in a shared path | The shared path now knows about one caller, and every other caller inherits the branch |
@@ -30,14 +30,14 @@ asking the author to do your thinking.
 | Independent work serialized for no reason | Slower, and more states to reason about than the problem has |
 | Related updates that can leave state half-applied | The failure window is invisible until it is a support ticket |
 
-## The 1,000-line rule
+## The 1,000-line heuristic
 
-A default, not a law. A diff that pushes a file from under 1,000 lines to over it is a finding unless
-the file is still clearly organized and the split would be artificial — carve it by responsibility,
-not by line count.
+A heuristic, not a merge threshold. When a diff pushes a file past 1,000 lines, inspect whether
+responsibilities are tangled and a split would improve navigation. A clearly organized file whose
+split would be artificial is not a finding merely because of its line count.
 
-Ask for the decomposition *before* approving, because "we will split it later" is how files become
-3,000 lines.
+When decomposition addresses a concrete maintenance problem, describe that problem and the proposed
+responsibility boundary. Scale its severity by impact, not by line count alone.
 
 ## Remedies, in order of preference
 
@@ -64,10 +64,9 @@ Do not suggest 6 when 1 is available.
 Prefer four high-conviction findings over twenty cosmetic ones. If a structural finding exists, the
 cosmetic ones are not worth the reader's attention in the same document.
 
-## What blocks approval
+## Readiness and severity
 
-Correct behaviour is not approval. Treat these as presumptive blockers until the author justifies
-them:
+Correct behavior does not rule out meaningful maintenance risks. Investigate:
 
 - a structural regression, or incidental complexity preserved where a path to delete it was visible
 - a file pushed past 1,000 lines
@@ -76,7 +75,11 @@ them:
 - an unnecessary wrapper, cast, or optional that makes the design more indirect
 - a duplicate of an existing helper, or logic in the wrong layer
 
-If none of these hold, approve — and say what you checked.
+These are signals, not automatic blockers. Explain the concrete failure or maintenance cost and a
+viable remedy; use Blocking only when the issue must be resolved before merge, Important for material
+cost, and Suggestion for an optional improvement with concrete value. A merely conceivable simpler
+design is not a defect. The absence of structural findings does not establish readiness: include
+requirements, correctness, security, and verification evidence from the rest of the review.
 
 ## Tone
 

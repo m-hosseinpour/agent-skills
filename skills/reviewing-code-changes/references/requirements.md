@@ -50,15 +50,9 @@ Also check the inverse: a requirement that changed an existing behavior, where t
 - Extra functionality: severity follows concrete risk, not mere presence. **Blocking** for a hard acceptance-constraint violation or risk that must be resolved before merge, such as an authorization bypass, data-loss risk, or incompatible contract change; **Important** for material maintenance cost or unintended behavior; **Nit** for a low-risk scope mismatch with no material impact. Merely touching persisted data or adding an endpoint is not automatically Blocking. Always include the extra in the report, even at Nit severity.
 - Ambiguous or unverified is not a severity. State the unresolved question or missing evidence and its effect on readiness; do not claim conformance while material criteria remain unresolved.
 
-## Report shape
+## Return coverage evidence
 
-Present conformance as one table, not as scattered findings:
-
-| Requirement | Status | Evidence | Note |
-| --- | --- | --- | --- |
-| [one-line requirement or scope constraint] | Met / Partial / Missing / Ambiguous / Unverified / Violated / Respected | [file:line, test assertion/result, or "unavailable"] | [gap or unresolved question] |
-
-List extras separately with their evidence and severity; do not invent requirement rows for behavior nobody requested. Write a normal finding for every Partial, Missing, Violated, and confirmed extra: location, scope mismatch or concrete failure/cost, and the change that would address it. Retain low-risk extras even when the handoff normally omits nits.
+Return every criterion and scope constraint with its status, evidence location, and any gap or unresolved question. List extras separately with their evidence and severity; do not invent requirements for behavior nobody requested. Write a normal finding for every Partial, Missing, Violated, and confirmed extra: location, scope mismatch or concrete failure/cost, and the change that would address it. The handoff format belongs to `writing-code-review-reports`; the conformance pass must supply the evidence it needs, including low-risk extras.
 
 ## Traps
 
