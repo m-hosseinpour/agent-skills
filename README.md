@@ -37,11 +37,12 @@ Installs are symlinks by default, so there is one copy on disk; `--copy` puts a 
 | [designing-persian-web-ui](skills/designing-persian-web-ui/SKILL.md) | building or changing a Persian (Farsi) or right-to-left web interface — direction, layout, numerals, UI copy — and before calling Persian UI work done |
 | [dispatching-parallel-agents](skills/dispatching-parallel-agents/SKILL.md) | planning two or more subagents that will run at the same time |
 | [proxy-tunnel](skills/proxy-tunnel/SKILL.md) | a fetch fails because the site is blocked or geo-restricted, and only that domain should go through your own VLESS/Trojan configs |
-| [reviewing-code-changes](skills/reviewing-code-changes/SKILL.md) | reviewing a diff, branch, or merge request before merge — including against a ticket's requirements; or giving an independent second opinion |
+| [reviewing-code-changes](skills/reviewing-code-changes/SKILL.md) | inspecting a diff, branch, or merge request for defects and readiness, including requirement conformance — not formatting existing review results |
 | [splitting-task-descriptions](skills/splitting-task-descriptions/SKILL.md) | a long task description needs a concise team-facing version plus a full developer guide |
 | [systematic-debugging](skills/systematic-debugging/SKILL.md) | a bug, test failure, build error, or performance problem needs a cause found before a fix |
 | [trimming-project-instructions](skills/trimming-project-instructions/SKILL.md) | a project instruction file (`CLAUDE.md`, `AGENTS.md`) has outgrown what a session can hold |
 | [understanding-a-merge-request](skills/understanding-a-merge-request/SKILL.md) | you have to maintain or explain someone else's change rather than judge it |
+| [writing-code-review-reports](skills/writing-code-review-reports/SKILL.md) | existing review findings need a reader-facing handoff report, revision, translation, or consolidation — not a new code review |
 | [writing-plans](skills/writing-plans/SKILL.md) | a large, risky, or multi-session change needs a durable implementation plan before coding |
 | [writing-skills](skills/writing-skills/SKILL.md) | creating a skill or making a substantive change to an existing one |
 
@@ -56,6 +57,8 @@ skills/
 ```
 
 The format is progressive: only the frontmatter of every skill is preloaded, `SKILL.md` is read when a skill triggers, and anything else is read on demand. Keeping detail in `references/` is what makes that work.
+
+Use a separate skill when the task has its own trigger, not merely more detail within a parent workflow. For example, `reviewing-code-changes` owns inspection and findings; `writing-code-review-reports` owns the handoff document once those results exist. A request for both uses them at successive stages; a brief review reply does not require the reporting skill.
 
 ## Working in this repo
 
