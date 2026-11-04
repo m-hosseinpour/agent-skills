@@ -37,7 +37,7 @@ Installs are symlinks by default, so there is one copy on disk; `--copy` puts a 
 | [designing-persian-web-ui](skills/designing-persian-web-ui/SKILL.md) | building or changing a Persian (Farsi) or right-to-left web interface — direction, layout, numerals, UI copy — and before calling Persian UI work done |
 | [dispatching-parallel-agents](skills/dispatching-parallel-agents/SKILL.md) | planning two or more subagents that will run at the same time |
 | [proxy-tunnel](skills/proxy-tunnel/SKILL.md) | a fetch fails because the site is blocked or geo-restricted, and only that domain should go through your own VLESS/Trojan configs |
-| [reviewing-code-changes](skills/reviewing-code-changes/SKILL.md) | reviewing a diff, branch, or merge request before merge, or giving an independent second opinion |
+| [reviewing-code-changes](skills/reviewing-code-changes/SKILL.md) | reviewing a diff, branch, or merge request before merge — including against a ticket's requirements; or giving an independent second opinion |
 | [splitting-task-descriptions](skills/splitting-task-descriptions/SKILL.md) | a long task description needs a concise team-facing version plus a full developer guide |
 | [systematic-debugging](skills/systematic-debugging/SKILL.md) | a bug, test failure, build error, or performance problem needs a cause found before a fix |
 | [trimming-project-instructions](skills/trimming-project-instructions/SKILL.md) | a project instruction file (`CLAUDE.md`, `AGENTS.md`) has outgrown what a session can hold |
