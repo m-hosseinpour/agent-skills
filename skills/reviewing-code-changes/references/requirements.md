@@ -52,7 +52,7 @@ Also check the inverse: a requirement that changed an existing behavior, where t
 
 ## Return coverage evidence
 
-Return every criterion and scope constraint with its status, evidence location, and any gap or unresolved question. List extras separately with their evidence and severity; do not invent requirements for behavior nobody requested. Write a normal finding for every Partial, Missing, Violated, and confirmed extra: location, scope mismatch or concrete failure/cost, and the change that would address it. The handoff format belongs to `writing-code-review-reports`; the conformance pass must supply the evidence it needs, including low-risk extras.
+Return every criterion and scope constraint with its status, evidence location, and any gap or unresolved question. List extras separately with their evidence and severity; do not invent requirements for behavior nobody requested. Write a normal finding for every Partial, Missing, Violated, and confirmed extra: location, scope mismatch or concrete failure/cost, and the change that would address it. In the handoff report, put confirmed extras in an Out of scope subsection under Findings. The handoff format belongs to `writing-code-review-reports`; the conformance pass must supply the evidence it needs, including low-risk extras.
 
 ## Traps
 

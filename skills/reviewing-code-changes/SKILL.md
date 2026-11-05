@@ -42,7 +42,7 @@ For each finding, identify the location, explain the concrete failure or cost, a
 - **Nit:** non-blocking polish or consistency issue.
 - **Suggestion:** a plausible alternative, only if it offers concrete value.
 
-Confirmed missing, incorrect, partial, or unreachable required behavior is Blocking: the change does not meet its agreed contract. Uncertainty alone is not proof of a defect. Always report extras introduced beyond the agreed scope, even when they work correctly or carry little risk; scale severity by concrete risk and cost. Necessary supporting work is not an extra. Do not report personal preference as a defect, inflate severity, or present a pre-existing issue as introduced by this diff. Do not hide a meaningful finding among cosmetic comments.
+Confirmed missing, incorrect, partial, or unreachable required behavior is Blocking: the change does not meet its agreed contract. Uncertainty alone is not proof of a defect. Always report extras introduced beyond the agreed scope, even when they work correctly or carry little risk; put them in an Out of scope subsection under Findings and scale severity by concrete risk and cost. Necessary supporting work is not an extra. Do not report personal preference as a defect, inflate severity, or present a pre-existing issue as introduced by this diff. Do not hide a meaningful finding among cosmetic comments.
 
 ## Verification Evidence
 

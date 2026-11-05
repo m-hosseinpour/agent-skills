@@ -5,7 +5,7 @@ description: Use when existing code-review findings need to be written, edited, 
 
 # Writing Code Review Reports
 
-Turn existing review results into a report the reader can understand and act on without access to the reviewer's session. Write in the reader's language; preserve code identifiers, paths, and log text unchanged.
+Turn existing review results into a report the reader can understand and act on without access to the reviewer's session. Write in the reader's language; translate headings, labels, and status names too. For Persian reports, use the Persian labels and template below; for other languages, translate them consistently into the reader's language. Preserve code identifiers, paths, and log text unchanged.
 
 ## Boundary and Inputs
 
@@ -18,8 +18,8 @@ Collect the reviewed change and scope, findings with locations and impact, verif
 1. **Subject:** one line describing the reviewed change.
 2. **Verdict:** ready, not ready, or cannot determine, with the main reason.
 3. **Scope:** what the review covers and any important limits.
-4. **Requirements** (only when stated requirements exist): use the coverage statuses below, including ambiguity, unavailable evidence, and respected or violated scope constraints. Include evidence and verification limits. List confirmed extras separately with their severity. Missing, partial, violated, and extra behavior also appears as findings.
-5. **Findings:** most serious first. For each, include:
+4. **Requirements** (only when stated requirements exist): use the coverage statuses below, including ambiguity, unavailable evidence, and respected or violated scope constraints. Include evidence and verification limits. Record confirmed extras separately with their severity in a subsection under Findings. Missing, partial, violated, and extra behavior also appears as findings.
+5. **Findings:** most serious first. Put confirmed behavior beyond the agreed scope in a separate **Out of scope** subsection within Findings. For each finding, include:
    - **Problem:** what is wrong and where (file/line).
    - **Why it matters:** the concrete failure or cost.
    - **Action:** what change would address it.
@@ -36,50 +36,60 @@ Keep each finding's concrete failure or cost and proposed action. Do not turn pe
 
 ## Requirement Coverage and Verdict
 
-Use these statuses for stated requirements:
+Use these statuses for stated requirements. In a Persian report, use the Persian names shown here:
 
-| Status | Meaning |
-| --- | --- |
-| Met | Reachable behavior matches the criterion and its stated edge cases |
-| Partial | Implemented but incorrect or incomplete; state the specific gap |
-| Missing | No implementation or no reachable path to it |
-| Ambiguous | More than one plausible reading; retain the unresolved question |
-| Unverified | Required implementation, configuration, or runtime evidence is unavailable |
+| English status | Persian label | Meaning |
+| --- | --- | --- |
+| Met | محقق‌شده | Reachable behavior matches the criterion and its stated edge cases |
+| Partial | ناقص | Implemented but incorrect or incomplete; state the specific gap |
+| Missing | تحقق‌نیافته | No implementation or no reachable path to it |
+| Ambiguous | مبهم | More than one plausible reading; retain the unresolved question |
+| Unverified | راستی‌آزمایی‌نشده | Required implementation, configuration, or runtime evidence is unavailable |
+| Violated | نقض‌شده | A stated non-goal or scope constraint is implemented |
+| Respected | رعایت‌شده | A stated non-goal or scope constraint stays out |
 
-For explicit non-goals or scope constraints, use **Respected** or **Violated**, not Met or Missing. Present coverage in one table, with evidence and limits, rather than scattered findings. Do not invent requirement rows for unrequested behavior; list confirmed extras separately.
+For explicit non-goals or scope constraints, use **Respected** or **Violated**, not Met or Missing. Present coverage in one table, with evidence and limits, rather than scattered findings. Do not invent requirement rows for unrequested behavior; report confirmed extras as findings under **Out of scope**, with their evidence and severity.
 
 State readiness only for the reviewed scope and available evidence. Material unresolved requirements or missing evidence prevent an unqualified Ready verdict, but are not themselves confirmed defects. If the supplied review does not support a verdict, say readiness cannot be determined and identify what is missing. An empty findings list is not proof that the change is ready.
 
 ## Template
 
 Omit the Requirements section when the change had no stated requirements. If confirmed extras still
-exist, keep an Extras section outside it. In Confirmed, include only supported checks; say none were
+exist, report them under the Out of scope subsection within Findings; omit that subsection when there are none. In Confirmed, include only supported checks; say none were
 supplied when that is the limit rather than filling the section with inferred successes.
 
 ```markdown
-# [Short subject: what change was reviewed]
+# [موضوع کوتاه: چه تغییری بازبینی شد]
 
-**Verdict:** [Ready / Not ready / Cannot determine] — [one or two sentences stating the main reason and any material unresolved gap]
+**حکم:** [آماده / آماده نیست / قابل‌تعیین نیست] — [یک یا دو جمله دربارهٔ دلیل اصلی و هر ابهام مهمِ حل‌نشده]
 
-**Scope:** [what this review covers; mention important exclusions or limits]
+**دامنه:** [این بازبینی چه چیزی را پوشش می‌دهد؛ محدودیت‌ها یا موارد مهمِ بررسی‌نشده]
 
-## Requirements
+## الزامات
 
-| Requirement or scope constraint | Status | Evidence and limits |
+| الزام یا محدودیت دامنه | وضعیت | شواهد و محدودیت‌ها |
 | --- | --- | --- |
-| [one-line criterion] | Met / Partial / Missing / Ambiguous / Unverified / Violated / Respected | [file:line, assertion/result, or unavailable evidence; distinguish inspected from executed] |
+| [معیار در یک سطر] | محقق‌شده / ناقص / تحقق‌نیافته / مبهم / راستی‌آزمایی‌نشده / نقض‌شده / رعایت‌شده | [مسیر:خط، گزاره/نتیجه یا شواهد در دسترس‌نبود؛ بررسی ایستا را از اجرای واقعی جدا کنید] |
 
-**Extras:** [confirmed behavior beyond the agreed scope, evidence and severity; or none found within the reviewed scope]
+## یافته‌ها
 
-## Findings
+### [مانع ادغام / مهم] — [عنوان کوتاه]
 
-### [Blocking / Important / Nit — scope mismatch] — [short title]
+- **مشکل:** [ایراد و محل آن، همراه با فایل و خط]
+- **چرا مهم است:** [پیامد یا هزینهٔ مشخص]
+- **اقدام:** [تغییری که مشکل را برطرف می‌کند]
 
-- **Problem:** [what is wrong, with file and line]
-- **Why it matters:** [concrete failure or cost]
-- **Action:** [what change would address it]
+### موارد خارج از دامنه
 
-## Confirmed
+#### [مانع ادغام / مهم / کم‌اهمیت — خارج از دامنه] — [عنوان کوتاه]
 
-- [Important behavior or contract checked and found sound]
+- **مشکل:** [رفتار اضافه و محل آن، همراه با فایل و خط]
+- **چرا مهم است:** [ریسک یا هزینهٔ مشخص، یا توضیح اینکه مورد کم‌اهمیت است]
+- **اقدام:** [حذف، جداسازی از این تغییر، یا تأیید صریح دامنه]
+
+## موارد تأییدشده
+
+- [رفتار یا قراردادی مهم که بررسی و درستی آن تأیید شده است]
 ```
+
+For Persian findings, translate severity labels as **مانع ادغام** (Blocking) and **مهم** (Important). Translate **Nit** or **Minor** as **کم‌اهمیت**; label a low-risk scope extra **کم‌اهمیت — خارج از دامنه**. Do not use English severity names in the Persian report.
