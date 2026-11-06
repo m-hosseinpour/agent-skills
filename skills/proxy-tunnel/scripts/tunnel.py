@@ -1100,8 +1100,13 @@ def cmd_doctor(args: argparse.Namespace) -> None:
     line(DOMAINS.exists(), f"domains: {len(load_domains())} routed through the tunnel")
 
     unit = Path.home() / ".config/systemd/user/proxy-tunnel.service"
-    line(unit.exists(), f"service unit: {unit}")
-    line(service_active(), "service active")
+    # The service is optional: `setup` deliberately installs none. Report its
+    # absence as a note instead of failing an otherwise healthy manual setup.
+    if unit.exists():
+        line(service_active(), f"service active: {unit}")
+    else:
+        print("note service unit not installed (optional; run `serve` or use "
+              "`setup --service` on Linux)")
     if service_active():
         best, fails = probe_best(gateway_port())
         line(best is not None, f"gateway canary: {'%.2fs' % best if best else 'FAILED'} ({fails}/3 resets)")

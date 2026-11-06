@@ -25,7 +25,17 @@ import socket
 import sys
 from pathlib import Path
 
-HOME = Path(os.environ.get("PROXY_TUNNEL_HOME") or Path.home() / ".config" / "proxy-tunnel")
+
+def _default_home() -> Path:
+    if os.name == "nt":
+        base = os.environ.get("APPDATA")
+        return Path(base) / "proxy-tunnel" if base else Path.home() / "AppData/Roaming/proxy-tunnel"
+    if sys.platform == "darwin":
+        return Path.home() / "Library/Application Support/proxy-tunnel"
+    return Path.home() / ".config/proxy-tunnel"
+
+
+HOME = Path(os.environ.get("PROXY_TUNNEL_HOME") or _default_home())
 PORT = int(os.environ.get("PROXY_TUNNEL_PORT") or 1080)
 PROXY_VARS = ("HTTP_PROXY", "HTTPS_PROXY", "http_proxy", "https_proxy",
               "URL_READER_HTTP_PROXY", "URL_READER_HTTPS_PROXY")

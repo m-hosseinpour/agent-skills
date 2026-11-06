@@ -38,7 +38,8 @@ v2rayN), or there is nothing to tunnel through.
 5. **If the whole tunnel is down** (`status` shows `canary: FAILED`), run
    `up --refresh` to rotate to another config, then retry.
 6. **If the tunnel is healthy but fetches still go direct**, the client was launched
-   without the wrapper: run `doctor` and fix the `FAIL` line it reports.
+   without the wrapper: run `doctor`; it prints a note when no known client config
+   mentions the launcher, and `FAIL` when a known client is only half-wired.
 
 ## Commands
 
@@ -46,6 +47,7 @@ v2rayN), or there is nothing to tunnel through.
 |---|---|
 | `status` | gateway pid/port, canary health, last-good config, pool and domain counts |
 | `up [--refresh]` | start the gateway; `--refresh` ignores the last-good config and rescans |
+| `serve [--interval N]` | keep the gateway running and rotate dead configs; the systemd service runs this |
 | `down` | stop the gateway |
 | `allow <domain>...` | route these domains (and subdomains) through the tunnel, hot-reload |
 | `disallow <domain>...` | stop routing them |
@@ -59,7 +61,8 @@ v2rayN), or there is nothing to tunnel through.
 | `seed [--db PATH] [--group good] [--force]` | rebuild `pool.txt` from a v2rayN database |
 | `install-wrapper` / `install-service` | the two `setup` steps, separately |
 
-Paths: `scripts/tunnel.py` under this skill; data in the platform config dir
+Run these commands from this skill's directory, or use the absolute path to
+`scripts/tunnel.py`. Data lives in the platform config dir
 (`~/.config/proxy-tunnel` on Linux, `~/Library/Application Support/proxy-tunnel` on
 macOS, `%APPDATA%\proxy-tunnel` on Windows).
 
