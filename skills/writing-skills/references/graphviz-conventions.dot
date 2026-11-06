@@ -1,0 +1,25 @@
+// Optional shape example, not a mandatory process or an extra source of rules.
+// Copy only a branch that prose cannot explain as clearly.
+digraph skill_decision {
+    rankdir=TB;
+    node [shape=box];
+
+    request [label="Recurring task or skill audit", shape=ellipse];
+    home [label="Does an existing skill own the task?", shape=diamond];
+    improve [label="Improve that skill within scope"];
+    distinct [label="Is a separate skill justified?", shape=diamond];
+    draft [label="Define trigger and useful guidance"];
+    other [label="Use instructions, reference, or existing automation"];
+    verify [label="Check selection, application, and package"];
+    done [label="Report evidence and limits", shape=ellipse];
+
+    request -> home;
+    home -> improve [label="yes"];
+    home -> distinct [label="no"];
+    distinct -> draft [label="yes"];
+    distinct -> other [label="no"];
+    improve -> verify;
+    draft -> verify;
+    verify -> done;
+    other -> done;
+}

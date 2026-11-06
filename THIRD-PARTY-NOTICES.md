@@ -10,7 +10,7 @@ Source: <https://github.com/obra/superpowers>
 
 - `skills/brainstorming/` keeps the name and subject; the former upstream visual-companion scripts and guide have been removed, and the current text is independently rewritten
 - `skills/systematic-debugging/references/root-cause-tracing.md`, `references/defense-in-depth.md`, `references/condition-based-waiting.md`, `scripts/condition-based-waiting-example.ts`, and `scripts/find-polluter.sh` are rewritten descendants of the original supporting files; the evaluation scenarios are new
-- `skills/writing-skills/anthropic-best-practices.md`, `persuasion-principles.md`, `testing-skills-with-subagents.md`, `examples/instruction-files-testing.md`, `graphviz-conventions.dot`, `render-graphs.js`
+- `skills/writing-skills/references/anthropic-best-practices.md`, `discipline-wording.md`, `testing-skills.md`, `instruction-files-testing.md`, and `graphviz-conventions.dot` are condensed or rewritten descendants of the original authoring, persuasion, subagent-testing, instruction-file example, and Graphviz guides; `scripts/render-graphs.mjs` replaces the original renderer with a standalone implementation; evaluation scenarios are new
 - `skills/dispatching-parallel-agents/SKILL.md` and `skills/writing-plans/SKILL.md` keep the name and the subject; their text is rewritten
 - A few review-process points in `skills/reviewing-code-changes/` follow upstream `requesting-code-review`
 
