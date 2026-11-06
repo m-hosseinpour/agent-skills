@@ -6,6 +6,9 @@ skills-lock.json
 # Legacy brainstorming companion artifacts (preserved, no longer generated)
 .brainstorm/
 
+# Playwright MCP browser state/output
+.playwright-mcp/
+
 # OS and editor noise
 .DS_Store
 Thumbs.db
