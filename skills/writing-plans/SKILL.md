@@ -37,7 +37,7 @@ Do not write the implementation into the plan. Code bodies and command-by-comman
 
 The plan does not determine who implements the work. The coordinator may implement directly, delegate independent units, or combine both approaches according to task size, risk, context, and the user's preference. Do not create a subagent per task by default.
 
-- Give each delegate only the goal, scope, constraints, settled interfaces, and expected result it needs. See `dispatching-parallel-agents` when sending two or more agents to work concurrently.
+- Give each delegate only the goal, scope, constraints, settled interfaces, and expected result it needs. See `dispatching-parallel-agents` when assessing substantial independent workstreams for delegation or running a subagent alongside yourself or other agents.
 - Use one progress record only when work is long enough that progress could be lost; the plan itself may be that record.
 - If a decision or interface changes, update the affected plan items and any not-yet-started briefs before continuing.
 - Review the integrated result at meaningful boundaries. Small edits do not need per-task review.
