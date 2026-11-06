@@ -6,7 +6,7 @@ When only a vague description exists, state the assumptions you reviewed against
 
 ## 1. Build the requirement list
 
-Read the requirement text and approved clarifications before the diff, so the code does not frame what you look for. Keep their source identifiable; the author's implementation summary cannot silently expand the agreed scope. Turn the requirements into separate, checkable statements:
+Read the requirement text and approved clarifications before the implementation, so the code does not frame what you look for. Use the reviewed scope/revisions established with `scope-and-evidence.md` when applicable. Keep requirement sources identifiable; the author's implementation summary cannot silently expand the agreed scope. Turn the requirements into separate, checkable statements:
 
 - One line per behavior, not per ticket bullet — a bullet often holds several criteria.
 - Include stated edge cases, error behavior, limits, permissions, and compatibility requirements.
@@ -53,6 +53,8 @@ Also check the inverse: a requirement that changed an existing behavior, where t
 ## Return coverage evidence
 
 Return every criterion and scope constraint with its status, evidence location, and any gap or unresolved question. List extras separately with their evidence and severity; do not invent requirements for behavior nobody requested. Write a normal finding for every Partial, Missing, Violated, and confirmed extra: location, scope mismatch or concrete failure/cost, and the change that would address it. In the handoff report, put confirmed extras in an Out of scope subsection under Findings. The handoff format belongs to `writing-code-review-reports`; the conformance pass must supply the evidence it needs, including low-risk extras.
+
+Keep short reviews concise: coverage can be a compact list rather than a separate document, but do not omit a criterion or turn unknown runtime behavior into a confirmed gap. Keep unverified criteria separate from defect findings. For required behavior already missing in the base, report the current conformance gap without falsely claiming this diff introduced the original defect; the change can still be incomplete against its agreed goal.
 
 ## Traps
 
