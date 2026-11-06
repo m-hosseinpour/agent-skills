@@ -22,10 +22,13 @@ or fixing a broken tunnel.
 
 ## First run, any OS
 
+Run these from this skill's directory, or use the absolute path to
+`scripts/tunnel.py`:
+
 ```bash
 python3 scripts/tunnel.py setup          # xray + pool + launcher; touches nothing else
 python3 scripts/tunnel.py up             # pick a config and start the gateway
-python3 scripts/tunnel.py doctor         # every line should say ok
+python3 scripts/tunnel.py doctor         # required lines should say ok; optional service is a note
 ```
 
 `setup` is idempotent: it downloads xray only if no binary is found, seeds the pool only
@@ -79,8 +82,9 @@ auto-detects the default per platform.
 
 ### Windows notes
 
-- The launcher installs as `proxy-tunnel-exec.cmd` next to the Python script; add that
-  directory to `PATH`, or reference `launch.py` directly in the client config
+- The launcher installs as `%USERPROFILE%\.local\bin\proxy-tunnel-exec.cmd` (the
+  installer prints the exact path); add that directory to `PATH`, or reference
+  `launch.py` directly in the client config
   (`command: python`, `args: ['C:\\path\\to\\launch.py', '--url-reader', ...]`).
 - There is no systemd. Run `python tunnel.py serve --interval 60` in a terminal, or let
   the client start the gateway with `up`; the supervisor is only needed for automatic
