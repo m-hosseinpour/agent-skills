@@ -1,55 +1,69 @@
 ---
 name: writing-plans
-description: Use when a large or high-risk change, or work spanning multiple components, sessions, or delegated units, needs a durable implementation plan before coding.
+description: Use when asked to write, review, or update an implementation plan; when substantial cross-component changes, migrations, or high-risk work need coordinated steps and checks; or when preparing multi-session or cross-owner implementation work or resuming from a potentially stale implementation plan. Not for routine local edits without a plan request, executing a current settled plan, design-only exploration, or non-implementation handoffs.
 ---
 
 # Writing Plans
 
-A plan records decisions an implementer should not have to guess: the goal, scope, interfaces, files, and how to tell the work is done. It is useful for large, multi-session, high-risk, or delegated work. A clear task that one agent can finish in one session may need only a short checklist or no plan.
+A useful plan lets an implementer start the right work, in the right order, without guessing consequential decisions. It connects the agreed outcome to bounded tasks, dependencies, and observable checks. Detail should prevent a costly mistake or lost context, not prescribe every coding move.
 
-This skill is self-contained. It does not require a separate design or execution skill.
+This skill is self-contained and focuses on writing, reviewing, and maintaining plans, not managing the entire implementation. Loading it does not authorize implementation, delegation, publishing, or destructive actions.
 
-## Choose the Right Artifact
+## Choose the Smallest Useful Artifact
 
-- Use a short checklist for a small, clear task with a few steps.
-- Use a plan when work spans components, sessions, or independent delegated units, or when losing a decision would be costly.
-- Add a separate design/spec document only when another person will implement or maintain the work, the decisions need a durable record, or the project already uses design documents. Otherwise put the agreed design in the plan. The optional template `references/spec-template.md` explains what its sections capture; omit sections that do not apply.
+- **No new plan:** a routine, local change with obvious steps, or execution of an existing plan that still matches the project and requirements. Do not plan merely because several files or steps are involved.
+- **Short checklist:** a small explicit planning request or a clear single-session task that needs a little sequencing. Chat may be sufficient.
+- **Durable plan:** work with meaningful cross-component dependencies, staged migration or rollout, costly failure, or context that must survive a session or ownership change. A short but risky change can qualify; size alone is not the test.
 
-Do not create both a spec and a plan that repeat the same detail. A spec records why and what; a plan records how the work is divided and verified. If the project has no convention for specs, ask once whether the user wants one. The compact template in `references/spec-template.md` is optional and can be included in or linked from the plan.
+Reuse an existing plan and follow the project's document conventions. Save long-lived plans where future implementers can find them; if the location or a new document convention is unsettled and matters, ask rather than inventing a directory or filename convention. A template is not a requirement to create a file.
 
-## Plan Contents
+Keep the agreed approach in the plan unless a separate design/spec is already maintained or has a distinct audience or purpose. Do not create a spec merely because a plan exists. For a separate design record, read [references/spec-template.md](references/spec-template.md); link to its authoritative decisions rather than duplicating them.
 
-Before writing tasks, map the affected areas and identify shared files and interfaces. Group work that touches the same files or depends on unsettled decisions. Split only where tasks can be completed and checked independently.
+## Ground the Plan Before Writing Tasks
 
-Include:
+1. **Establish the goal and authority.** Read the request, acceptance criteria, prior decisions, existing plan/spec, and relevant project instructions. Distinguish user decisions, verified facts, proposals, and assumptions. A planning-only request stops at the plan.
+2. **Check the current project.** Inspect the affected code, documents, interfaces, and existing verification practice. Record exact known paths and the relevant starting revision or state for a handoff; label proposed new files as proposed. Do not invent paths, commands, API shapes, or a test framework.
+3. **Resolve decision-changing gaps.** Investigate relevant dependencies, failure behavior, compatibility, security/privacy, persisted data, and operational constraints. Get external API facts from authoritative docs or an authorized focused probe. Ask about material user choices before scheduling dependent implementation; `brainstorming`, if available, can help resolve design choices but is not a prerequisite.
+4. **Bound remaining uncertainty.** State low-risk assumptions and their consequences. If a technical fact cannot yet be verified, add a bounded investigation task with a question, evidence required, and the work it blocks. Do not call the dependent work ready or disguise an unsettled design as an implementation task.
 
-- **Goal and non-goals:** what changes and what is explicitly out of scope.
-- **Approach:** the chosen design and important trade-offs; note unresolved decisions that need the user's input.
-- **Files and responsibilities:** exact known paths and why they change.
-- **Interfaces:** names and shapes of data or calls that cross task boundaries.
-- **Behavior to verify:** the meaningful outcomes and relevant edge cases, using the project's testing practice.
-- **Acceptance criteria:** observable conditions that show the whole change works.
-- **Constraints:** verified external API facts, compatibility needs, or project rules that affect implementation.
+Use existing evidence when it still describes the current state; do not repeat investigation just to fill a template. A bug whose cause is unknown needs diagnosis before a fix plan, not a guessed solution.
 
-Do not write the implementation into the plan. Code bodies and command-by-command recipes usually belong to the implementer. Be specific where a guess would alter behavior; leave routine implementation choices to the person doing the work.
+## Build Tasks Around Outcomes and Dependencies
 
-## Execution
+Map affected areas, shared files/resources, and producer/consumer contracts before splitting work. Group tightly coupled edits; sequence tasks that need another task's output. Mark tasks parallelizable only when their inputs are settled and their writable resources do not conflict. Planning independent units does not require delegating them.
 
-The plan does not determine who implements the work. The coordinator may implement directly, delegate independent units, or combine both approaches according to task size, risk, context, and the user's preference. Do not create a subagent per task by default.
+The plan should capture:
 
-- Give each delegate only the goal, scope, constraints, settled interfaces, and expected result it needs. See `dispatching-parallel-agents` when assessing substantial independent workstreams for delegation or running a subagent alongside yourself or other agents.
-- Use one progress record only when work is long enough that progress could be lost; the plan itself may be that record.
-- If a decision or interface changes, update the affected plan items and any not-yet-started briefs before continuing.
-- Review the integrated result at meaningful boundaries. Small edits do not need per-task review.
-- Verify the combined work with checks relevant to the changes and the project's norms. Preserve a baseline before a change removes the path needed to measure it.
-- Do not push, merge, or delete branches without the user's instruction. Preserve uncommitted work.
+- **Outcome and boundaries:** goal, non-goals, observable acceptance criteria, and the chosen approach or link to it.
+- **Current context and constraints:** relevant sources, verified contracts, compatibility limits, bounded assumptions, and unresolved blockers.
+- **Tasks:** for each coherent unit, a stable ID, outcome, affected paths/responsibilities, dependencies or required inputs, meaningful actions, and verification with an expected result. Include an owner only when ownership matters or is already agreed; do not invent workers.
+- **Integration:** which task or milestone checks the combined behavior and shared interfaces. Trace each acceptance criterion to a task or final check so local completion cannot hide a missing end-to-end outcome.
+- **Risk-dependent safeguards:** where relevant, data preservation, old/new version coexistence, rollout order, rollback or recovery limits, and actions needing explicit authorization. Preserve a performance or behavior baseline before removing the way to measure it.
 
-## Plan Review
+A task should be finishable and checkable as a coherent unit, not necessarily independently runnable. Avoid a task per file, arbitrary minute estimates, full implementation bodies, and commands for every edit. A contract, example input/output, pseudocode sketch, or exact verification command is useful when it removes a consequential ambiguity; syntax or block length alone does not make it excessive.
 
-Review your plan for missing requirements, unclear interfaces, unnecessary tasks, and acceptance criteria that cannot be checked. Ask the user to review it when it will guide delegated or multi-session work, or when an incorrect assumption would be expensive. Do not require a separate approval round for a short checklist or a plan that merely records an already-approved design without adding decisions.
+For a starting layout, read [references/plan-template.md](references/plan-template.md) when drafting a durable plan or task handoff. Omit irrelevant sections; the contents above matter more than the headings.
 
-When a large or high-stakes plan would benefit from a fresh reader, dispatch one read-only reviewer using `plan-document-reviewer-prompt.md`. Point its spec field at the separate design record when one exists; when none exists, omit that field and tell the reviewer to use the plan's design section. Skip this for short checklists or when the user does not want an extra review round.
+## Make Verification and Review Useful
 
-## When the Plan Changes
+- Specify behavior and expected results, not just “run tests” or “works.” Cover relevant failure paths and integration seams using the project's existing practices. If there is no framework, use an appropriate manual flow or focused check; introducing a framework is a separate choice.
+- Record known baseline failures and unavailable checks honestly. A planned command is not a result, and missing evidence is not proof of a defect. If a gap affects readiness, name what must resolve it before dependent work starts or completion is claimed.
+- Self-review requirement coverage, dependency order, contract consistency, feasible checks, unnecessary scope, and unresolved decisions. If the plan introduces a consequential choice, get the user's decision; merely recording an approved approach does not need another approval round.
+- For a large or high-stakes plan that warrants an independent review, use one read-only reviewer **only when delegation is available and allowed**. Read [references/plan-document-reviewer-prompt.md](references/plan-document-reviewer-prompt.md) at that point. If a reviewer is unavailable or prohibited, do the self-review and report that limit. Reviewer readiness is not user authorization.
 
-Keep the plan and any active briefs consistent. Update only the affected items; do not preserve obsolete choices as current instructions. Search documents for paths, names, values, and requirements that changed, and correct references that would mislead the next reader.
+## Handoff, Resume, and Change
+
+Leave one current plan, linked decisions, and the next authorized action. For multi-session work, use one progress record, optionally the plan itself: pending, blocked, in progress, or completed **with evidence**. Include outstanding blockers and the next task; avoid competing ledgers. If delegation is chosen and allowed, `dispatching-parallel-agents`, if available, covers safe ownership and dispatch, not the plan template.
+
+On resumption, compare the plan and recorded progress with current requirements, code state, and relevant checks before treating old items as current. Do not rewrite an unchanged, settled plan or redo still-valid work merely to restart.
+
+When a requirement, decision, path, or interface changes:
+
+1. Identify affected pending, active, **and completed** work, including integration checks and documentation.
+2. Update the authoritative decision and affected plan items. Notify active implementers before they continue dependent work; revise pending briefs and reopen completed work when needed.
+3. Reverify the behavior affected by the change. Prior checks remain evidence only for artifacts and assumptions they still cover.
+4. Correct stale live references without erasing useful historical context; label retained old decisions or results as superseded snapshots, not current instructions.
+
+## Evaluating This Skill
+
+When revising discovery or planning guidance, use [references/evaluation-scenarios.md](references/evaluation-scenarios.md) for optional metadata-selection and plan-quality cases. These are maintainer inputs, not a ritual during ordinary planning. Installer discovery does not prove automatic loading, and a decision simulation does not prove implementation success.
