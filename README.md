@@ -32,7 +32,7 @@ Installs are symlinks by default, so there is one copy on disk; `--copy` puts a 
 
 | Skill | Use it when |
 | --- | --- |
-| [brainstorming](skills/brainstorming/SKILL.md) | the goal, constraints, or approach are unclear and need to become a design the user can correct before building |
+| [brainstorming](skills/brainstorming/SKILL.md) | before nontrivial implementation, even with clear requirements, or when exploring ideas or a design; skip mechanical edits and explanation-only requests, and diagnose bugs first |
 | [curating-global-instructions](skills/curating-global-instructions/SKILL.md) | deciding what belongs in the always-loaded global instruction file, or reorganizing it as it grows |
 | [designing-persian-web-ui](skills/designing-persian-web-ui/SKILL.md) | building or changing a Persian (Farsi) or right-to-left web interface — direction, layout, numerals, UI copy — and before calling Persian UI work done |
 | [dispatching-parallel-agents](skills/dispatching-parallel-agents/SKILL.md) | planning two or more subagents that will run at the same time |
@@ -58,6 +58,10 @@ skills/
 
 The format is progressive: only the frontmatter of every skill is preloaded, `SKILL.md` is read when a skill triggers, and anything else is read on demand. Keeping detail in `references/` is what makes that work.
 
+`brainstorming` is a design checkpoint for nontrivial implementation, not an automatic interview or approval gate. It checks current evidence even when requirements are clear, asks only about consequential unresolved choices, and proceeds without re-approving settled decisions when implementation is already requested. This is broader than using it only for vague requests, but does not require a design document or visual preview for every task.
+
+For visual decisions, its optional [visual guide](skills/brainstorming/references/visual-decisions.md) uses diagrams, images, or static HTML with an existing preview tool. The former custom browser-companion server and scripts have been removed: there is no companion launch command, automatic click capture, or dedicated live-reload service. Feedback stays in the conversation. Existing `.brainstorm/` artifacts are not removed by this change.
+
 Use a separate skill when the task has its own trigger, not merely more detail within a parent workflow. For example, `reviewing-code-changes` owns inspection and findings; `writing-code-review-reports` owns the handoff document once those results exist. A request for both uses them at successive stages; a brief review reply does not require the reporting skill.
 
 `understanding-a-merge-request` produces an adaptive Markdown walkthrough, not a merge verdict: it connects the change to relevant unchanged code, explains before/after behavior or responsibility shifts, and selects useful views such as flow maps, example traces, contract tables, or rollout sequences. Short explanations can stay in chat; substantial walkthroughs can be saved alongside the code. It requires no Cursor Canvas or particular hosting provider.
@@ -75,7 +79,7 @@ Several skills started from someone else's work, and a few still carry it. Full 
 
 **obra/superpowers** ([MIT](https://github.com/obra/superpowers), © 2025 Jesse Vincent) — five skills began as copies of the same-named skills and have been rewritten since:
 
-- `brainstorming` — the visual-companion scripts and `visual-companion.md`
+- `brainstorming` — the name and the subject; the former upstream visual-companion scripts and guide have been removed
 - `systematic-debugging` — `root-cause-tracing.md`, `defense-in-depth.md`, `condition-based-waiting.md`, `condition-based-waiting-example.ts`, `find-polluter.sh`
 - `writing-skills` — `anthropic-best-practices.md`, `persuasion-principles.md`, `testing-skills-with-subagents.md`, `examples/instruction-files-testing.md`, `graphviz-conventions.dot`, `render-graphs.js`
 - `dispatching-parallel-agents`, `writing-plans` — the name and the subject, nothing else

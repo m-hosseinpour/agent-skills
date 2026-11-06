@@ -3,7 +3,7 @@
 .agents/
 skills-lock.json
 
-# Runtime files from the brainstorming skill
+# Legacy brainstorming companion artifacts (preserved, no longer generated)
 .brainstorm/
 
 # OS and editor noise
