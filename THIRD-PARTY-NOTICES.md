@@ -8,7 +8,7 @@ Source: <https://github.com/obra/superpowers>
 
 `brainstorming`, `dispatching-parallel-agents`, `systematic-debugging`, `writing-plans`, and `writing-skills` began as copies of the same-named skills in that repository and have been rewritten. Material that remains from upstream, or is lightly edited:
 
-- `skills/brainstorming/scripts/` and `skills/brainstorming/visual-companion.md`
+- `skills/brainstorming/` keeps the name and subject; the former upstream visual-companion scripts and guide have been removed, and the current text is independently rewritten
 - `skills/systematic-debugging/root-cause-tracing.md`, `defense-in-depth.md`, `condition-based-waiting.md`, `condition-based-waiting-example.ts`, `find-polluter.sh`
 - `skills/writing-skills/anthropic-best-practices.md`, `persuasion-principles.md`, `testing-skills-with-subagents.md`, `examples/instruction-files-testing.md`, `graphviz-conventions.dot`, `render-graphs.js`
 - `skills/dispatching-parallel-agents/SKILL.md` and `skills/writing-plans/SKILL.md` keep the name and the subject; their text is rewritten
