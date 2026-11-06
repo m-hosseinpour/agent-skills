@@ -6,10 +6,10 @@ This repository contains material derived from the projects below. Each section 
 
 Source: <https://github.com/obra/superpowers>
 
-`brainstorming`, `dispatching-parallel-agents`, `systematic-debugging`, `writing-plans`, and `writing-skills` began as copies of the same-named skills in that repository and have been rewritten. Material that remains from upstream, or is lightly edited:
+`brainstorming`, `dispatching-parallel-agents`, `systematic-debugging`, `writing-plans`, and `writing-skills` began as copies of the same-named skills in that repository and have been rewritten. Attribution for retained or adapted material and rewritten descendants:
 
 - `skills/brainstorming/` keeps the name and subject; the former upstream visual-companion scripts and guide have been removed, and the current text is independently rewritten
-- `skills/systematic-debugging/root-cause-tracing.md`, `defense-in-depth.md`, `condition-based-waiting.md`, `condition-based-waiting-example.ts`, `find-polluter.sh`
+- `skills/systematic-debugging/references/root-cause-tracing.md`, `references/defense-in-depth.md`, `references/condition-based-waiting.md`, `scripts/condition-based-waiting-example.ts`, and `scripts/find-polluter.sh` are rewritten descendants of the original supporting files; the evaluation scenarios are new
 - `skills/writing-skills/anthropic-best-practices.md`, `persuasion-principles.md`, `testing-skills-with-subagents.md`, `examples/instruction-files-testing.md`, `graphviz-conventions.dot`, `render-graphs.js`
 - `skills/dispatching-parallel-agents/SKILL.md` and `skills/writing-plans/SKILL.md` keep the name and the subject; their text is rewritten
 - A few review-process points in `skills/reviewing-code-changes/` follow upstream `requesting-code-review`
