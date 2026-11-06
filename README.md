@@ -41,7 +41,7 @@ Installs are symlinks by default, so there is one copy on disk; `--copy` puts a 
 | [splitting-task-descriptions](skills/splitting-task-descriptions/SKILL.md) | a long task description needs a concise team-facing version plus a full developer guide |
 | [systematic-debugging](skills/systematic-debugging/SKILL.md) | a bug, test failure, build error, or performance problem needs a cause found before a fix |
 | [trimming-project-instructions](skills/trimming-project-instructions/SKILL.md) | a project instruction file (`CLAUDE.md`, `AGENTS.md`) has outgrown what a session can hold |
-| [understanding-a-merge-request](skills/understanding-a-merge-request/SKILL.md) | you have to maintain or explain someone else's change rather than judge it |
+| [understanding-a-merge-request](skills/understanding-a-merge-request/SKILL.md) | understanding an unfamiliar MR, branch, or diff in its project context — for explanation, maintenance, or orientation before review, rather than a verdict |
 | [writing-code-review-reports](skills/writing-code-review-reports/SKILL.md) | existing review findings need a reader-facing handoff report, revision, translation, or consolidation — not a new code review |
 | [writing-plans](skills/writing-plans/SKILL.md) | a large, risky, or multi-session change needs a durable implementation plan before coding |
 | [writing-skills](skills/writing-skills/SKILL.md) | creating a skill or making a substantive change to an existing one |
@@ -59,6 +59,8 @@ skills/
 The format is progressive: only the frontmatter of every skill is preloaded, `SKILL.md` is read when a skill triggers, and anything else is read on demand. Keeping detail in `references/` is what makes that work.
 
 Use a separate skill when the task has its own trigger, not merely more detail within a parent workflow. For example, `reviewing-code-changes` owns inspection and findings; `writing-code-review-reports` owns the handoff document once those results exist. A request for both uses them at successive stages; a brief review reply does not require the reporting skill.
+
+`understanding-a-merge-request` produces an adaptive Markdown walkthrough, not a merge verdict: it connects the change to relevant unchanged code, explains before/after behavior or responsibility shifts, and selects useful views such as flow maps, example traces, contract tables, or rollout sequences. Short explanations can stay in chat; substantial walkthroughs can be saved alongside the code. It requires no Cursor Canvas or particular hosting provider.
 
 ## Working in this repo
 
@@ -80,9 +82,9 @@ Several skills started from someone else's work, and a few still carry it. Full 
 
 `reviewing-code-changes` also borrows a few review-process points from `requesting-code-review`.
 
-**PR Review Canvas** ([MIT](https://github.com/projekta2/pr-review-canvas), © 2026 Alexandre Iglesias / Projekta2 Creative Studio) — `reviewing-code-changes` is built on its review checklist: `references/checklist.md` keeps the categories and item numbering, reworded, for 35 of the 51 items. `understanding-a-merge-request` is inspired by the [Cursor `pr-review-canvas` skill](https://github.com/cursor/plugins/tree/main/pr-review-canvas) (MIT, © 2026 Cursor); none of its text was copied.
+**PR Review Canvas** ([MIT](https://github.com/projekta2/pr-review-canvas), © 2026 Alexandre Iglesias / Projekta2 Creative Studio) — `reviewing-code-changes` is built on its review checklist: `references/checklist.md` keeps the categories and item numbering, reworded, for 35 of the 51 items.
 
-**cursor/plugins** ([MIT](https://github.com/cursor/plugins), © 2026 Cursor) — the rubric in `reviewing-code-changes/references/quality-bar.md` is distilled from its `thermo-nuclear-code-quality-review` skill, and three checklist items come from its `thermos` plugin.
+**cursor/plugins** ([MIT](https://github.com/cursor/plugins), © 2026 Cursor) — the rubric in `reviewing-code-changes/references/quality-bar.md` is distilled from its `thermo-nuclear-code-quality-review` skill, and three checklist items come from its `thermos` plugin. `understanding-a-merge-request` adapts the comprehension-first grouping, pseudocode, traces, callouts, and choice of representation from [its `pr-review-canvas` skill](https://github.com/cursor/plugins/tree/main/pr-review-canvas), with independently written guidance for portable Markdown and project-context investigation rather than the Canvas SDK.
 
 **wshobson/agents** ([MIT](https://github.com/wshobson/agents), © 2024 Seth Hobson) — the language traps in `reviewing-code-changes/references/patterns.md` adapt its `code-review-excellence` skill.
 

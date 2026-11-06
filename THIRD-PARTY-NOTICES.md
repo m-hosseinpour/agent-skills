@@ -70,7 +70,7 @@ Source: <https://github.com/cursor/plugins>
 
 - `skills/reviewing-code-changes/references/quality-bar.md` is distilled from the `thermo-nuclear-code-quality-review` skill
 - Three checklist items (`c5`, `a10`, `s5`) come from the `thermos` plugin
-- `skills/understanding-a-merge-request/` is inspired by the `pr-review-canvas` skill; no text was copied
+- `skills/understanding-a-merge-request/SKILL.md` and `references/explanation-patterns.md` adapt comprehension-first grouping, pseudocode, traces, callouts, and representation selection from the `pr-review-canvas` skill. The guidance and examples are independently written, extend investigation to project context, and use portable Markdown instead of the Canvas SDK.
 
 MIT License
 
