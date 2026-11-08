@@ -1,6 +1,6 @@
 ---
 name: reviewing-code-changes
-description: Use when reviewing a PR, merge request, branch, commit range, patch, or uncommitted changes — including a work order that asks you to review and test changes against a ticket or acceptance criteria — for defects, regressions, requirement conformance, or merge readiness; or before completing consequential changes to behavior, public contracts, security, or persisted data. Load it before inspecting the change, planning the review, or running checks. Not for unchanged-code audits, explanation-only walkthroughs, formatting existing findings, receiving review feedback, or routine mechanical edits without a review request.
+description: Use when starting a review of a PR, merge request, branch, commit range, patch, or uncommitted changes for defects, regressions, requirement conformance, or merge readiness, including direct instructions to review and test changes against a ticket or acceptance criteria; or before completing consequential changes to behavior, public contracts, security, or persisted data. Not for test-only runs, unchanged-code audits, explanation-only walkthroughs, formatting existing findings, receiving review feedback, or routine mechanical edits without a review request.
 ---
 
 # Reviewing Code Changes

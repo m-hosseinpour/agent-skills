@@ -27,6 +27,8 @@ selection between skills is unclear.
 | D11 | Respond to supplied reviewer feedback, not an independent review. | SKIP |
 | D12 | Audit an unchanged module, with no diff or before/after. | SKIP: outside change-review scope |
 | D13 | A work order asks to review the branch's new commits and run the full test, with acceptance criteria in a ticket. | LOAD: review work, regardless of the task framing |
+| D14 | «تغییرات جدید این برنچ را ریویو کن و تست‌ها را اجرا کن؛ معیارهای پذیرش در تیکت هستند.» | LOAD: direct review-and-test instruction in Persian |
+| D15 | Run the test suite and report its result only; no change assessment or pre-completion review is requested. | SKIP: test-only execution |
 
 Report misses and false positives, not just total matches. One evaluator's metadata choices do not
 establish an automatic loading rate across harnesses, languages, or models. If claiming actual
