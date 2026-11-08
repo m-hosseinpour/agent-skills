@@ -26,6 +26,7 @@ selection between skills is unclear.
 | D10 | Diagnose why an existing test fails; no change yet. | SKIP: debugging workflow |
 | D11 | Respond to supplied reviewer feedback, not an independent review. | SKIP |
 | D12 | Audit an unchanged module, with no diff or before/after. | SKIP: outside change-review scope |
+| D13 | A work order asks to review the branch's new commits and run the full test, with acceptance criteria in a ticket. | LOAD: review work, regardless of the task framing |
 
 Report misses and false positives, not just total matches. One evaluator's metadata choices do not
 establish an automatic loading rate across harnesses, languages, or models. If claiming actual
