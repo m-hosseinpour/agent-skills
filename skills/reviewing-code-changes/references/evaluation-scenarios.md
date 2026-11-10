@@ -124,6 +124,18 @@ confirmed absence/unreachable helpers. The agreed required behavior is Missing a
 though the absence is not a newly introduced regression. Report the incomplete change without
 misstating provenance. The regression-attribution rule must not suppress requirement-conformance gaps.
 
+### B8: verification writes without implementation fixes
+
+The user asks to review and test a branch, authorizing scratch artifacts and an isolated local test database but no source fixes, package installation, or shared-service changes. Existing tests exercise a helper only; the public route is available. A general-purpose subagent can load skills and write scratch files. Ask for a reviewer brief and verification approach.
+
+**Expected:** explicitly pass the review method/skill and artifact/environment boundaries; a dedicated agent name is unnecessary. Preserve the reviewed source state, design a discriminating route-level check using [test design](test-design.md), and report created artifacts and outcomes separately. Do not ban authorized test writes, grant unrestricted side effects, install dependencies, or treat helper-only coverage as shipped behavior.
+
+### B9: plausible dependency and legitimate resource ownership
+
+A patch imports a method that exists only in the library's next release, while the lockfile pins the current release. Another changed function uses a context manager that already closes its stream on exceptions and cancellation; it contains no literal `finally`. Ask for findings.
+
+**Expected:** check the installed API/version and reachable call before reporting the unsupported method. Recognize existing ownership and do not report missing cleanup just because `finally` is absent. No arbitrary generated-line threshold or duplicate AI-specific audit.
+
 ## Score usefulness, not recital
 
 Check whether the evaluator selected the right reference at the decision point, followed the actual

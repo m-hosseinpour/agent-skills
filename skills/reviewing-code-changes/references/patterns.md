@@ -5,6 +5,12 @@ public endpoints, or asynchronous/resource-owning changes. These are traps to in
 automatic findings. Establish the actual contract, reachable path, and impact before reporting.
 Language traps adapted from wshobson/agents `code-review-excellence` (MIT, Seth Hobson).
 
+## Dependencies and external APIs: plausible is not installed
+
+For new or changed imports, library calls, or service integrations, verify the package/path and API against the project's installed or locked version and authoritative documentation. The latest release's API is not proof that the deployed version supports it. Check that the reachable implementation uses the dependency and follows the project's existing conventions; do not add speculative adapters or flag an intentional local module solely because it is absent from a package manifest.
+
+These boundary, failure, and lifetime checks apply to generated code as well as human code. Line count, the absence of a literal `finally`, or compiling successfully is not a safety test: establish ownership, existing safeguards, and a reachable failure before reporting a defect. Avoid duplicate full audits just because code was AI-written.
+
 ## Python: accidental shared state and swallowed failures
 
 - A mutable default such as `def add_item(item, items=[])` shares state across calls. When calls should be independent, use `None` and allocate inside the function. Verify intended ownership rather than treating an intentional shared cache as the same defect.

@@ -52,6 +52,8 @@ Example for a shared checkout:
 
 Use a reply for short results. Ask for a report file or one progress record only when length, durability, or multi-stage tracking warrants it; do not create competing ledgers.
 
+Preserve source locators, important scope gaps, and the code state/environment behind reported checks even in a concise return. A length target must not hide a blocker. Workers should distinguish observations, user decisions, and hypotheses; summaries must not turn the last into established facts.
+
 ## Run, Adjust, and Recover
 
 Launch independent assignments in the same round using the tool's actual concurrent/background mechanism; repeated blocking calls are sequential. While workers run, do useful work outside their ownership instead of redoing their assignments. Follow the runtime's notification/waiting rules; wait when your next action really requires a result.
