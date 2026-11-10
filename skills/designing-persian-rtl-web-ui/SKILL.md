@@ -1,6 +1,6 @@
 ---
 name: designing-persian-rtl-web-ui
-description: Use when building or changing a Persian (Farsi) or right-to-left web interface — a page, a component, a layout, dark mode, UI copy, direction, numerals, or an existing RTL UI that needs work — and before calling Persian UI work done.
+description: Use when building, changing, or checking a Persian (Farsi) web interface — including right-to-left layout, typography, UI copy, numerals, responsive behavior, or dark mode — and before calling Persian UI work done. Not for RTL-only work in non-Persian interfaces.
 ---
 
 # Designing Persian RTL Web UI

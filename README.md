@@ -33,7 +33,7 @@ Installs are symlinks by default, so there is one copy on disk; `--copy` puts a 
 | Skill | Use it when |
 | --- | --- |
 | [curating-global-instructions](skills/curating-global-instructions/SKILL.md) | deciding what belongs in the always-loaded global instruction file, or reorganizing it as it grows |
-| [designing-persian-rtl-web-ui](skills/designing-persian-rtl-web-ui/SKILL.md) | building or changing a Persian (Farsi) or right-to-left web interface — direction, layout, numerals, UI copy — and before calling Persian UI work done |
+| [designing-persian-rtl-web-ui](skills/designing-persian-rtl-web-ui/SKILL.md) | building, changing, or checking a Persian (Farsi) web interface — RTL layout, typography, UI copy, numerals, responsive behavior, or dark mode — and before calling Persian UI work done; not RTL-only work in non-Persian interfaces |
 | [dispatching-parallel-agents](skills/dispatching-parallel-agents/SKILL.md) | assessing multiple substantial, possibly independent workstreams when delegation is allowed, explicit parallel-agent requests, or a subagent running alongside the coordinator or other agents; not tiny multi-step tasks or parallel tool calls |
 | [research-with-evidence](skills/research-with-evidence/SKILL.md) | multi-source research, evidence-backed comparisons, conflicting claims, or recommendations dependent on external evidence — not simple lookups, already-sufficient explanations, code-change review, or concrete software debugging |
 | [reviewing-code-changes](skills/reviewing-code-changes/SKILL.md) | starting a review of a PR/MR, branch, commit range, patch, or uncommitted changes for defects, regressions, requirements, or readiness, including direct review-and-test instructions against a ticket or acceptance criteria; also before completing consequential behavior, contract, security, or persisted-data changes — not test-only runs, routine edits without a review request, unchanged-code audits, explanation-only walkthroughs, or formatting existing findings |
@@ -50,7 +50,9 @@ Installs are symlinks by default, so there is one copy on disk; `--copy` puts a 
 
 ### Renamed skills
 
-The following names have changed; their descriptions and workflows are unchanged:
+The following names have changed. The rename itself preserved their descriptions and
+workflows; `designing-persian-rtl-web-ui` has since narrowed its description to match
+its Persian-specific guidance, excluding RTL-only work in non-Persian interfaces:
 
 | Former name | Current name |
 | --- | --- |
