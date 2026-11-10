@@ -16,7 +16,7 @@ when practical; use nearby review/explanation descriptions in a follow-up if the
 | D2 | Translate a supplied code-review report fully into Persian. | LOAD |
 | D3 | Combine two reviewer outputs into one author-facing report. | LOAD |
 | D4 | A review-and-report request has completed inspection; the report is next. | LOAD now |
-| D5 | Inspect an MR for defects only; a short review reply suffices, no handoff requested. | SKIP |
+| D5 | Inspect an MR for defects only; a short findings-only reply suffices, no report requested. | SKIP |
 | D6 | Rewrite an existing report to be clearer/shorter. | LOAD |
 | D7 | Explain MR architecture, not judge it. | SKIP: explanation workflow |
 | D8 | Fix bugs listed in a supplied review. | SKIP: implementation task |
@@ -24,11 +24,17 @@ when practical; use nearby review/explanation descriptions in a follow-up if the
 | D10 | Create a review handoff with zero findings and supplied scope/check results. | LOAD |
 | D11 | Create an unrelated engineering status report. | SKIP |
 | D12 | Review a branch and write a handoff; inspection has not begun. | LOAD later: reporting stage, not a substitute for review |
+| D13 | «ریویو را انجام دادم؛ حالا طبق درخواست کاربر یک گزارش کوتاه همین‌جا در چت می‌نویسم.» No separate file or handoff wording was requested. | LOAD now |
+| D14 | The agent completed its own review with no findings; the requested code-review report is next. | LOAD now |
+| D15 | «این تغییر کوچک را فقط از نظر باگ بررسی کن؛ اگر چیزی پیدا شد بگو.» No report is requested. | SKIP |
 
 Report false positives, misses, and stage confusion. Installer discovery does not prove automatic
 selection by an agent, and a single evaluator does not establish a loading rate across harnesses.
 If claiming runtime loading, observe a safe real task's skill-tool call rather than extrapolating from
-these metadata decisions.
+these metadata decisions. For a combined review-and-report task, check the transition from inspection
+to drafting as well as initial selection: the available reporting skill should be loaded before drafting,
+even for a short report in chat or a review with no findings. Do not treat this metadata table as proof
+that `reviewing-code-changes`' delivery-stage instruction was followed.
 
 ## Application: produce reports, not rule recitals
 

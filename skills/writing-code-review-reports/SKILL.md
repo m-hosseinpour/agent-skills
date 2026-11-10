@@ -1,6 +1,6 @@
 ---
 name: writing-code-review-reports
-description: Use when existing code-review results need an author-facing handoff report, revision, faithful translation, or consolidation across reviewers; also at the reporting stage of a review-and-report request, including reviews with no findings. Not for inspecting code, fixing findings, responding to review feedback, explanation-only walkthroughs, or a brief review reply without a requested handoff.
+description: Use when writing a code-review report from completed review results, whether supplied by others or produced in the current task; includes the reporting stage of a combined review-and-report request, reports with no findings, and editing, translating, or consolidating review reports. Not for code inspection, fixing findings, responding to review feedback, explanation-only walkthroughs, or a brief findings-only review reply when no report is requested.
 ---
 
 # Writing Code Review Reports
@@ -11,10 +11,13 @@ Useful reporting is not a second review or a more confident version of the first
 
 ## Boundary and Reporting Mode
 
-Use after results exist, including the reporting stage of a request to review and write a report.
+Use after results exist, whether supplied by others or produced by the agent in the current task,
+including the reporting stage of a request to review and write a report. A requested report can be
+short and delivered in chat; neither a separate file nor the word "handoff" is required.
 Code inspection belongs to `reviewing-code-changes`; explanation-only walkthroughs belong to
-`understanding-a-merge-request`. Neither skill is required to report from supplied results. A short
-review reply does not automatically need this skill, a report file, or a full template.
+`understanding-a-merge-request`. Neither skill is required to report from supplied results. A brief
+findings-only review reply when no report is requested does not automatically need this skill,
+a report file, or a full template.
 
 Choose the mode from the request; ask only if the ambiguity would change the deliverable:
 
