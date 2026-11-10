@@ -1,9 +1,9 @@
 ---
-name: proxy-tunnel
+name: targeted-proxy-access
 description: Use when a page fetch fails because the site is blocked, geo-restricted, or sanctioned in this network (timeouts, connection resets, 403 from the region), or when the user asks to reach a domain through their VLESS/Trojan configs without tunneling the whole system.
 ---
 
-# Proxy Tunnel
+# Targeted Proxy Access
 
 A local HTTP proxy on `127.0.0.1:1080` that sends **only chosen domains** through a
 pool of VLESS/Trojan configs and connects everything else directly. Fetch servers are
@@ -19,6 +19,12 @@ This keeps normal pages fast and inside the local network path: only the blocked
 hostnames borrow the tunnel's bandwidth. **You supply the configs:** the skill ships
 no share links. Bring your own `vless://` / `trojan://` links (or an installed
 v2rayN), or there is nothing to tunnel through.
+
+The skill name is `targeted-proxy-access`; the gateway's existing command names,
+`PROXY_TUNNEL_*` settings, service, and data directories retain `proxy-tunnel` for
+compatibility. If upgrading from the former `skills/proxy-tunnel/` folder, follow
+[the rename upgrade steps](references/setup.md#upgrading-after-the-skill-rename)
+to refresh installed links and launch paths; existing pool and state files stay put.
 
 ## Use it
 

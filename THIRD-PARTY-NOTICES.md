@@ -6,12 +6,12 @@ This repository contains material derived from the projects below. Each section 
 
 Source: <https://github.com/obra/superpowers>
 
-`brainstorming`, `dispatching-parallel-agents`, `systematic-debugging`, `writing-plans`, and `writing-skills` began as copies of the same-named skills in that repository and have been rewritten. Attribution for retained or adapted material and rewritten descendants:
+Five skills began as copies from that repository and have been rewritten: `structured-reasoning` (originally `brainstorming`), `dispatching-parallel-agents`, `systematic-debugging`, `writing-implementation-plans` (originally `writing-plans`), and `writing-skills`. Attribution for retained or adapted material and rewritten descendants:
 
-- `skills/brainstorming/` keeps the name and subject; the former upstream visual-companion scripts and guide have been removed, and the current text is independently rewritten
+- `skills/structured-reasoning/` began with the upstream `brainstorming` subject; the former upstream visual-companion scripts and guide have been removed, and the current text is independently rewritten
 - `skills/systematic-debugging/references/root-cause-tracing.md`, `references/defense-in-depth.md`, `references/condition-based-waiting.md`, `scripts/condition-based-waiting-example.ts`, and `scripts/find-polluter.sh` are rewritten descendants of the original supporting files; the evaluation scenarios are new
 - `skills/writing-skills/references/anthropic-best-practices.md`, `discipline-wording.md`, `testing-skills.md`, `instruction-files-testing.md`, and `graphviz-conventions.dot` are condensed or rewritten descendants of the original authoring, persuasion, subagent-testing, instruction-file example, and Graphviz guides; `scripts/render-graphs.mjs` replaces the original renderer with a standalone implementation; evaluation scenarios are new
-- `skills/dispatching-parallel-agents/SKILL.md` and `skills/writing-plans/SKILL.md` keep the name and the subject; their text is rewritten
+- `skills/dispatching-parallel-agents/SKILL.md` keeps the name and subject; `skills/writing-implementation-plans/SKILL.md` keeps the subject of upstream `writing-plans`; their text is rewritten
 - A few review-process points in `skills/reviewing-code-changes/` follow upstream `requesting-code-review`
 
 MIT License
@@ -70,7 +70,7 @@ Source: <https://github.com/cursor/plugins>
 
 - `skills/reviewing-code-changes/references/quality-bar.md` is distilled from the `thermo-nuclear-code-quality-review` skill
 - Three checklist items (`c5`, `a10`, `s5`) come from the `thermos` plugin
-- `skills/understanding-a-merge-request/SKILL.md` and `references/explanation-patterns.md` adapt comprehension-first grouping, pseudocode, traces, callouts, and representation selection from the `pr-review-canvas` skill. The guidance and examples are independently written, extend investigation to project context, and use portable Markdown instead of the Canvas SDK.
+- `skills/understanding-code-changes/SKILL.md` and `references/explanation-patterns.md` adapt comprehension-first grouping, pseudocode, traces, callouts, and representation selection from the `pr-review-canvas` skill. The guidance and examples are independently written, extend investigation to project context, and use portable Markdown instead of the Canvas SDK.
 
 MIT License
 
@@ -126,7 +126,7 @@ SOFTWARE.
 
 Source: <https://github.com/anthropics/skills/tree/main/skills/frontend-design>
 
-`skills/designing-persian-web-ui/SKILL.md` follows the anti-default guidance and copywriting section of that skill, paraphrased.
+`skills/designing-persian-rtl-web-ui/SKILL.md` follows the anti-default guidance and copywriting section of that skill, paraphrased.
 
 ```
 

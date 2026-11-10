@@ -15,7 +15,7 @@ Use after results exist, whether supplied by others or produced by the agent in 
 including the reporting stage of a request to review and write a report. A requested report can be
 short and delivered in chat; neither a separate file nor the word "handoff" is required.
 Code inspection belongs to `reviewing-code-changes`; explanation-only walkthroughs belong to
-`understanding-a-merge-request`. Neither skill is required to report from supplied results. A brief
+`understanding-code-changes`. Neither skill is required to report from supplied results. A brief
 findings-only review reply when no report is requested does not automatically need this skill,
 a report file, or a full template.
 

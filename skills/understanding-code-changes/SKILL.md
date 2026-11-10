@@ -1,9 +1,9 @@
 ---
-name: understanding-a-merge-request
+name: understanding-code-changes
 description: Use when you need to understand or explain a pull request, merge request, branch, or diff rather than judge it — especially when taking over unfamiliar code, locating a change in the project's architecture, or getting oriented before reviewing a large change.
 ---
 
-# Understanding a Merge Request
+# Understanding Code Changes
 
 Build a mental model the reader can use: what changes, where it fits in the existing system, how it works, and where to look next. A review asks whether a change is right; this walkthrough explains it without issuing a merge verdict.
 

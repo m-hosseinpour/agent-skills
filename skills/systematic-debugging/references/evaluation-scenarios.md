@@ -4,7 +4,7 @@ Use when maintaining this skill, not during ordinary debugging. These are reusab
 
 ## Discovery: Metadata Only
 
-Give a fresh evaluator only the candidate name/description and the Situation column. Record LOAD/SKIP with a reason before showing the body or expected answers. Compare old/new metadata in separate sessions where practical; include nearby brainstorming, explanation, and review skills if selection is unclear. Do not execute hypothetical tasks.
+Give a fresh evaluator only the candidate name/description and the Situation column. Record LOAD/SKIP with a reason before showing the body or expected answers. Compare old/new metadata in separate sessions where practical; include nearby structured-reasoning, explanation, and review skills if selection is unclear. Do not execute hypothetical tasks.
 
 | ID | Situation | Expected |
 | --- | --- | --- |

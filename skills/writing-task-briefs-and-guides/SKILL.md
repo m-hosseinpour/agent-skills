@@ -1,9 +1,9 @@
 ---
-name: splitting-task-descriptions
+name: writing-task-briefs-and-guides
 description: Use when a long task or issue description needs a concise team-facing version for estimation while preserving full requirements in a standalone developer guide.
 ---
 
-# Splitting Task Descriptions
+# Writing Task Briefs and Guides
 
 ## Overview
 

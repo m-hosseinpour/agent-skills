@@ -1,9 +1,9 @@
 ---
-name: writing-plans
+name: writing-implementation-plans
 description: Use when asked to write, review, or update an implementation plan; when substantial cross-component changes, migrations, or high-risk work need coordinated steps and checks; or when preparing multi-session or cross-owner implementation work or resuming from a potentially stale implementation plan. Not for routine local edits without a plan request, executing a current settled plan, design-only exploration, or non-implementation handoffs.
 ---
 
-# Writing Plans
+# Writing Implementation Plans
 
 A useful plan lets an implementer start the right work, in the right order, without guessing consequential decisions. It connects the agreed outcome to bounded tasks, dependencies, and observable checks. Detail should prevent a costly mistake or lost context, not prescribe every coding move.
 
@@ -23,7 +23,7 @@ Keep the agreed approach in the plan unless a separate design/spec is already ma
 
 1. **Establish the goal and authority.** Read the request, acceptance criteria, prior decisions, existing plan/spec, and relevant project instructions. Distinguish user decisions, verified facts, proposals, and assumptions. A planning-only request stops at the plan.
 2. **Check the current project.** Inspect the affected code, documents, interfaces, and existing verification practice. Record exact known paths and the relevant starting revision or state for a handoff; label proposed new files as proposed. Do not invent paths, commands, API shapes, or a test framework.
-3. **Resolve decision-changing gaps.** Investigate relevant dependencies, failure behavior, compatibility, security/privacy, persisted data, and operational constraints. Get external API facts from authoritative docs or an authorized focused probe. Ask about material user choices before scheduling dependent implementation; `brainstorming`, if available, can help resolve design choices but is not a prerequisite.
+3. **Resolve decision-changing gaps.** Investigate relevant dependencies, failure behavior, compatibility, security/privacy, persisted data, and operational constraints. Get external API facts from authoritative docs or an authorized focused probe. Ask about material user choices before scheduling dependent implementation; `structured-reasoning`, if available, can help resolve design choices but is not a prerequisite.
 4. **Bound remaining uncertainty.** State low-risk assumptions and their consequences. If a technical fact cannot yet be verified, add a bounded investigation task with a question, evidence required, and the work it blocks. Do not call the dependent work ready or disguise an unsettled design as an implementation task.
 
 Use existing evidence when it still describes the current state; do not repeat investigation just to fill a template. A bug whose cause is unknown needs diagnosis before a fix plan, not a guessed solution.

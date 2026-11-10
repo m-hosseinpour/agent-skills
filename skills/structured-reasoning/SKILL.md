@@ -1,9 +1,9 @@
 ---
-name: brainstorming
+name: structured-reasoning
 description: Use when a request requires substantial reasoning, synthesizing evidence, resolving uncertainty, planning, or weighing meaningful alternatives, regardless of domain or whether the result is an answer, recommendation, artifact, or action. Also use for explicit brainstorming. Skip simple factual lookups and obvious mechanical tasks.
 ---
 
-# Brainstorming
+# Structured Reasoning
 
 Help the user get a useful result from a nontrivial request. Understand what matters, investigate what is uncertain, and connect the response or chosen approach to the user's goal. This skill is domain-independent and self-contained.
 
@@ -16,7 +16,7 @@ Use for any nontrivial request, even with clear instructions or when only an ans
 Also use for an explicit request to brainstorm or explore possibilities, even when small. Scale the discussion accordingly; a bounded request for ideas may need only the ideas, not clarifying questions.
 
 - Skip simple questions with a direct, well-established answer and routine mechanical tasks with no meaningful uncertainty or trade-off. Do not exclude a substantial explanation or investigation merely because it changes nothing.
-- Use relevant specialized methods or skills alongside this checkpoint. They supply domain technique; brainstorming does not replace them. When investigating a failure, establish the cause before proposing a remedy; use `systematic-debugging` if available.
+- Use relevant specialized methods or skills alongside this checkpoint. They supply domain technique; structured reasoning does not replace them. When investigating a failure, establish the cause before proposing a remedy; use `systematic-debugging` if available.
 - Check prior decisions against relevant current evidence only where circumstances could have changed. Do not reopen them merely because this skill loaded.
 
 ## Investigate Before Proposing
@@ -49,7 +49,7 @@ Include what is relevant, not a fixed report template:
 - How to assess usefulness or success where applicable. Match the check to the claim; not every outcome has a test or a measurable guarantee.
 - Any meaningful unresolved assumption and an optional or authorized next step, without implying the user must take one.
 
-Use only the detail the work needs. Record decisions or an approach durably when continuity or a handoff warrants it, following existing conventions and the user's request; do not introduce a document workflow by default. A plan can help substantial execution, but neither a plan nor a separate design is mandatory after discussion. Use `writing-plans` if available when an implementation plan is actually needed, not for every nontrivial answer. Do not duplicate decisions across artifacts.
+Use only the detail the work needs. Record decisions or an approach durably when continuity or a handoff warrants it, following existing conventions and the user's request; do not introduce a document workflow by default. A plan can help substantial execution, but neither a plan nor a separate design is mandatory after discussion. Use `writing-implementation-plans` if available when an implementation plan is actually needed, not for every nontrivial answer. Do not duplicate decisions across artifacts.
 
 ## Visual Decisions
 

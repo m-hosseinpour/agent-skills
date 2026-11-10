@@ -5,6 +5,28 @@ pointed at the wrapper once** (see [Wiring a fetch tool](#wiring-a-fetch-tool)).
 that, `SKILL.md` is enough. Read this when installing, moving to another agent or client,
 or fixing a broken tunnel.
 
+## Upgrading after the skill rename
+
+The skill folder changed from `proxy-tunnel` to `targeted-proxy-access`; the gateway
+command names, environment variables, service name, and data directory did not change.
+Do not move or reseed the pool just because the skill was renamed.
+
+1. Reinstall this skill under `targeted-proxy-access` if an installed skill link still
+   points to the old folder. Review old links before removing them; do not delete a
+   copied skill that may contain local changes.
+2. From the new skill directory, run `python3 scripts/tunnel.py install-wrapper` to
+   refresh the `proxy-tunnel-exec` link (or Windows shim) to the moved `launch.py`.
+   Client configs that use that wrapper command need no name change. Update any
+   config that directly names a script under the old skill folder.
+3. If you installed the optional systemd service, rerun
+   `python3 scripts/tunnel.py install-service` from the new folder to refresh its
+   script path, then run `systemctl --user restart proxy-tunnel` to make an already
+   running service use the new path. This is unnecessary for manual gateway use.
+4. Restart affected fetch clients, then run `python3 scripts/tunnel.py doctor`.
+
+These are user-authorized upgrade operations, not actions to run automatically when
+reading this guide. Existing gateway data remains in the same platform config directory.
+
 ## Requirements
 
 - **Python 3.8+**. macOS and most Linux distributions ship it; on Windows use
