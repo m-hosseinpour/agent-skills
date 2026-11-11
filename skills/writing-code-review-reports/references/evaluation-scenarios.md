@@ -62,7 +62,7 @@ than account totals at `src/quota.ts:42` as Important; a cross-tenant write befo
 at `src/view.ts:11` as Suggestion. Do not inspect the implementation or regrade the source.
 
 **Expected:** preserve all four with Persian severity labels and optionality. Faithful transformation
-does not inherit the default handoff's nit filtering, promote Important to Blocking, or invent new
+does not force the handoff's optional-category structure, promote Important to Blocking, or invent new
 headings/verdict/actions. Any material source-classification caveat is separate from the translation.
 
 ### B3: duplicate symptoms and conflicting revisions
@@ -132,10 +132,52 @@ target and all requested scope is covered; there are no remaining blockers or ma
 the old finding historical rather than active; a Ready verdict for the reviewed target/scope can be
 supported. Do not keep readiness permanently uncertain merely because evidence came from a reviewer.
 
+### B9: default handoff includes minor points and useful suggestions
+
+Create a Persian author report from supplied current-revision results at H3, with no request to include
+nits: an Important repeated cache lookup at `src/cache.ts:30` adds a measured 80 ms per request; a Nit
+inconsistent validation-message punctuation at `src/form.ts:14` can optionally be normalized; a
+Suggestion at `src/form.ts:22` can optionally share a formatter to avoid two copies of the same display
+logic; and a low-risk unrelated debug command at `src/cli.ts:51` is a confirmed extra without a hard
+scope constraint. The cache remedy is to reuse the lookup result; the extra's action is separation or
+explicit scope approval. Only these paths were reviewed, with no execution results supplied.
+
+**Expected:** all four appear without a special request for nits. Keep the cache issue Important, the
+debug command under Out of scope, and punctuation plus formatter advice together under **نکات
+کم‌اهمیت (اختیاری)**. Preserve Nit versus Suggestion, optional actions, locations, measured cost as
+supplied rather than newly measured, and limited coverage. Do not invent a blocker, test execution,
+or new polish ideas; low-risk extra placement must not imply scope approval is settled.
+
+### B10: only optional points, supported scoped readiness
+
+Compose a short English report at H4. The supplied review covers all requested scope and required
+behavior, with no material gaps, blockers, or extras. Its only findings are a Nit to optionally clarify
+an internal variable name at `src/summary.ts:18` for readability and a Suggestion to optionally
+consolidate two equivalent log messages at `src/summary.ts:24` for consistency. The reviewer reports
+`npm test -- summary` passing at H4; no separate runtime verification is necessary for this scope.
+
+**Expected:** include both under **Minor points (optional)**, preserving their distinct types and
+locations. Ready is supported for the stated scope; do not make these actions merge conditions or
+claim there are no findings. Attribute the supplied test result rather than rerunning it.
+
+### B11: explicit exclusion and a misgraded required gap
+
+The user asks for a concise Persian handoff without optional advice. Supplied results include an
+ordinary Nit about a label's punctuation at `src/label.ts:9`, and missing agreed required CSV export
+at `src/export.ts:12` mistakenly graded Nit. Review establishes the export gap at target H5; its
+correction plan and verification results are not supplied.
+
+**Expected:** omit ordinary punctuation advice and the empty optional category. Retain the required
+export gap, explain the conflict with the supplied Nit grading, and classify it Blocking with Not ready.
+Mark the missing correction/verification evidence rather than inventing it. Never treat a required gap
+as optional merely because its source label says Nit.
+
 ## Completion of an Evaluation
 
 Score generated output, not whether it quotes the skill. Check fidelity, all material findings/extras,
-optional classifications, citations/code state, evidence provenance, readiness limits, concise language,
+default inclusion of relevant supplied minor points/suggestions, their shared low-importance category
+with parenthesized optionality, faithful-transformation exceptions, optional classifications,
+citations/code state, evidence provenance, readiness limits, concise language,
 reference selection, and authorization. Record tested revision, outputs, skipped checks, and limitations
 outside the live skill. Decision/report simulations do not prove actual publication safety, current
 application correctness, or automatic runtime loading.

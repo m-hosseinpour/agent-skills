@@ -21,7 +21,7 @@ a report file, or a full template.
 
 Choose the mode from the request; ask only if the ambiguity would change the deliverable:
 
-- **Compose a handoff:** select and organize actionable results for the author. Default to material findings and confirmed extras; omit routine nits and optional suggestions unless requested. Keep required coverage and material evidence limits even when shortening.
+- **Compose a handoff:** select and organize actionable results for the author. Include supplied, relevant low-impact findings and useful suggestions by default, alongside material findings and confirmed extras. Group ordinary nits and suggestions under **Minor points (optional)**, or its equivalent in the reader's language; the heading must name the low importance and put optionality in parentheses. Do not invent polish advice to fill the category. Omit an empty category, and respect an explicit request to exclude optional advice. Keep required coverage and material evidence limits even when shortening.
 - **Translate or edit faithfully:** preserve the requested content, classifications, conditions, uncertainty, and structure. A full translation includes nits and suggestions; do not silently delete them, regrade severity, or add a verdict absent from the original. When shortening, preserve material findings, extras, coverage gaps, and qualifications. If a source contradiction needs attention, identify it separately rather than silently correcting an engineering judgment.
 - **Consolidate:** reconcile supplied reports before composing the handoff; do not assume the newest report is correct or combine different revisions into a current verdict. Open `references/consolidation-and-evidence.md` here.
 
@@ -56,7 +56,7 @@ or bullets; use a full document only when the request or project convention call
 1. **Subject and verdict:** what was reviewed; Ready, Not ready, or Cannot determine, with the main reason and scope qualification.
 2. **Scope and evidence limits:** base/head or local scope when supplied, important exclusions, and which revision the findings/checks concern. If unknown, say so.
 3. **Requirements, when supplied:** coverage with statuses, evidence, and gaps. A table suits several criteria; a compact list suits a short report. Do not invent rows for unrequested behavior.
-4. **Findings, most serious first:** short title and severity, precise location, trigger/conditions, concrete failure or cost, and a supported next action. Group duplicate symptoms without losing distinct affected paths. Report confirmed extras in an **Out of scope** subsection within Findings, including low-risk ones; flag a serious extra in the verdict so subsection placement does not hide it.
+4. **Findings, most serious first:** short title and severity, precise location, trigger/conditions, concrete failure or cost, and a supported next action. Group duplicate symptoms without losing distinct affected paths. Report confirmed extras in an **Out of scope** subsection within Findings, including low-risk ones; flag a serious extra in the verdict so subsection placement does not hide it. Put ordinary low-impact findings and suggestions together in a separate **Minor points (optional)** subsection after material findings and extras. Preserve whether each item is a minor defect or a suggestion; explain its location, concrete benefit/cost, and supplied next action concisely, without presenting a preference as a defect.
 5. **Verification and open questions:** checks run by the reviewer versus supplied results, their code state, failures, and unverified paths. Add confirmed sound behavior only when supported and useful; omit an empty praise section. No-defect reviews still need meaningful scope and evidence limits.
 
 If a remedy was not supplied, identify the missing correction/verification plan rather than inventing
@@ -75,12 +75,18 @@ The default handoff rubric, when needed, is:
 
 - **Blocking:** confirmed correctness, security, data-loss, or contract issue that must be resolved before merge. Confirmed missing, incorrect, partial, or unreachable agreed required behavior is Blocking; explain any conflict with supplied grading instead of silently changing it.
 - **Important:** a material issue worth fixing; retain any supported acceptable alternative or reason it can be left.
-- **Nit — scope mismatch:** a confirmed low-risk extra, not an invented material defect. Preserve explicitly requested ordinary nits/suggestions separately with their original optional status.
+- **Minor / Nit:** an ordinary low-impact polish or consistency issue whose correction is optional, not a merge condition. Report it under **Minor points (optional)**; keep useful optional suggestions in that category, labeled as suggestions rather than defects.
+- **Nit — scope mismatch:** a confirmed low-risk extra, not an invented material defect. Keep it under **Out of scope**; low severity alone does not settle whether scope approval or removal is required.
 
 Always retain confirmed extras in a composed handoff. Necessary supporting work and unchanged
 behavior are not extras. Extras follow concrete risk/cost; a hard acceptance-constraint violation is
 Blocking. Recommend removal, separation, or explicit scope approval. Required behavior absent in
 both base and head is still a current conformance gap, not automatically a new regression.
+The optional category does not weaken an agreed requirement or hard constraint: keep such violations
+in the appropriate required findings, explaining any conflict with supplied grading. Ordinary minor
+points and optional suggestions alone do not support **Not ready**; assess readiness from the required
+behavior, material findings, and evidence limits. Do not promote optional advice to Important just to
+fit a report, or claim there are no findings when only optional points remain.
 
 Coverage statuses follow the supplied evidence:
 
@@ -114,8 +120,10 @@ a request to publish a report does not authorize exposing credentials or unrelat
 If sensitive disclosure remains unresolved, provide a safe draft and ask before publishing.
 
 Before delivering, check that the requested transformation is faithful, every material finding and
-confirmed extra is accounted for, citations/revisions and verification limits survived, optional advice
-remains optional, and the verdict does not exceed the evidence. Return the report or its saved path
+confirmed extra is accounted for, relevant supplied minor points/suggestions are included unless
+explicitly excluded, citations/revisions and verification limits survived, optional advice is grouped
+under a low-importance heading with parenthesized optionality in composed handoffs and remains
+optional, and the verdict does not exceed the evidence. Return the report or its saved path
 with a concise summary; do not publish or implement fixes just because a report recommends them.
 
 ## References

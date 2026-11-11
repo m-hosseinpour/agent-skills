@@ -16,7 +16,7 @@ Keep the sentences natural and explain the concrete point before technical detai
 | Cannot determine | قابل‌تعیین نیست | Material uncertainty prevents a readiness conclusion |
 | Blocking | مانع ادغام | Must resolve before merge |
 | Important | مهم | Material issue worth fixing |
-| Nit / Minor | کم‌اهمیت | Low-impact polish, retained when requested |
+| Nit / Minor | کم‌اهمیت | Ordinary low-impact polish, included by default under نکات کم‌اهمیت (اختیاری); not a merge condition |
 | Nit — scope mismatch | کم‌اهمیت — خارج از دامنه | Confirmed low-risk extra |
 | Suggestion | پیشنهاد اختیاری | Optional advice, not a defect |
 | Met | محقق‌شده | Reachable behavior matches the requirement |
@@ -36,7 +36,8 @@ separately, without rewriting the source as if the reviewer had reached a differ
 ## Adaptable Handoff Template
 
 Use only sections that earn their space. Omit Requirements without supplied requirements, Out of
-scope without confirmed extras, and Confirmed behavior without useful supporting evidence. Keep
+scope without confirmed extras, Minor points without relevant supplied minor findings/suggestions,
+and Confirmed behavior without useful supporting evidence. Keep
 scope, material limits, findings, and verification even in a short report. A translation may preserve
 the source's structure instead. Do not fill placeholders with invented facts or claim checks ran
 because a test appears in the source.
@@ -70,6 +71,10 @@ because a test appears in the source.
 - **چرا مهم است:** [ریسک/هزینهٔ مشخص، یا اینکه مورد کم‌خطر است]
 - **اقدام:** [حذف، جداسازی، یا تأیید صریح دامنه]
 
+### نکات کم‌اهمیت (اختیاری)
+
+- **[کم‌اهمیت / پیشنهاد] — [عنوان کوتاه]:** [محل دقیق، ایراد جزئی یا فایدهٔ مشخص، و اقدام اختیاریِ ارائه‌شده در نتایج بازبینی]
+
 ## شواهد بررسی و محدودیت‌ها
 
 - [دستور/سناریو، نتیجه، نسخه و محیط مرتبط؛ مشخص کنید بازبین اجرا کرده یا نتیجه از منبع دیگری نقل شده است]
@@ -80,9 +85,17 @@ because a test appears in the source.
 - [رفتار مهمی که شواهد موجود درستی آن را پشتیبانی می‌کنند؛ محدودیت بررسی ایستا یا اجرا را نگه دارید]
 ```
 
-For requested nits/suggestions, use a separate **نکات کم‌اهمیت و پیشنهادهای اختیاری** section. Do not
-promote them to مهم merely to fit the template. For an empty findings list, say **در دامنهٔ بررسی‌شده،
-ایراد قابل‌اقدامی گزارش نشده است**; this does not mean every path was verified or the whole change is ready.
+Include relevant supplied ordinary nits and useful suggestions by default under **نکات کم‌اهمیت
+(اختیاری)**; the parentheses make it clear that addressing this category is optional. Keep minor
+defects distinguishable from suggestions, and do not promote them to مهم merely to fit the template.
+Keep confirmed extras under **موارد خارج از دامنه**, even when low-risk; a required gap or hard
+scope-constraint violation must not be hidden as optional polish. Faithful translations preserve the
+source's requested structure and classifications instead of forcing this handoff template.
+
+If only optional points remain, say **در دامنهٔ بررسی‌شده، مورد مانع ادغام یا مهم گزارش نشده است؛
+نکات کم‌اهمیت (اختیاری) در ادامه آمده‌اند**. For an empty findings list with no suggestions, say
+**در دامنهٔ بررسی‌شده، ایراد قابل‌اقدامی گزارش نشده است**. Neither statement means every path was
+verified or the whole change is ready; optional points alone do not prevent a supported آماده verdict.
 
 ## Short Example: No Findings, Incomplete Coverage
 
