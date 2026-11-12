@@ -1,7 +1,10 @@
 # Acceptance Verification
 
 Open when planning task tests, choosing real versus simulated flows, or reconciling code with its
-runtime environment. This guide does not authorize setup, writes, paid calls, deletion, or deployment.
+runtime environment. For implementation checks, first use `reviewing-code-changes` and its
+`references/test-design.md` for independent expectations, discriminating assertions, real boundaries,
+and execution safety. This guide adds task-acceptance coverage; it does not duplicate that method or
+authorize setup, writes, paid calls, deletion, or deployment.
 
 ## Build a Small Coverage Map
 
@@ -44,11 +47,6 @@ from suspension time. A callback test that merely checks a sender was called can
   outcome. Name the entry point and mocked boundaries. A real CLI test is not browser E2E; a browser
   trigger with a fake message provider is not proof of real SMS delivery.
 
-Use existing tests first where they discriminate the relevant mistake; add authorized focused checks
-or exact manual reproductions where they don't. Keep the boundary under investigation real. For denial,
-check absence of writes/messages as well as the error. Observe saved state, API output, events, or UI
-results, not only what the model/app claims happened.
-
 If an LLM or external provider is part of acceptance, distinguish deterministic test doubles from real
 execution and control the relevant budget/model/settings. One observed success does not prove universal
 predictability. Don't launch costly calls or send real messages without authorization; a missing credential
@@ -74,25 +72,15 @@ rituals; use them when required, authorized, and result-changing.
 
 ## Preserve Results and Close Coverage
 
-For every executed check retain:
-
-- Criterion/behavior and independently expected result.
-- Command or manual steps, observed result/failure, and relevant code/artifact/environment state.
-- Reproduction inputs and redacted evidence sufficient for another reader; summarize short outputs in
-  the report, retain larger logs/scripts in an authorized review-artifact location when useful.
-- Replaced/mocked boundaries, untested portions, and setup/state changes relevant to interpreting it.
+Use the owner skill's evidence record rather than a second logging/reporting scheme. Attach the
+acceptance-case/layer coverage and mocked/replaced boundaries to those results. For code/mixed reports,
+`writing-code-review-reports` handles evidence portability, redaction, provenance, and baseline issues;
+for pure research, use the research owner and the main skill's research-handoff safety guidance.
 
 Before delivery, list each material case/layer as executed, covered by trustworthy supplied evidence,
 not applicable, blocked, or skipped with reason. Do not mark a layer executed because a test source exists.
 A requested full test pass isn't silently reduced to smoke tests because the verdict is already negative;
 continue independent safe checks, but skip paths whose broken prerequisite makes them uninformative.
 
-Compare failures with a suitable base only when it can resolve introduction/worsening, without resetting
-user work or running destructive baseline operations. An old suite failure is not automatically unrelated;
-an unchanged function can fail only because this task introduces a new trigger. If baseline is unavailable,
-keep origin unestablished. Don't repair unrelated red suites as part of validation.
-
-On a later revision or configuration change, rerun only dependent checks. Report which revision each
-finding/check concerns; do not combine old green results and new code into an unsupported current verdict.
 Temporary logs that disappeared are no longer independently inspectable evidence; retain the observed
 historical result with that qualification and rerun only if acceptance needs it and execution is authorized.

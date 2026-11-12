@@ -1,7 +1,9 @@
 # Validating Research Deliverables
 
 Open for a completed investigation, security assessment, experiment report, or other non-code output.
-Validate the deliverable against the task, not a generic audit of everything related to its subject.
+Load `research-with-evidence` for claim validation: it owns source selection/fitness, provenance,
+counterevidence, quantitative reasoning, and coverage reporting. This reference adds acceptance of the
+delivered task, not a second research method or a generic audit of its whole subject.
 
 ## Two Independent Questions
 
@@ -22,26 +24,12 @@ locator; don't require source-code line numbers for a document finding. Build a 
 map for acceptance-critical claims and requested areas. Account for the whole deliverable; spend depth
 on consequential claims and disclose any sampling rather than pretending every sentence was verified.
 
-For each consequential claim check:
-
-- Its exact proposition and conditions. Separate inherent design risks, deployment-specific
-  misconfiguration, reachable vulnerabilities, and hypothetical attacks.
-- Provenance: primary docs/source, version-pinned code/config, measured data, request/response,
-  experiment output, or unsupported assertion. Follow the supporting section, not just the URL/title.
-- Applicability: repository revision, upstream version, applied patches, image/build inputs, effective
-  runtime config, dataset/population, relevant date and assumptions. An old local image or wrong branch
-  cannot refute a report about a different deployment; resolve the mismatch before grading the claim.
-- Reasoning: does the evidence establish the asserted mechanism and impact? Could an existing
-  safeguard, another environment, correlated source, or narrower result explain the observation?
-- Evidence availability: missing attached logs means execution is unverified unless stronger evidence
-  establishes otherwise. Ask for pivotal missing evidence or reproduce safely; don't claim “never ran”
-  merely because a document has no screenshot.
-
-AI-generated reports, shared model chats, OCR, and repeated summaries are leads, not independent
-confirmation. Verify version-specific public API/CVE/security claims with primary sources when material.
-Quantitative scores need a defined rubric, data, denominator, units, and relevant comparison; do not add
-confidence percentages or severity from rhetoric. Evaluate research design against its question, not
-an unrelated ideal methodology.
+Apply the research owner's source-fitness and evidence checks to the report's claims, keeping inherent
+design risks, deployment misconfiguration, and demonstrated exploits distinct. Reconcile the target
+revision, upstream version, build patches, image, and effective config before using local runtime
+observations: an old image or wrong branch cannot refute a claim about another deployment. Missing
+attached logs mean execution is unverified unless stronger evidence establishes otherwise, not “never
+ran.” Ask for pivotal evidence or reproduce safely. Reuse the research owner's claim/evidence record.
 
 Check requested questions and exclusions explicitly. A task asking for current security risks and
 exploits but no replacement architecture is not fulfilled by a migration plan or product comparison.
@@ -51,12 +39,9 @@ Do not expand to retired/excluded components merely because they appear in the r
 ## Experiments and Security PoCs
 
 When executable evidence is required, use [acceptance verification](acceptance-verification.md) for
-layers and environments; the main skill links it directly as well. Establish:
-
-- The tested proposition, relevant artifact/configuration, expected result, and meaningful counter-case.
-- Actual steps/input, observed output or side effect, and repeatability conditions.
-- Whether the real boundary under investigation ran, or a model/mock/source trace substituted for it.
-- The authorized target, accounts/data ownership, write limits, costs, and evidence redaction.
+layers and environments; the main skill links it directly as well. Add the experiment's required output
+and actual execution to the research owner's evidence record, including relevant target/configuration
+and whether a real boundary, model/mock, or source trace was used.
 
 For security tests, prefer two synthetic identities and synthetic secrets/canary data in an authorized
 isolated environment. Verify both permitted and forbidden operations and their side effects. A theoretical
@@ -73,13 +58,7 @@ experiment/evidence deliverable is a conformance gap, even if source inspection 
 
 ## Report the Current Assessment
 
-For each material issue give the document locator, problem, concrete effect on trust/coverage, evidence
-and limits, and a supported action: correct the claim, qualify the mechanism, supply missing evidence,
-rerun on the intended artifact, or remove/separate confirmed extras. Don't prescribe a replacement
-architecture in a task that explicitly excludes it.
-
-Use the main skill's report spine with document locators and separate trust/completeness conclusions
-where useful. Keep current supported findings and qualifications; remove superseded criticisms without
-laundering unresolved uncertainty. Internal iteration history and side questions aren't author-facing
-findings. A polished rewrite of the colleague's report is not a substitute for the requested validation,
+Pass the claim/coverage record and the two conclusions to the main skill's reporting stage, using the
+owner method appropriate to pure research versus mixed work. Don't prescribe a replacement architecture
+in a task that excludes it. A polished rewrite of the colleague's report is not a substitute for validation,
 and validation does not authorize editing their original deliverable.

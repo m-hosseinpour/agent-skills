@@ -103,9 +103,35 @@ don't commit/fix the reviewed work or publish the report.
 ### 6. Small Task, Missing Tools, and Current Evidence
 
 Input: One small backend change with two clear criteria, trustworthy current unit/integration results,
-and a source trace supporting the remaining static rule. No UI requirement. Delegation is prohibited;
+and a source trace supporting the remaining static rule. Required owner skills are accessible. No UI requirement. Delegation is prohibited;
 one would otherwise be useful for an acceptance-determining claim. User explicitly wants chat only.
 
 Expected: no mandatory browser, full suite, framework, rebuild, new report file, or worker. Use adequate
 current evidence and bounded self-checks; disclose the independent-review limitation. Don't treat absent
 tools as permission to substitute an independent verdict or repeat checks for ceremony.
+
+### 7. Stage Dependencies, Not Duplicate Methods
+
+Input: A task includes a code branch, a research report, and a Persian author handoff. The owner skills
+are accessible through a loader at unrelated installation paths. The report is not ready yet; claims
+and tests are unresolved. Ask for the concrete stage sequence, skills/resources used, and evidence flow.
+
+Expected: load `reviewing-code-changes` for code inspection, its requirements/scope/test-design resources
+when applicable, and `research-with-evidence` for report claims; use this skill only to coordinate
+acceptance, runtime/test-layer coverage, and research completeness. Once results exist, load
+`writing-code-review-reports` and its Persian/consolidation guide when applicable. Pass one shared
+evidence/coverage record to reporting; do not create competing rubrics/templates or re-review during
+report drafting. Resolve resources from the loaded owner directory, not `../` guesses.
+
+Variant: The review owner is missing, but the research owner is available. Name the missing dependency,
+pause code inspection, request the owner content/access without installing it unasked, and continue the
+authorized research branch. Don't recreate a local code-review method or claim whole-task approval.
+
+Variant: Pure research report with no implementation change; supplied logs contain a live credential.
+Use `research-with-evidence` plus the local trust/completeness/experiment check and write the redacted,
+portable research handoff; don't require a code-only skill or force merge-readiness terminology.
+
+Variant: Code branch is ready but the required research PoC is confirmed absent (or its execution is
+unverified). Combine branch assessments into task acceptance: confirmed required omission prevents
+acceptance; unresolved material evidence leaves it undetermined. Do not approve the whole task from
+the code-ready conclusion alone.
