@@ -1,6 +1,6 @@
 ---
 name: validating-completed-tasks
-description: "Use when validating a completed task or a colleague's deliverable for task acceptance: whether the agreed work is correct, complete, and trustworthy, including implementation review plus real acceptance/edge-case testing or checking a research/security report against its brief and evidence. Not for a defect-only or merge-readiness code review without task-completion validation, even if a ticket is cited; test-only execution; reporting settled findings; explanation-only walkthroughs; implementing the task; or fixing findings."
+description: "Use when validating a completed task or a colleague's deliverable for task acceptance, initially or after prior review and revisions: whether the work is correct, complete, and trustworthy, including review plus real acceptance/edge-case testing, re-reviewing fixes against earlier findings and current task requirements, or checking a research/security report and its evidence. Not for defect-only or merge-readiness review without task-completion validation even if a ticket is cited; test-only execution; reporting settled findings; explanation-only walkthroughs; implementing the task; or fixing findings."
 ---
 
 # Validating Completed Tasks
@@ -43,6 +43,11 @@ By default, deliver **a Markdown report file for the author plus a short chat su
 chat-only request overrides this default; do not require another request for the file.
 
 ## 1. Establish What Is Being Accepted
+
+If the task was already reviewed, open [follow-up validation](references/follow-up-validation.md)
+before selecting scope or tests. Recover the prior target/evidence and current decisions, track each
+previous finding's disposition, review the new delivery, and revalidate affected acceptance paths.
+Use the same stage owners; a follow-up is neither a full restart nor merely ticking off old fixes.
 
 Read the task text, approved clarifications, project guidance, and delivered artifacts. Establish:
 
@@ -144,6 +149,11 @@ an existing target; don't overwrite unrelated work or write to a desktop/outside
 If no authorized writable path exists, provide the report in chat, state the file-delivery limitation,
 and ask for a permitted destination only if needed; do not bypass a read-only boundary.
 For a mixed task, deliver one integrated report with clear implementation/research evidence boundaries.
+For follow-ups, pass prior-finding dispositions, new findings, current acceptance map, and retained
+versus newly executed evidence to the applicable delivery owner. For code/mixed reports, use the code-
+report owner's `references/consolidation-and-evidence.md` for earlier reports, drift, or conflicts;
+for pure research, use the research owner and local trust/completeness guidance. Keep closed historical
+items out of active findings while retaining a concise closure summary where useful.
 
 For code or mixed deliveries, hand the completed findings, conformance map, acceptance-test results,
 reviewer outcome, and limits to `writing-code-review-reports`. Use its report structure, Persian labels,

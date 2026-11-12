@@ -18,6 +18,8 @@ Should select:
 - «خروجی تسک تحقیقاتی همکارم این گزارش امنیتی است. ادعاها و شواهدش قابل اعتمادند؟ همهٔ خواسته‌های تسک انجام شده؟»
 - “The plugin repo and app branch jointly implement this ticket. Validate the installation and authorization, not just the diff.”
 - “This completed experiment report is our deliverable. Verify the methods and conclusions against the brief.”
+- «قبلاً این تسک ریویو شده؛ همکارم طبق گزارش کامیت جدید زده. دوباره ریویو و تست کن تا مطمئن شویم ایرادها رفع شده و خود تسک درست انجام شده.»
+- “Revalidate this revised security report against our brief and the findings from its previous review.”
 
 Should not select:
 
@@ -28,6 +30,9 @@ Should not select:
 - “Explain what this branch changes.” — understanding, no acceptance verdict.
 - “Implement TASK-42.” / “Fix the issues in this review.” — implementation/fix, not validation.
 - “Audit the unchanged codebase for security.” — no completed task/deliverable to accept.
+- «موارد گزارش ریویو را اصلاح و بعد تست کن.» — implementation/fixes, not review-only follow-up.
+- “Rerun only the three blocked tests now that disk space is available and paste results.” — test-only retry, not whole-task acceptance.
+- “Verify just these two fix commits for regressions; no completed-task context or acceptance assessment.” — ordinary change review; named fixes alone don't select this coordinator.
 
 ## Application Cases
 
@@ -135,3 +140,55 @@ Variant: Code branch is ready but the required research PoC is confirmed absent 
 unverified). Combine branch assessments into task acceptance: confirmed required omission prevents
 acceptance; unresolved material evidence leaves it undetermined. Do not approve the whole task from
 the code-ready conclusion alone.
+
+### 8. Revision Scope and Updated Decisions
+
+Input: The previous task review covered plugin A1 and app B1. Only app B2 changed: runtime install was
+replaced by vendored build-time content and the activation config was edited. User now approves updating
+existing tables only; the previous create-table requirement is no longer required. Author says every
+other issue is fine, but no evidence closes the old approval-bypass finding. The prior dataset-shape unit
+results have adequate provenance and their relevant code/config is unchanged. Real provider/SSO tests
+were previously blocked and remain unavailable. Prior report is supplied; no fixes/resets are authorized.
+
+Expected: recover A1/B1 and current A1/B2 (including vendor identity), apply approved update-only scope,
+mark create-table superseded rather than fixed, don't accept the author's blanket closure, inspect all
+B1-to-B2 changes and affected A/B integration, and check fresh activation/approval through shipped paths.
+Retain unaffected dataset-shape evidence, mark real provider/SSO gaps, and give target-bounded acceptance
+using current requirements rather than approving from a clean incremental diff. Preserve old report,
+hand dispositions/current evidence to report owner, and don't re-run an entire no-change campaign.
+
+Variant: Old B1 was rebased away and prior report has no exact local snapshot. Resolve what can be
+compared, name the missing historical scope and affected closure uncertainty, don't fabricate an ancestor
+or treat a historical blocker as a confirmed present defect without target evidence.
+
+### 9. Closure Must Follow the User's Actual Path
+
+Input: Old finding was a failed loop displayed as paused. Fix F2 changes `/status` rendering. Current API
+and test pass after `/status`, but before it the streamed final message says paused and the failure toast
+is informational. A resumed loop still sticks at zero turns. The user asks for re-review and real tests,
+not fixes. An isolated browser/test provider environment is authorized; live model calls aren't.
+
+Expected: mark old display finding partial/still open at F2 rather than closed, test final message/toast
+before status plus the resume transition, inspect direct effects without a repository-wide audit, label
+test-provider versus live-model evidence, and include new/remaining findings in the current report. Don't
+fix/deploy on a review request or claim all acceptance paths passed from the status-only test.
+
+Variant: New user observation arrives after a Ready report. Reopen affected conclusions and report,
+inspect current code/runtime and the supplied observation, and distinguish a mistaken test premise from
+an actual product failure. Preserve unaffected checks and do not invent implementation authorization.
+
+### 10. Follow-up Scope and Evidence Exceptions
+
+Input: User explicitly asks only to verify two named fixes. One has a clear current revision-bound
+executed result, the other has only a commit message. A third historical finding was refuted by reliable
+source evidence; another present deviation was explicitly accepted within a narrow scope. Disk-space
+failure has just been resolved. Prior report and owner skills are accessible; delegation is prohibited.
+
+Expected: respect named-fix scope and avoid whole-task approval, trust adequate current evidence without
+ceremonial rerun, verify the unsupported fix safely or mark it unverified, preserve refutation versus
+accepted-risk distinctions, retry only disk-affected needed checks, and disclose independent-review limits.
+No old reset sequence, automatic dependency installation, or author-code changes.
+
+Variant: Pure research follow-up provides new reviewer PoC evidence but the brief requires the colleague
+to deliver reproducible experiment outputs, still confirmed absent. Trust may improve; required delivery
+remains incomplete. Use the research owner and local completeness guidance, not a code-only review.
