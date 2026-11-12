@@ -172,12 +172,68 @@ export gap, explain the conflict with the supplied Nit grading, and classify it 
 Mark the missing correction/verification evidence rather than inventing it. Never treat a required gap
 as optional merely because its source label says Nit.
 
+### B12: mixed change findings and unrelated baseline issues
+
+Create a concise Persian handoff for ticket Q7, base B7 to head H7. Supplied review confirms an
+introduced Blocking duplicate payment at `src/pay.ts:40`; a Nit about punctuation added by the
+change at `src/receipt.ts:18`; and a new low-risk unrelated debug command at `src/cli.ts:51`, absent
+in B7, with separation or scope approval recommended. It also supplies B7 and H7 reproductions of
+an Important archived-report calculation error at `src/archive.ts:23`, causing materially incorrect
+financial totals, and a Nit naming inconsistency at `src/legacy.ts:9`. Both baseline issues are
+unaffected by Q7 and unrelated to its requirements; the calculation remedy is a separate correction
+ticket. No payment remedy or other verification results were supplied.
+
+**Expected:** Not ready due to duplicate payment in the main findings, with the missing remedy stated.
+Debug command remains under Out of scope; receipt punctuation under **نکات کم‌اهمیت (اختیاری)**.
+Only the archived-report error appears under **مشکلات ازپیش‌موجود (اختیاری)**, with its severity,
+location, impact, B7/H7 evidence, and separate follow-up. Omit the unrelated naming nit entirely.
+Do not treat the archived error as a regression, confirmed extra, or Q7 merge condition.
+
+### B13: unchanged code is not automatically unrelated background
+
+Create an English handoff for B8 to H8. Supplied results establish required PDF export is absent in
+both revisions at `src/export.ts:12`; a new caller in H8 activates a previously unreachable parser bug
+at unchanged `src/parser.ts:33`, causing data loss; and an Important suspected notification failure
+at unchanged `src/notify.ts:17` whose failure and base/head provenance are unverified. The export
+gap and parser failure are confirmed; correction plans were not supplied.
+
+**Expected:** export stays a Blocking main finding with honest pre-existing provenance; the parser
+issue stays a main finding linked to the new caller, not optional background. Not ready is supported
+by the confirmed blockers. Preserve the notification observation as unresolved with needed evidence,
+not a confirmed regression or pre-existing issue. Do not infer provenance from untouched lines, hide
+required behavior in the background section, fabricate actions, inspect code, or run tests.
+
+### B14: faithful translation does not filter background content
+
+The user asks for a complete faithful Persian translation of an English review report. It has Ready
+for the scoped change, a separate Pre-existing issues section with an Important calculation error
+and an unrelated legacy-variable Nit, and supplied baseline evidence. No restructure is requested.
+
+**Expected:** preserve both background items, their classifications, source section structure,
+evidence, and the attributed verdict. Do not silently omit the legacy nit or impose the composed
+handoff's filter/template. Any scope-policy clarification is separate from the translation.
+
+### B15: only background issues, supported task readiness, and exclusion
+
+Compose a short report for B9 to H9. Supplied review covers all requested scope and required behavior
+with no material verification gaps, regressions, extras, or in-scope minor points. An unrelated
+Important old audit-log loss at `src/audit.ts:29` is reproduced in both B9 and H9 and unaffected by
+the change; the supplied action is an urgent separate correction ticket. Produce one default report
+and another for the user's explicit request to exclude unrelated background issues.
+
+**Expected:** the default can say Ready for the reviewed task and no actionable change findings,
+with the audit issue, baseline evidence, material impact, and separate urgent action in **Pre-existing
+issues (optional)**. Optional does not mean low severity or permission to ignore its impact. The
+excluded version omits that item and the empty section without claiming the whole repository is
+defect-free. Neither version becomes Not ready or Cannot determine solely due to the unrelated issue.
+
 ## Completion of an Evaluation
 
-Score generated output, not whether it quotes the skill. Check fidelity, all material findings/extras,
-default inclusion of relevant supplied minor points/suggestions, their shared low-importance category
+Score generated output, not whether it quotes the skill. Check fidelity, all material change/requirement findings/extras,
+default inclusion of relevant in-scope minor points/suggestions, their shared low-importance category
 with parenthesized optionality, faithful-transformation exceptions, optional classifications,
-citations/code state, evidence provenance, readiness limits, concise language,
+the importance/baseline filter and separate optional placement for unrelated pre-existing issues,
+change/requirement exceptions and unresolved provenance, citations/code state, evidence provenance, readiness limits, concise language,
 reference selection, and authorization. Record tested revision, outputs, skipped checks, and limitations
 outside the live skill. Decision/report simulations do not prove actual publication safety, current
 application correctness, or automatic runtime loading.

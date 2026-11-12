@@ -21,7 +21,7 @@ a report file, or a full template.
 
 Choose the mode from the request; ask only if the ambiguity would change the deliverable:
 
-- **Compose a handoff:** select and organize actionable results for the author. Include supplied, relevant low-impact findings and useful suggestions by default, alongside material findings and confirmed extras. Group ordinary nits and suggestions under **Minor points (optional)**, or its equivalent in the reader's language; the heading must name the low importance and put optionality in parentheses. Do not invent polish advice to fill the category. Omit an empty category, and respect an explicit request to exclude optional advice. Keep required coverage and material evidence limits even when shortening.
+- **Compose a handoff:** select and organize actionable results for the author. Include supplied findings and useful suggestions relevant to the reviewed change or its agreed requirements, including low-impact ones, alongside material findings and confirmed extras. Filter unrelated pre-existing issues using the scope rules below. Group ordinary in-scope nits and suggestions under **Minor points (optional)**, or its equivalent in the reader's language; the heading must name the low importance and put optionality in parentheses. Do not invent polish advice to fill the category. Omit an empty category, and respect an explicit request to exclude optional advice. Keep required coverage and material evidence limits even when shortening.
 - **Translate or edit faithfully:** preserve the requested content, classifications, conditions, uncertainty, and structure. A full translation includes nits and suggestions; do not silently delete them, regrade severity, or add a verdict absent from the original. When shortening, preserve material findings, extras, coverage gaps, and qualifications. If a source contradiction needs attention, identify it separately rather than silently correcting an engineering judgment.
 - **Consolidate:** reconcile supplied reports before composing the handoff; do not assume the newest report is correct or combine different revisions into a current verdict. Open `references/consolidation-and-evidence.md` here.
 
@@ -32,7 +32,7 @@ when choosing labels or drafting a handoff; it supplies consistent labels and an
 ## Prepare the Inputs
 
 Identify the intended reader/deliverable, reviewed change and revisions or local-change scope, supplied
-findings with locations and impact, verification results and limits, and any stated requirements with
+findings with locations, impact, and their evidenced relationship to the change, verification results and limits, and any stated requirements with
 their coverage and confirmed extras. For a faithful edit, the original report is the source; for a handoff,
 use the supplied review evidence, not an implementation summary as a substitute.
 
@@ -48,6 +48,27 @@ details, including timestamps when they establish freshness. Remove incidental p
 evidence. Open `references/consolidation-and-evidence.md` for conflicts, revision drift, repeated findings,
 or difficult provenance/verification details.
 
+## Separate Change Findings from Background Issues
+
+For composed handoffs, classify supplied observations before choosing their report section:
+
+- **Change or requirement finding:** introduced, worsened, or newly exposed by the change, or a confirmed failure to meet an agreed requirement. Keep it in the main findings with the causal or requirement link. An issue in unchanged code can belong here; untouched lines alone do not establish that the failure predates the change. A required behavior missing in both base and head remains a conformance gap, labeled as pre-existing rather than a new regression.
+- **Confirmed extra:** behavior added by this change outside the agreed scope. Keep it under **Out of scope**, including low-risk extras. Necessary supporting work and unchanged behavior are not extras.
+- **Unrelated pre-existing issue:** supplied baseline evidence establishes that it already existed, the change does not worsen or newly expose it, and it is not an agreed requirement gap. Include only important issues with a concrete material impact, such as security exposure, data loss, substantial incorrect results, or service disruption. Omit unrelated minor defects, nits, and cleanup suggestions entirely; do not move them into Minor points. Do not promote severity merely to pass this filter.
+
+Put eligible unrelated issues in a separate **Pre-existing issues (optional)** section after the change
+findings and their subsections; omit it when empty or when the user explicitly excludes background
+issues. For each item, retain its supported severity, location, impact, baseline evidence, and supported
+next action, and state that it is unrelated to this task. Optionality refers to including it in this task's
+report and addressing it within this task, not to its impact being minor; a serious issue may warrant
+separate urgent follow-up. Do not make it a merge condition or let it alone change this review's verdict.
+
+If provenance or the relationship to the change is unestablished, do not guess that an issue is new,
+pre-existing, or an extra. Request the specific missing evidence or retain a material unresolved
+observation with that limit. Report-writing does not authorize a repository-wide audit or new tests.
+Faithful translations/edits preserve the source content and structure instead of applying this filter;
+identify a material scope/classification problem separately when needed.
+
 ## Compose a Handoff
 
 Use this content spine, not mandatory headings for every report. Short reports can use compact prose
@@ -56,8 +77,9 @@ or bullets; use a full document only when the request or project convention call
 1. **Subject and verdict:** what was reviewed; Ready, Not ready, or Cannot determine, with the main reason and scope qualification.
 2. **Scope and evidence limits:** base/head or local scope when supplied, important exclusions, and which revision the findings/checks concern. If unknown, say so.
 3. **Requirements, when supplied:** coverage with statuses, evidence, and gaps. A table suits several criteria; a compact list suits a short report. Do not invent rows for unrequested behavior.
-4. **Findings, most serious first:** short title and severity, precise location, trigger/conditions, concrete failure or cost, and a supported next action. Group duplicate symptoms without losing distinct affected paths. Report confirmed extras in an **Out of scope** subsection within Findings, including low-risk ones; flag a serious extra in the verdict so subsection placement does not hide it. Put ordinary low-impact findings and suggestions together in a separate **Minor points (optional)** subsection after material findings and extras. Preserve whether each item is a minor defect or a suggestion; explain its location, concrete benefit/cost, and supplied next action concisely, without presenting a preference as a defect.
-5. **Verification and open questions:** checks run by the reviewer versus supplied results, their code state, failures, and unverified paths. Add confirmed sound behavior only when supported and useful; omit an empty praise section. No-defect reviews still need meaningful scope and evidence limits.
+4. **Change findings, most serious first:** short title and severity, precise location, trigger/conditions, concrete failure or cost, relationship to the change/requirement, and a supported next action. Group duplicate symptoms without losing distinct affected paths. Report confirmed extras in an **Out of scope** subsection within Findings, including low-risk ones; flag a serious extra in the verdict so subsection placement does not hide it. Put ordinary in-scope low-impact findings and suggestions together in a separate **Minor points (optional)** subsection after material findings and extras. Preserve whether each item is a minor defect or a suggestion; explain its location, concrete benefit/cost, and supplied next action concisely, without presenting a preference as a defect.
+5. **Pre-existing issues (optional), only when eligible:** a separate section for important unrelated baseline issues, following the scope and evidence rules above. Never use it to hide an in-scope regression, required gap, or confirmed extra.
+6. **Verification and open questions:** checks run by the reviewer versus supplied results, their code state, failures, and unverified paths. Add confirmed sound behavior only when supported and useful; omit an empty praise section. No-defect reviews still need meaningful scope and evidence limits.
 
 If a remedy was not supplied, identify the missing correction/verification plan rather than inventing
 an implementation prescription. A reported possible failure is an unresolved observation, not a
@@ -97,7 +119,9 @@ Coverage statuses follow the supplied evidence:
 - **Unverified:** required implementation/configuration/runtime evidence is unavailable.
 - **Respected / Violated:** a stated non-goal or scope constraint stays out / is implemented contrary to the constraint. Do not grade a non-goal as Missing.
 
-Confirmed Blocking issues support **Not ready**. Otherwise, unresolved material criteria, conflicting
+Confirmed Blocking issues in the reviewed change or agreed requirements support **Not ready**.
+Unrelated pre-existing issues alone do not support **Not ready** or **Cannot determine**; keep their
+severity and any separate follow-up distinct from readiness of this task. Otherwise, unresolved material criteria, conflicting
 current evidence, omitted critical paths, or necessary missing verification prevent an unqualified
 **Ready** verdict; say **Cannot determine** and name what resolves the gap. If a blocker and an evidence
 gap both exist, retain both rather than weakening the verdict to uncertainty alone. No findings or green
@@ -119,9 +143,10 @@ mandatory file for a short report. Publication needs authorization for both the 
 a request to publish a report does not authorize exposing credentials or unrelated private material.
 If sensitive disclosure remains unresolved, provide a safe draft and ask before publishing.
 
-Before delivering, check that the requested transformation is faithful, every material finding and
-confirmed extra is accounted for, relevant supplied minor points/suggestions are included unless
-explicitly excluded, citations/revisions and verification limits survived, optional advice is grouped
+Before delivering, check that the requested transformation is faithful, every material change/requirement
+finding and confirmed extra is accounted for, relevant in-scope minor points/suggestions are included
+unless explicitly excluded, in composed handoffs unrelated pre-existing issues pass the importance/evidence
+filter and remain in their separate optional section without determining readiness, citations/revisions and verification limits survived, optional advice is grouped
 under a low-importance heading with parenthesized optionality in composed handoffs and remains
 optional, and the verdict does not exceed the evidence. Return the report or its saved path
 with a concise summary; do not publish or implement fixes just because a report recommends them.

@@ -19,6 +19,7 @@ Keep the sentences natural and explain the concrete point before technical detai
 | Nit / Minor | کم‌اهمیت | Ordinary low-impact polish, included by default under نکات کم‌اهمیت (اختیاری); not a merge condition |
 | Nit — scope mismatch | کم‌اهمیت — خارج از دامنه | Confirmed low-risk extra |
 | Suggestion | پیشنهاد اختیاری | Optional advice, not a defect |
+| Pre-existing issues (optional) | مشکلات ازپیش‌موجود (اختیاری) | Important unrelated baseline issues; separate follow-up, not task merge conditions |
 | Met | محقق‌شده | Reachable behavior matches the requirement |
 | Partial | ناقص | Incorrect or incomplete implementation |
 | Missing | تحقق‌نیافته | Confirmed absence or unreachable behavior |
@@ -36,7 +37,8 @@ separately, without rewriting the source as if the reviewer had reached a differ
 ## Adaptable Handoff Template
 
 Use only sections that earn their space. Omit Requirements without supplied requirements, Out of
-scope without confirmed extras, Minor points without relevant supplied minor findings/suggestions,
+scope without confirmed extras, Minor points without relevant supplied in-scope minor findings/suggestions,
+Pre-existing issues without eligible important unrelated baseline issues (or when explicitly excluded),
 and Confirmed behavior without useful supporting evidence. Keep
 scope, material limits, findings, and verification even in a short report. A translation may preserve
 the source's structure instead. Do not fill placeholders with invented facts or claim checks ran
@@ -59,7 +61,7 @@ because a test appears in the source.
 
 ### [مانع ادغام / مهم] — [عنوان کوتاه]
 
-- **مشکل:** [محل دقیق و شرایطی که رفتار نادرست رخ می‌دهد]
+- **مشکل:** [محل دقیق و شرایطی که رفتار نادرست رخ می‌دهد؛ ارتباط با تغییر یا الزام تسک]
 - **چرا مهم است:** [پیامد یا هزینهٔ مشخص]
 - **اقدام:** [اصلاح/بررسی بعدیِ پشتیبانی‌شده؛ اگر برنامهٔ اصلاح ارائه نشده، همین کمبود را روشن کنید]
 
@@ -75,6 +77,10 @@ because a test appears in the source.
 
 - **[کم‌اهمیت / پیشنهاد] — [عنوان کوتاه]:** [محل دقیق، ایراد جزئی یا فایدهٔ مشخص، و اقدام اختیاریِ ارائه‌شده در نتایج بازبینی]
 
+## مشکلات ازپیش‌موجود (اختیاری)
+
+- **[شدت پشتیبانی‌شده] — [عنوان کوتاه]:** [محل، پیامد مهم، شاهد وجود مشکل در نسخهٔ مبنا، و اقدام بعدیِ ارائه‌شده؛ نامرتبط با این تسک و بدون تشدید یا فعال‌شدن بر اثر تغییر، برای پیگیری جداگانه و نه شرط ادغام این تسک]
+
 ## شواهد بررسی و محدودیت‌ها
 
 - [دستور/سناریو، نتیجه، نسخه و محیط مرتبط؛ مشخص کنید بازبین اجرا کرده یا نتیجه از منبع دیگری نقل شده است]
@@ -85,16 +91,25 @@ because a test appears in the source.
 - [رفتار مهمی که شواهد موجود درستی آن را پشتیبانی می‌کنند؛ محدودیت بررسی ایستا یا اجرا را نگه دارید]
 ```
 
-Include relevant supplied ordinary nits and useful suggestions by default under **نکات کم‌اهمیت
+Include relevant supplied in-scope ordinary nits and useful suggestions by default under **نکات کم‌اهمیت
 (اختیاری)**; the parentheses make it clear that addressing this category is optional. Keep minor
 defects distinguishable from suggestions, and do not promote them to مهم merely to fit the template.
 Keep confirmed extras under **موارد خارج از دامنه**, even when low-risk; a required gap or hard
 scope-constraint violation must not be hidden as optional polish. Faithful translations preserve the
 source's requested structure and classifications instead of forcing this handoff template.
 
+Keep only important unrelated issues with supplied baseline evidence under **مشکلات ازپیش‌موجود
+(اختیاری)**; omit unrelated minor defects and suggestions instead of moving them into نکات کم‌اهمیت.
+This optional section does not mean a serious issue is unimportant, but it is not a condition for merging
+this task and alone does not change its verdict. An issue worsened or newly exposed by the change, or
+an unmet agreed requirement even if pre-existing, remains in the main findings. Unknown provenance
+stays explicitly unresolved rather than being labeled old or new.
+
 If only optional points remain, say **در دامنهٔ بررسی‌شده، مورد مانع ادغام یا مهم گزارش نشده است؛
 نکات کم‌اهمیت (اختیاری) در ادامه آمده‌اند**. For an empty findings list with no suggestions, say
-**در دامنهٔ بررسی‌شده، ایراد قابل‌اقدامی گزارش نشده است**. Neither statement means every path was
+**در دامنهٔ بررسی‌شده، ایراد قابل‌اقدامی گزارش نشده است**. If only unrelated pre-existing issues remain,
+say **در تغییرات این تسک، ایراد قابل‌اقدامی گزارش نشده است؛ مشکلات مهم ازپیش‌موجود برای پیگیری جداگانه در ادامه آمده‌اند**.
+None of these statements means every path was
 verified or the whole change is ready; optional points alone do not prevent a supported آماده verdict.
 
 ## Short Example: No Findings, Incomplete Coverage

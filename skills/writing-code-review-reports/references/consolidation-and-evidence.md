@@ -7,7 +7,7 @@ reopening code review, rerunning tests, or fixing findings.
 ## 1. Establish what each source covers
 
 For each report, identify the reviewed revision/local scope, baseline, covered paths, requirements,
-findings, and checks with their results. Preserve whether the reviewer executed a check or relied on
+findings with their evidenced relationship to the change/requirements, and checks with their results. Preserve whether the reviewer executed a check or relied on
 another source. Report timestamps may help establish order but do not identify a code state.
 
 Determine the report's intended target from the request and supplied inputs. Do not assume the latest
@@ -60,6 +60,12 @@ establishes that difference. Do not erase an already-red suite or call its failu
 If checks apply to an older state, qualify which evidence remains relevant and what is stale. Report
 known revision drift without assuming all old results are useless or that all still apply.
 
+Apply the main skill's scope filter when composing the consolidated handoff: important unrelated
+pre-existing issues belong only in their separate optional section; unrelated minor issues are omitted.
+Baseline evidence must establish the pre-existing failure, not merely that its file or lines are unchanged.
+Do not filter out an agreed requirement gap or new impact from the change. If sources disagree about
+this relationship, retain the material uncertainty and name the missing evidence rather than guessing.
+
 Portability and privacy are not reasons to delete the proof:
 
 - Convert a known project-root prefix to a repository-relative path. If unknown, retain a clearly marked `[PROJECT_ROOT]` placeholder and name the unresolved mapping.
@@ -69,10 +75,11 @@ Portability and privacy are not reasons to delete the proof:
 
 ## 5. Produce an evidence-bounded verdict
 
-The main skill owns severity and readiness. A confirmed current Blocking issue means Not ready,
+The main skill owns severity and readiness. A confirmed current in-scope Blocking issue means Not ready,
 even if another path is unverified. With no confirmed blocker but material conflicting/unavailable
 evidence, use Cannot determine and name the required input. Historical defects do not become
-current blockers just because their resolution is uncertain.
+current blockers just because their resolution is uncertain. Important unrelated pre-existing issues
+may warrant separate urgent follow-up, but alone do not make this task Not ready or Cannot determine.
 
 State the scope and target the verdict concerns; preserve material exclusions. Faithful translations
 retain the source verdict, attributed to the source, with any necessary caveat separate. Do not
