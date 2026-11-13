@@ -1,6 +1,6 @@
 ---
 name: structured-reasoning
-description: Use when a request requires substantial reasoning, synthesizing evidence, resolving uncertainty, planning, or weighing meaningful alternatives, regardless of domain or whether the result is an answer, recommendation, artifact, or action. Also use for explicit brainstorming. Skip simple factual lookups and obvious mechanical tasks.
+description: Use when a request requires substantial reasoning, synthesizing evidence, resolving uncertainty, planning, or weighing meaningful alternatives, regardless of domain or whether the result is an answer, recommendation, artifact, or action. Also use for explicit brainstorming, stress-testing an idea or decision, or a guided interview to clarify a plan. Skip simple factual lookups and obvious mechanical tasks.
 ---
 
 # Structured Reasoning
@@ -14,6 +14,8 @@ Help the user get a useful result from a nontrivial request. Understand what mat
 Use for any nontrivial request, even with clear instructions or when only an answer is wanted. Judge the reasoning required, not the subject, output format, presence of code, or size of the deliverable. Work is nontrivial when reaching a useful result requires substantial analysis, connecting evidence, understanding interacting constraints, resolving uncertainty, or weighing meaningful consequences. Repeating many obvious operations does not alone make a task nontrivial.
 
 Also use for an explicit request to brainstorm or explore possibilities, even when small. Scale the discussion accordingly; a bounded request for ideas may need only the ideas, not clarifying questions.
+
+Use the deeper interview method below when the user asks to challenge their assumptions or examine a plan through questions. Keep that method within the requested scope; it is not the default response to every uncertainty.
 
 - Skip simple questions with a direct, well-established answer and routine mechanical tasks with no meaningful uncertainty or trade-off. Do not exclude a substantial explanation or investigation merely because it changes nothing.
 - Use relevant specialized methods or skills alongside this checkpoint. They supply domain technique; structured reasoning does not replace them. When investigating a failure, establish the cause before proposing a remedy; use `systematic-debugging` if available.
@@ -30,13 +32,25 @@ If evidence is unavailable, name the uncertainty and its consequence. Do not rel
 ## Conversation
 
 1. **Ask only result-changing questions.** Start with the most important unresolved goal or constraint when its answer is needed. Ask one focused question at a time; batch only genuinely independent questions. Explain why the answer matters when that is not obvious. Do not repeat answered questions or run a fixed questionnaire. Respond to the user's expressed concern before turning it into a decision exercise.
-2. **Make choices easy to compare.** Prefer the environment's question tool with selectable options when available; otherwise give concise choices in chat. Explain each option's benefit and cost, mark a recommendation when justified, and leave room for an alternative answer. Use an open question when meaningful choices cannot yet be offered.
+2. **Make choices easy to compare.** Prefer the environment's question tool with selectable options when available; otherwise give concise choices in chat. Explain each option's benefit and cost, mark a recommendation when justified, and leave room for an alternative answer. Word questions neutrally; do not make agreement with your recommendation the easiest answer. Use an open question when meaningful choices cannot yet be offered.
 3. **Compare alternatives when they help.** For meaningful trade-offs, present viable options, usually two or three, and explain which best fits the user's priorities and the evidence. Include a smaller step or keeping the current situation when viable. Do not invent alternatives to meet a quota or manufacture a decision in a request for explanation. When the user wants possibilities rather than a verdict, do not force convergence.
 4. **Keep consequential choices with the user.** Resolve comparable alternatives before taking actions that commit the user to materially different outcomes, risks, costs, or obligations. A recommendation is not the user's decision. If one approach is clearly better under the agreed constraints, explain why and proceed within authorization; routine execution choices do not need permission. When only advice is requested, offer reasoned or conditional guidance without treating agreement as permission to act.
 
 Stop asking when the goal and constraints are clear enough to provide a useful result and remaining user input cannot reasonably change it. Summarize settled choices and bounded assumptions only when that helps. Do not delay a useful answer until every uncertainty disappears or impose a decision on a user who wants exploration or support.
 
 When feasibility is the only question, answer from sufficient evidence or use the smallest useful check within scope and authorization. Report findings and limitations, not an unsolicited implementation. A proposed experiment is not permission to spend money, contact people, expose information, or change shared state; retaining a disposable prototype is a separate decision.
+
+## Dependent Decisions and Deeper Interviews
+
+Use this method when several decisions depend on one another, answers can change the direction of the work, or the user requests a deeper interview or stress test. A single ambiguity needs only a direct question. This method is part of this skill; no separate interview skill is required.
+
+1. **Map the relevant dependencies.** Identify settled choices, unresolved decisions, and facts still needed. Track which answers would change later questions or options; a small branching outline is enough, and a diagram or document is optional. For example, whether a tool is personal or shared comes before questions about team roles and permissions. Follow branches that could affect the requested result, not every imaginable branch.
+2. **Ask what is ready now.** Start with the highest-impact unresolved decision whose prerequisites are known. Batch a few genuinely independent questions when that reduces turns without overwhelming the user, respecting the environment's question-tool limits. If one answer could change another question's wording, relevance, or options, defer that question to a later round. Use the conversation's question format above, not a mandatory interview template.
+3. **Investigate missing facts separately.** Look up discoverable facts within the authorized scope rather than asking the user to guess. Delegate only when allowed and worthwhile, not for every lookup. If evidence is pending or unavailable, mark dependent decisions as unresolved; continue with independent questions or useful work instead of assuming the missing answer.
+4. **Test the important assumptions.** When depth is warranted, probe unsupported premises, conflicts between goals, plausible failure conditions, simpler alternatives, and evidence that would change a conclusion. Challenge the idea constructively, not the person; do not invent objections, treat preferences as factual errors, or push past a user who declines further probing.
+5. **Update the next round.** Use each answer to settle decisions, prune irrelevant branches, and identify newly answerable questions. If new evidence or answers conflict with a settled choice, explain the conflict and revisit only affected decisions. An unanswered material question remains open, not tacitly approved.
+
+Finish using the stopping rule above: the important decisions are settled enough for a useful result, and remaining uncertainty is either immaterial or explicitly bounded. For an interview, briefly summarize the resulting understanding and any material open issues so the user can correct it; do not impose an extra confirmation turn when nothing consequential remains undecided. Completing an interview does not itself authorize implementation or external action.
 
 ## Result and Next Step
 
@@ -64,3 +78,7 @@ Read `references/visual-decisions.md` when preparing visual explanations, mockup
 - If new information changes an agreed choice, explain why and resolve only the affected consequential decision, not unchanged details again.
 - If investigation contradicts an assumption or approach, reassess rather than forcing the evidence to fit it.
 - Do not turn a settled request into an interview, a document, or a plan merely because this skill was loaded.
+
+## Evaluating This Skill
+
+When maintaining the skill's selection or conversation behavior, use [evaluation scenarios](references/evaluation-scenarios.md) to check dependent questions, assumption testing, and nearby cases that should stay simple. These are reusable inputs and expected outcomes, not evidence of completed tests or a required workflow for ordinary requests.
