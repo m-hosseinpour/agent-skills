@@ -1,7 +1,8 @@
 # Setup, wiring, and troubleshooting
 
 Most of this is optional for daily use, with one exception: **each fetch client has to be
-pointed at the wrapper once** (see [Wiring a fetch tool](#wiring-a-fetch-tool)). After
+pointed at the gateway once** — a separate server through the wrapper, an in-process
+reader through its own environment (see [Wiring a fetch tool](#wiring-a-fetch-tool)). After
 that, `SKILL.md` is enough. Read this when installing, moving to another agent or client,
 or fixing a broken tunnel.
 
@@ -129,11 +130,11 @@ proxy into each client's config, launch the client through the wrapper:
 python3 scripts/tunnel.py install-wrapper     # ~/.local/bin/proxy-tunnel-exec
 ```
 
-**This is a per-server edit, and it is required.** Every MCP server that fetches pages —
-a URL reader, Playwright, a browser tool — keeps its own command and args, and gets the
-wrapper in front plus one profile flag. Nothing else in the config changes, and servers
-that only call a local service (a search server, for example) need no edit at all. Reuse
-the original command and args verbatim after the flag:
+**For a separate server this is a per-server edit, and it is required.** Every MCP server
+that fetches pages — a URL reader, Playwright, a browser tool — keeps its own command and
+args, and gets the wrapper in front plus one profile flag. Nothing else in the config
+changes, and servers that only call a local service (a search server, for example) need no
+edit at all. Reuse the original command and args verbatim after the flag:
 
 ```yaml
 # original: npx -y mcp-searxng
@@ -181,8 +182,8 @@ never injects.
 
 Why a launcher rather than an `env` block: the launcher decides at each launch whether
 the gateway is listening and whether the tunnel is paused, and it falls back to direct
-when either is false. Nothing in the client config mentions a port or a proxy, so a
-port change, a paused tunnel, or a dead gateway never needs a config edit. `pause` and
+when either is false. Nothing in a wrapped server's config mentions a port or a proxy, so
+a port change, a paused tunnel, or a dead gateway never needs a config edit there. `pause` and
 `resume` flip that decision at runtime:
 
 ```bash
@@ -200,15 +201,41 @@ carry the same values, with none of the fallback. mcp-searxng accepts only `http
 and `https://` proxies — a `socks5://` value is rejected, which is why the gateway
 exposes a mixed port.
 
+### In-process readers
+
+Some harnesses read pages inside their own process instead of starting a separate
+server. There is nothing to wrap there: the proxy has to be in that process's environment
+when it starts.
+
+1. Set `HTTP_PROXY` and `HTTPS_PROXY` to `http://127.0.0.1:<port>` wherever that process
+   gets its environment — its service manager (a systemd drop-in, a launchd plist, a
+   scheduled task) or the shell that launches it in the foreground.
+2. Set `NO_PROXY` to `localhost,127.0.0.1,::1` plus any API host whose availability must
+   not depend on the gateway, such as the model provider. Most runtimes match a host and
+   its subdomains.
+3. Restart the process once and confirm the variables reached it — on Linux,
+   `tr '\0' '\n' < /proc/<pid>/environ | grep -i proxy`. A process started before the
+   change keeps running direct, exactly like an unwrapped MCP server.
+4. Verify with a page that only answers through the tunnel. An unlisted domain still goes
+   direct, so a newly blocked site needs `learn <url>` (or `allow <domain>`), not a config
+   change.
+
+Unlike the launcher, the environment has no fallback: when the gateway is down, requests
+through these variables fail instead of going direct. That is why provider and other
+must-stay-direct hosts belong in `NO_PROXY`.
+
+`pause` only changes what a wrapped launcher injects; an in-process reader keeps the
+environment it started with. Stop the gateway or unset the variables there instead.
+
 **Search is not routed.** A search tool that only calls a local service (a local
 SearXNG, for instance) gains nothing from the hop: results and latency stay the same, and
 it breaks whenever the gateway is down. Leave the search tool's proxy settings unset.
 
 **Anything with curl:** `curl -x http://127.0.0.1:1080 <url>`, or `tunnel.py fetch <url>`.
 
-Do not set `HTTPS_PROXY` globally in the shell or in the harness process: that routes
-every request, including pages reachable directly, and a dead pool then looks like a
-dead network.
+Point the agent process at the gateway, never at a single pool config or at a proxy that
+tunnels every request: the gateway's direct route keeps ordinary pages on the local
+network path, and `NO_PROXY` keeps must-stay-direct APIs out of it.
 
 ## Running as a service
 
@@ -266,7 +293,9 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | `status` says `stopped` | run `up`; if the service is installed, `systemctl --user restart proxy-tunnel` |
 | `canary: FAILED (0/3)` | tunnel is dead: `up --refresh`; if that fails too, reseed the pool |
 | `canary: ok … (1/3 resets)` | normal for public configs; fetchers retry, nothing to do |
-| fetch works for one blocked site, fails for another | the second domain is not routed: `allow <domain>` adds it to `domains.txt`; `domains` shows the current list |
+| fetch works for one blocked site, fails for another | the second domain is not routed: `learn <url>` tests direct, then the tunnel, and routes the domain only if that is what fixed it; `allow <domain>` adds one by hand; `domains` shows the current list |
+| gateway `fetch` works, the harness's own reader fails | that process has no proxy in its environment, or started before one was set: check `/proc/<pid>/environ`, then restart it |
+| `learn` says `not learned` | check `status` first: a FAILED canary means the tunnel is down (`up --refresh`), not that the site refuses the exit. With a healthy canary, the tunnel genuinely does not fix that host: leave it direct and report it unavailable |
 | every fetch fails, including normal sites | gateway is down and the tool insists on it: start the gateway, or unset the proxy env for that tool |
 | `pool is empty` | `seed --force`, or add links to `pool.txt` |
 | `xray binary not found` | run `setup` to download it, or set `XRAY_BIN` |
@@ -276,7 +305,7 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | gateway starts then exits | read `~/.config/proxy-tunnel/gateway.log`; a bad link makes xray refuse the config |
 
 `gateway.json` is rewritten from `pool.txt`, `domains.txt`, and the chosen config on
-every `up`/`allow`; edit the inputs, never the generated file.
+every `up`, `allow`, `disallow` and `learn`; edit the inputs, never the generated file.
 
 ## Log size
 

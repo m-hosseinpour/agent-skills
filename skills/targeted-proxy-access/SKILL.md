@@ -1,14 +1,15 @@
 ---
 name: targeted-proxy-access
-description: Use when a page fetch fails because the site is blocked, geo-restricted, or sanctioned in this network (timeouts, connection resets, 403 from the region); when a domain routed through the tunnel still fails and the gateway, routed domains, or client wiring needs checking; or when the user asks to reach a domain through their VLESS/Trojan configs without tunneling the whole system.
+description: Use when a page fetch fails because the site is blocked, geo-restricted, or sanctioned in this network (timeouts, connection resets, 403 from the region) — whether the fetch came from an MCP server, a browser, or the harness's own built-in page reader; when a domain routed through the tunnel still fails and the gateway, routed domains, or wiring needs checking; or when the user asks to reach a domain through their VLESS/Trojan configs without tunneling the whole system.
 ---
 
 # Targeted Proxy Access
 
 A local HTTP proxy on `127.0.0.1:1080` that sends **only chosen domains** through a
-pool of VLESS/Trojan configs and connects everything else directly. Fetch servers are
-launched through `proxy-tunnel-exec`, which injects the proxy only while the gateway
-is healthy, so no client config carries proxy settings.
+pool of VLESS/Trojan configs and connects everything else directly. Separately launched
+fetchers go through `proxy-tunnel-exec`, which injects the proxy only while the gateway is
+healthy; a harness's own in-process reader gets the standard proxy variables in its own
+environment instead.
 
 ```
 fetch tool ──► 127.0.0.1:1080 ──► domain listed in domains.txt? ──► tunnel config
@@ -30,32 +31,49 @@ to refresh installed links and launch paths; existing pool and state files stay 
 
 1. **Check the gateway.** `python3 scripts/tunnel.py status` — if it says `stopped`,
    start it with `up`. One probe of the canary is enough; do not loop.
-2. **Fetch through the URL reader.** Whatever tool your harness gives you for reading
-   pages (an MCP `web_url_read`, a fetch tool, a browser) must be launched through the
-   wrapper — a **one-time edit per MCP server**, described in
-   `references/setup.md#wiring-a-fetch-tool`. Once wired, a normal call is all that is
-   needed: do not add proxy flags per call, and do not edit the client config to "turn
-   the proxy on".
+2. **Point the page reader at the gateway**, once per client, in whichever shape it takes:
+   - **A separate process** — an MCP server, a browser, a CLI fetcher — is launched through
+     the wrapper: a **one-time edit per server**, described in
+     `references/setup.md#wiring-a-fetch-tool`. Servers that only talk to a local service
+     need no edit.
+   - **The harness's own page reader** runs inside the agent process and cannot be wrapped.
+     Give that process the standard `HTTP_PROXY`/`HTTPS_PROXY` and a `NO_PROXY` that keeps
+     loopback and direct-only API hosts out — once, in however it gets its environment. See
+     [in-process readers](references/setup.md#in-process-readers).
+   Once wired, a normal call is all that is needed: do not add proxy flags per call, and do
+   not edit the client config to "turn the proxy on".
 3. **Retry once before diagnosing.** A single `fetch failed` is usually one reset
    from the public config, not a dead tunnel. Call the tool again.
 4. **Locate the failing layer, first match wins:**
    - `status` reports `canary: FAILED` → the whole tunnel is down: `up --refresh`,
      then retry.
    - `python3 scripts/tunnel.py fetch <url>` returns a 2xx page where the client
-     tool fails → the client is not using the wrapper, or the tunnel is paused: run
+     tool fails → the client is not using the proxy, or the tunnel is paused: run
      `doctor`, which notes a paused tunnel and flags a client config that never
-     mentions the launcher. If doctor is all ok, restart that MCP server — a server
-     started before the config edit keeps running direct — or wire that server if its
-     config still carries the original command.
+     mentions the launcher. For a separate server, restart it — one started before the
+     config edit keeps running direct — or wire it if its config still carries the
+     original command. For the harness's own reader, check the process environment and
+     restart that process.
    - Both fail and no listed entry covers the host → the request went direct. When
-     the direct path is blocked in this network, `allow <domain>` and retry: it
-     writes `domains.txt`, and an entry covers its subdomains (`allow x.com` handles
-     `api.x.com`). When it is not, leave the list alone — see *Ground rules*. If the
-     retry still fails, compare again with `tunnel.py fetch`: an unwired client is a
-     separate fault.
+     the direct path is blocked in this network, `learn <url>` and retry the tool: it
+     routes the domain only if the tunnel is what made that URL work, and leaves the
+     list alone otherwise. An entry covers subdomains (`x.com` handles `api.x.com`).
+     Use `allow <domain>` only when you already know it needs the tunnel. If the retry
+     still fails, compare again with `tunnel.py fetch`: an unwired client is a separate
+     fault.
    - Both fail and the host is already routed → rotate with `up --refresh`, then
      call the tool again. If that does not help either, the site refuses these exits
      or is down: report it unavailable rather than widening the route.
+
+**The harness's own reader sees more than the gateway.** It reads the page, so it can
+spot a block page that a CONNECT proxy cannot. When it fails on a page:
+
+1. `learn <url>` — tries direct, then through the tunnel, and keeps the route only when
+   the tunnel is what made the URL work. It reverts and fails if neither route works.
+2. Retry the reader once.
+3. A 2xx block or consent page is the site's answer, not a route fault: report it and
+   leave the list alone. `learn` compares status, not content, so it cannot make that
+   call; the reader's content can.
 
 ## Commands
 
@@ -65,11 +83,12 @@ to refresh installed links and launch paths; existing pool and state files stay 
 | `up [--refresh]` | start the gateway; `--refresh` ignores the last-good config and rescans |
 | `serve [--interval N]` | keep the gateway running and rotate dead configs; the systemd service runs this |
 | `down` | stop the gateway |
-| `allow <domain>...` | route these domains (and subdomains) through the tunnel, hot-reload |
-| `disallow <domain>...` | stop routing them |
+| `allow <domain>...` | route these domains (and subdomains) through the tunnel and reload the gateway |
+| `disallow <domain>...` | stop routing them and reload the gateway |
 | `domains` | list routed domains |
 | `list` | pool entries in priority order |
 | `fetch <url> [--raw]` | fetch through the gateway without any MCP |
+| `learn <url>` | try direct, then the tunnel; route the domain only when only the tunnel works |
 | `env` | print raw proxy settings (only for clients that cannot use the launcher) |
 | `pause` / `resume` | stop/restart injecting the proxy at launch, without touching any client config |
 | `doctor` | check pool, service, launcher, and client wiring in one go |
@@ -117,8 +136,10 @@ and kept in the data dir (`bin/xray-<version>/`) for later runs.
   read: a site that already answers direct gains nothing from the hop, and one that
   refuses datacenter addresses keeps refusing. Add the **smallest** domain that
   works (`youtube.com`, not `google.com`); a wide entry sends unrelated traffic
-  through a shared public config.
-- Never edit `gateway.json`: it is generated on every `up` and `allow`.
+  through a shared public config. A routed entry carries everything that process does
+  on the domain — including credentialed requests — through that exit, and a plain
+  `http://` page travels in clear through it.
+- Never edit `gateway.json`: it is generated on every `up`, `allow`, `disallow` and `learn`.
 - Shared public configs reset roughly one request in three. Retry, then rotate; do not
   conclude the site is unreachable from one failure.
 - The pool is ordered, and `up` tries from the top, so put preferred configs first in

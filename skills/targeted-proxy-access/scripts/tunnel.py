@@ -22,6 +22,7 @@ import argparse
 import hashlib
 import http.client
 import io
+import ipaddress
 import json
 import os
 import platform
@@ -45,6 +46,10 @@ SCAN_TIMEOUT = 6
 GATEWAY_TIMEOUT = 10
 DEAD_COOLDOWN = 60
 IS_WIN = os.name == "nt"
+BROWSER_UA = (
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+)
 
 
 def _default_home() -> Path:
@@ -917,38 +922,69 @@ def cmd_list(args: argparse.Namespace) -> None:
         print(f"{idx:3d} {mark} {u.scheme:6s} {host:45s} {unquote(u.fragment)[:40]}")
 
 
+def covered(host: str, domains: list[str]) -> bool:
+    """True when an entry already routes this host (an entry covers subdomains)."""
+    return any(host == d or host.endswith("." + d) for d in domains)
+
+
+def write_domains(domains: list[str]) -> None:
+    DOMAINS.parent.mkdir(parents=True, exist_ok=True)
+    DOMAINS.write_text("\n".join(domains) + "\n", encoding="utf-8")
+
+
+def reload_gateway(domains: list[str]) -> bool:
+    """Apply domains.txt to the running gateway.
+
+    False means a running gateway kept the old list: the file is newer than what is
+    being enforced, which callers must not report as success.
+    """
+    unit = Path.home() / ".config/systemd/user/proxy-tunnel.service"
+    if unit.exists():
+        # The unit owns the port. Starting xray by hand here would put a second
+        # gateway on it (SO_REUSEPORT) and leave a process outside the unit's cgroup.
+        if not service_active():
+            print("proxy-tunnel.service is not running; start it to apply the list",
+                  file=sys.stderr)
+            return False
+        if restart_service():
+            print("gateway reloaded via proxy-tunnel.service")
+            return True
+        print("proxy-tunnel.service did not come back; the list is written, not applied",
+              file=sys.stderr)
+        return False
+    if gateway_pid():
+        last = (load_state().get("last_good") or {}).get("uri")
+        if not last:
+            print("no last-good config to reload the gateway; run: tunnel.py up", file=sys.stderr)
+            return False
+        start_gateway(parse_uri(last), domains)
+        print("gateway reloaded")
+        return True
+    return True  # nothing running: the next up reads the file
+
+
 def cmd_allow(args: argparse.Namespace) -> None:
     domains = load_domains()
     added = [d.strip().lower() for d in args.domains if d.strip().lower() not in domains]
-    if added:
-        domains.extend(added)
-        DOMAINS.write_text("\n".join(domains) + "\n", encoding="utf-8")
-        print("added: " + ", ".join(added))
-        if service_active():
-            if restart_service():
-                print("gateway reloaded via proxy-tunnel.service")
-        elif gateway_pid():
-            state = load_state()
-            last = state.get("last_good")
-            if last:
-                start_gateway(parse_uri(last["uri"]), domains)
-                print("gateway reloaded")
-    else:
+    if not added:
         print("already allowed")
+        return
+    domains.extend(added)
+    write_domains(domains)
+    print("added: " + ", ".join(added))
+    if not reload_gateway(domains):
+        sys.exit("added to domains.txt, but the running gateway was not reloaded")
 
 
 def cmd_disallow(args: argparse.Namespace) -> None:
     domains = load_domains()
-    keep = [d for d in domains if d not in args.domains]
-    DOMAINS.write_text("\n".join(keep) + "\n", encoding="utf-8")
-    print(f"removed {len(domains) - len(keep)} domain(s)")
-    if service_active():
-        restart_service()
-    elif gateway_pid():
-        last = (load_state().get("last_good") or {}).get("uri")
-        if last:
-            start_gateway(parse_uri(last), keep)
-            print("gateway reloaded")
+    targets = {d.strip().lower() for d in args.domains}
+    keep = [d for d in domains if d not in targets]
+    removed = len(domains) - len(keep)
+    write_domains(keep)
+    print(f"removed {removed} domain(s)")
+    if removed and not reload_gateway(keep):
+        sys.exit("removed from domains.txt, but the running gateway was not reloaded")
 
 
 def cmd_domains(args: argparse.Namespace) -> None:
@@ -976,6 +1012,151 @@ def cmd_fetch(args: argparse.Namespace) -> None:
         return
     print(f"{status} {len(body)} bytes")
     print(body[: args.max_chars])
+
+
+def _fetch_once(url: str, proxy: str | None, timeout: int) -> tuple[int | None, str]:
+    """One GET for the learning check; returns (status, error).
+
+    ``proxy=None`` forces a direct connection. For a proxied call, ``NO_PROXY`` is
+    removed for the duration: urllib applies it even to an explicit proxy, which
+    would silently turn the tunnel attempt into a second direct one.
+    """
+    saved = {}
+    if proxy:
+        for name in ("no_proxy", "NO_PROXY"):
+            if name in os.environ:
+                saved[name] = os.environ.pop(name)
+    try:
+        handlers = [
+            urllib.request.ProxyHandler({"http": proxy, "https": proxy} if proxy else {})
+        ]
+        request = urllib.request.Request(
+            url,
+            headers={
+                "User-Agent": BROWSER_UA,
+                "Accept": "text/html,application/xhtml+xml,application/json;q=0.9,*/*;q=0.8",
+                "Accept-Language": "en-US,en;q=0.9",
+            },
+        )
+        try:
+            with urllib.request.build_opener(*handlers).open(request, timeout=timeout) as response:
+                response.read(2048)
+                return response.status, ""
+        except urllib.error.HTTPError as exc:
+            return exc.code, f"HTTP {exc.code}"
+        except (urllib.error.URLError, http.client.HTTPException, OSError) as exc:
+            return None, str(getattr(exc, "reason", exc)) or type(exc).__name__
+    finally:
+        os.environ.update(saved)
+
+
+def _answered(status: int | None) -> bool:
+    """The path produced a page. 202 counts: a challenge is still an answer."""
+    return status is not None and 200 <= status < 300
+
+
+def _ok(status: int | None) -> bool:
+    """A tunneled fetch that delivered the page rather than a challenge.
+
+    202 is excluded: several engines answer a challenge with it, and routing a host
+    on that evidence would send traffic the tunnel does not actually unlock.
+    """
+    return _answered(status) and status != 202
+
+
+def _direct_attempt(url: str, timeout: int) -> tuple[int | None, str]:
+    """A direct verdict, with a second try when the first looked transient."""
+    status, error = _fetch_once(url, None, timeout)
+    if status is None or status >= 500:
+        time.sleep(1.0)
+        status, error = _fetch_once(url, None, timeout)
+    return status, error
+
+
+def _exit_on_termination() -> None:
+    """Make SIGTERM/SIGHUP unwind so the learn revert in ``finally`` can run.
+
+    Python's default handler ends the process without unwinding, which would leave
+    an unproven entry behind when the caller times the command out or the terminal
+    closes. SIGKILL still cannot be caught.
+    """
+
+    def handler(signum, frame):
+        raise SystemExit(1)
+
+    for name in ("SIGTERM", "SIGHUP"):
+        sig = getattr(signal, name, None)
+        if sig is None:
+            continue
+        try:
+            signal.signal(sig, handler)
+        except (OSError, ValueError):
+            pass  # not the main thread, or the platform refuses the handler
+
+
+def cmd_learn(args: argparse.Namespace) -> None:
+    _exit_on_termination()
+    parsed = urlparse(args.url)
+    host = (parsed.hostname or "").lower().strip(".")
+    if parsed.scheme not in ("http", "https") or not host:
+        sys.exit("learn needs an http:// or https:// URL")
+    try:
+        ipaddress.ip_address(host)
+    except ValueError:
+        pass
+    else:
+        sys.exit("learn needs a hostname, not an IP address")
+    if not gateway_pid():
+        sys.exit("gateway is stopped; run: tunnel.py up")
+
+    proxy = f"http://127.0.0.1:{gateway_port()}"
+    domains = load_domains()
+
+    if covered(host, domains):
+        status, error = _fetch_once(args.url, proxy, args.timeout)
+        print(f"{host} is already routed")
+        print(f"tunnel: {status}" if status else f"tunnel: failed ({error})")
+        sys.exit(0 if _ok(status) else 1)
+
+    status, error = _direct_attempt(args.url, args.timeout)
+    if _answered(status):
+        print(f"direct: {status}")
+        print("direct works; not learned")
+        return
+    print(f"direct: {status}" if status else f"direct: failed ({error})")
+
+    # Learn only on the evidence the rule asks for: the direct attempt failed and
+    # the same URL then succeeded through the tunnel. Adding on failure alone
+    # would route hosts that are down and that the tunnel cannot fix.
+    domains.append(host)
+    write_domains(domains)
+    kept = False
+    try:
+        print(f"trying {host} through the tunnel")
+        if not reload_gateway(domains):
+            sys.exit(f"not learned: the gateway kept the old list; {host} was reverted")
+        for attempt in range(2):
+            if attempt:
+                time.sleep(1.0)
+            status, error = _fetch_once(args.url, proxy, args.timeout)
+            if _ok(status):
+                kept = True
+                print(f"tunnel: {status}")
+                print(f"learned {host}")
+                return
+        healthy, _ = probe(gateway_port())
+        if not healthy:
+            sys.exit(f"not learned: the tunnel is down (canary FAILED); {host} was reverted")
+        sys.exit(f"not learned: the tunnel did not fix {host}")
+    finally:
+        # An interrupt between writing the entry and its verdict must not leave an
+        # unproven route behind; this also reverts a tunnel attempt that failed.
+        if not kept:
+            keep = [d for d in load_domains() if d != host]
+            write_domains(keep)
+            if not reload_gateway(keep):
+                print(f"warning: {host} was removed from domains.txt but the running "
+                      "gateway may still route it; restart the gateway", file=sys.stderr)
 
 
 def cmd_env(args: argparse.Namespace) -> None:
@@ -1215,6 +1396,11 @@ def main() -> None:
     p.add_argument("--max-chars", type=int, default=20000)
     p.add_argument("--timeout", type=int, default=40)
     p.set_defaults(func=cmd_fetch)
+
+    p = sub.add_parser("learn", help="route a domain only when only the tunnel makes it work")
+    p.add_argument("url")
+    p.add_argument("--timeout", type=int, default=20)
+    p.set_defaults(func=cmd_learn)
 
     p = sub.add_parser("serve", help="supervise the gateway and rotate dead configs")
     p.add_argument("--interval", type=int, default=60)
