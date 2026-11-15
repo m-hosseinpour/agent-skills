@@ -296,6 +296,7 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | fetch works for one blocked site, fails for another | the second domain is not routed: `learn <url>` tests direct, then the tunnel, and routes the domain only if that is what fixed it; `allow <domain>` adds one by hand; `domains` shows the current list |
 | gateway `fetch` works, the harness's own reader fails | that process has no proxy in its environment, or started before one was set: check `/proc/<pid>/environ`, then restart it |
 | `learn` says `not learned` | check `status` first: a FAILED canary means the tunnel is down (`up --refresh`), not that the site refuses the exit. With a healthy canary, the tunnel genuinely does not fix that host: leave it direct and report it unavailable |
+| `learn` refuses with 429 or 451 | the site's answer, not a route fault: wait, or use another source; do not add the domain by hand |
 | every fetch fails, including normal sites | gateway is down and the tool insists on it: start the gateway, or unset the proxy env for that tool |
 | `pool is empty` | `seed --force`, or add links to `pool.txt` |
 | `xray binary not found` | run `setup` to download it, or set `XRAY_BIN` |

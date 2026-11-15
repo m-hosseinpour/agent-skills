@@ -50,6 +50,9 @@ BROWSER_UA = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0 Safari/537.36"
 )
+# Statuses that are the site's own answer, not a route problem: routing them through
+# a shared exit would evade a rate limit or a legal block, not fix network filtering.
+NOT_A_ROUTE_PROBLEM = {429, 451}
 
 
 def _default_home() -> Path:
@@ -927,9 +930,39 @@ def covered(host: str, domains: list[str]) -> bool:
     return any(host == d or host.endswith("." + d) for d in domains)
 
 
-def write_domains(domains: list[str]) -> None:
+def _domain_lines() -> list[str]:
+    try:
+        return DOMAINS.read_text(encoding="utf-8").splitlines()
+    except FileNotFoundError:
+        return []
+
+
+def _domain_entry(line: str) -> str | None:
+    """The routing entry on a line, or None for a comment or blank line."""
+    text = line.strip().lower()
+    if not text or text.startswith("#"):
+        return None
+    return text
+
+
+def append_domains(hosts: list[str]) -> None:
+    """Append entries without touching comments, blanks or existing entries."""
+    lines = _domain_lines()
+    lines.extend(host.strip().strip(".").lower() for host in hosts if host.strip())
     DOMAINS.parent.mkdir(parents=True, exist_ok=True)
-    DOMAINS.write_text("\n".join(domains) + "\n", encoding="utf-8")
+    DOMAINS.write_text("\n".join(lines) + "\n", encoding="utf-8")
+
+
+def remove_domains(hosts: set[str]) -> int:
+    """Drop matching entry lines; every other line, comments included, stays."""
+    targets = {host.strip().strip(".").lower() for host in hosts if host.strip()}
+    lines = _domain_lines()
+    keep = [line for line in lines if _domain_entry(line) not in targets]
+    removed = len(lines) - len(keep)
+    if removed:
+        DOMAINS.parent.mkdir(parents=True, exist_ok=True)
+        DOMAINS.write_text("\n".join(keep) + "\n", encoding="utf-8")
+    return removed
 
 
 def reload_gateway(domains: list[str]) -> bool:
@@ -964,26 +997,27 @@ def reload_gateway(domains: list[str]) -> bool:
 
 
 def cmd_allow(args: argparse.Namespace) -> None:
-    domains = load_domains()
-    added = [d.strip().lower() for d in args.domains if d.strip().lower() not in domains]
+    targets: list[str] = []
+    for raw in args.domains:
+        host = raw.strip().strip(".").lower()
+        if host and host not in targets:
+            targets.append(host)
+    existing = set(load_domains())
+    added = [host for host in targets if host not in existing]
     if not added:
         print("already allowed")
         return
-    domains.extend(added)
-    write_domains(domains)
+    append_domains(added)
     print("added: " + ", ".join(added))
-    if not reload_gateway(domains):
+    if not reload_gateway(load_domains()):
         sys.exit("added to domains.txt, but the running gateway was not reloaded")
 
 
 def cmd_disallow(args: argparse.Namespace) -> None:
-    domains = load_domains()
-    targets = {d.strip().lower() for d in args.domains}
-    keep = [d for d in domains if d not in targets]
-    removed = len(domains) - len(keep)
-    write_domains(keep)
+    targets = {d.strip().lower() for d in args.domains if d.strip().lower()}
+    removed = remove_domains(targets)
     print(f"removed {removed} domain(s)")
-    if removed and not reload_gateway(keep):
+    if removed and not reload_gateway(load_domains()):
         sys.exit("removed from domains.txt, but the running gateway was not reloaded")
 
 
@@ -1123,17 +1157,19 @@ def cmd_learn(args: argparse.Namespace) -> None:
         print(f"direct: {status}")
         print("direct works; not learned")
         return
+    if status in NOT_A_ROUTE_PROBLEM:
+        print(f"direct: {status}")
+        sys.exit(f"not learned: HTTP {status} is the site's answer, not a route failure")
     print(f"direct: {status}" if status else f"direct: failed ({error})")
 
     # Learn only on the evidence the rule asks for: the direct attempt failed and
     # the same URL then succeeded through the tunnel. Adding on failure alone
     # would route hosts that are down and that the tunnel cannot fix.
-    domains.append(host)
-    write_domains(domains)
+    append_domains([host])
     kept = False
     try:
         print(f"trying {host} through the tunnel")
-        if not reload_gateway(domains):
+        if not reload_gateway(load_domains()):
             sys.exit(f"not learned: the gateway kept the old list; {host} was reverted")
         for attempt in range(2):
             if attempt:
@@ -1152,9 +1188,8 @@ def cmd_learn(args: argparse.Namespace) -> None:
         # An interrupt between writing the entry and its verdict must not leave an
         # unproven route behind; this also reverts a tunnel attempt that failed.
         if not kept:
-            keep = [d for d in load_domains() if d != host]
-            write_domains(keep)
-            if not reload_gateway(keep):
+            remove_domains({host})
+            if not reload_gateway(load_domains()):
                 print(f"warning: {host} was removed from domains.txt but the running "
                       "gateway may still route it; restart the gateway", file=sys.stderr)
 

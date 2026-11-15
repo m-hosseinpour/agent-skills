@@ -73,7 +73,8 @@ spot a block page that a CONNECT proxy cannot. When it fails on a page:
 2. Retry the reader once.
 3. A 2xx block or consent page is the site's answer, not a route fault: report it and
    leave the list alone. `learn` compares status, not content, so it cannot make that
-   call; the reader's content can.
+   call; the reader's content can. It also refuses a 429 or 451 outright: a rate limit
+   or a legal block is the site's answer, not a route fault.
 
 ## Commands
 
@@ -95,6 +96,9 @@ spot a block page that a CONNECT proxy cannot. When it fails on a page:
 | `setup [--db PATH] [--group good] [--service]` | fresh machine: get xray, seed the pool, install the launcher (service only with `--service`) |
 | `seed [--db PATH] [--group good] [--force]` | rebuild `pool.txt` from a v2rayN database |
 | `install-wrapper` / `install-service` | the two `setup` steps, separately |
+
+`allow`, `disallow` and `learn` rewrite entry lines only: whole-line comments and blank
+lines in `domains.txt` stay.
 
 Run these commands from this skill's directory, or use the absolute path to
 `scripts/tunnel.py`. Data lives in the platform config dir
