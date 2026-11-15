@@ -10,7 +10,7 @@ Include only what the reviewer needs:
 - **Scope:** exact base/head revisions and comparison meaning, or index/working-tree/new-file scope; changed-file inventory and important neighboring contracts. Use `scope-and-evidence.md` for selection when needed. Say whether the inputs are stable and identify known omissions.
 - **Constraints:** compatibility or project rules relevant to the change.
 - **Verification boundaries:** permitted commands/environments and artifact paths, trustworthy existing results with their code state, and forbidden implementation/shared-state changes or uploads. An unchanged checkout does not mean an integration test is safe for an external database. State whether scratch/test writes are authorized rather than calling every action read-only.
-- **Expected result:** evidenced actionable findings in impact order, requirement coverage when requirements exist, all confirmed extras with risk-based severity (including low-risk ones), reviewed/unavailable scope, checks run or relied on, and a scoped readiness assessment.
+- **Expected result:** evidenced actionable findings in impact order, requirement coverage when requirements exist, all confirmed extras with risk-based severity (including low-risk ones), meaningful file-choice concerns or material unresolved rationale, reviewed/unavailable scope, checks run or relied on, and a scoped readiness assessment. Include proportionate scrutiny of file necessity, structure, and naming, not three separate approvals or a rationale table for every file.
 
 Ask the reviewer to use the review skill if available; the parent's loaded skill is not automatically in a fresh child's context. If no skill loader is available, supply the essential guidance or its accessible file. Do not rely on an agent name to establish the method. Keep permissions compatible with the assignment: allow authorized verification artifacts without granting implementation fixes or unrestricted shell/MCP side effects.
 
@@ -28,7 +28,7 @@ Requirements, if available: [source/criteria, approved clarifications, non-goals
 Scope: [exact revisions + comparison, or local layers/paths; known omissions]
 Constraints: [relevant compatibility/project rules]
 Verification: [permitted checks/environment; current supplied results; unsafe/unapproved actions]
-Return: findings with trigger/impact/location/remedy, requirement coverage and confirmed extras, actual coverage, checks/limits, and scoped readiness
+Return: findings with trigger/impact/location/remedy, requirement coverage and confirmed extras, meaningful file-choice concerns/unresolved rationale, actual coverage, checks/limits, and scoped readiness
 Method: load the review skill if available; otherwise use the supplied essential review guidance
 Writes: implementation unchanged; verification artifacts only in [authorized paths, or none]; no fixes, commits, publication, or unapproved external-state changes
 ```

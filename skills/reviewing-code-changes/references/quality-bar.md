@@ -32,6 +32,29 @@ asking the author to do your thinking.
 | Independent work serialized for no reason | Can increase latency; first check ordering, rate limits, resource budgets, and failure semantics before recommending concurrency |
 | Related updates that can leave state half-applied | The failure window is invisible until it is a support ticket |
 
+## File structure, names, and rationale
+
+Use the proportionate file-choice guidance in `SKILL.md`; this guide expands structural issues it exposes.
+For new/moved files or changed boundaries, compare the existing responsibility owners, directory
+structure, and consumers. For new/renamed files or changed responsibilities, consider naming patterns
+and discoverability. Investigate unexplained additions, changes, moves, renames, or deletions against
+the goal. This is not a three-question approval gate for every touched file.
+
+A separate file can be justified by ownership, testing, lifecycle, compatibility, or policy even when
+it is small. Conversely, a working helper can still duplicate a canonical owner, and a new generic
+`utils` file can hide a domain-specific responsibility. Explain the actual navigation, coupling, ambiguity,
+or maintenance cost and a viable local remedy; neither small size nor a disliked name proves a defect.
+
+Tests, docs, migrations, lockfiles, and generated files need a rationale too. Shared evidence can justify
+a coherent group, such as a schema and its generated clients, when the source relationship and affected
+paths are identified. Do not demand hand-edited generated names or a split contrary to established
+project conventions. A deletion also needs evidence about consumers and replacement responsibilities,
+not merely an assertion that the file is unused.
+
+Do not relitigate an unchanged name or location unrelated to the changed responsibility. When evidence
+is missing, retain the file and the material question as unresolved; review does not authorize deletion,
+renaming, or moving it. Supported choices need no approval transcript, cosmetic alternatives, or finding quota.
+
 ## File growth without arbitrary cutoffs
 
 Inspect whether responsibilities are tangled and a split would improve navigation or ownership.

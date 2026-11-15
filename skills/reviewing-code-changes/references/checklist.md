@@ -14,13 +14,13 @@ IDs follow the source checklist, so gaps mark items dropped as redundant or host
 ## Context & Purpose
 
 - **c1** Intent is recoverable from the description, requirements, or commit history where available — missing intent limits interpretation; an unhelpful branch name alone is not a code defect.
-- **c3** The diff does one thing: unrelated changes are visible and called out — scope creep hides the change that needed the attention.
+- **c3** The diff does one thing, and its files have a supported connection to that goal or necessary supporting work — scope creep hides the change that needed the attention. Use the proportionate file-choice guidance in `SKILL.md`, including moves, renames, and deletions; a file type alone is not a justification.
 - **c5** Deliberate breakage is stated and bounded — a removed feature, flag, or safeguard says what stops working and for whom; unannounced removal is indistinguishable from a bug.
 
 ## Architecture & Design
 
-- **a1** Fits the existing architecture, or justifies the deviation, and introduces no new pattern where an existing one already solves it — silent drift creates five ways to do one thing.
-- **a2** Responsibilities sit in the right layer — business logic in a UI component resists testing and reuse.
+- **a1** Fits the existing architecture and file/directory organization, or justifies the deviation, and introduces no new pattern where an existing one already solves it — silent drift creates five ways to do one thing.
+- **a2** File responsibilities sit in the right directory/module/layer, especially for additions, moves, or changed boundaries; a new split or helper earns its boundary — business logic in a UI component resists testing and reuse; needless fragmentation makes ownership harder to find.
 - **a4** Coupling between unrelated modules is minimized — tight coupling turns a five-minute fix into a four-file change.
 - **a5** Abstraction level matches the problem — over-engineering a one-off costs as much as under-engineering reuse.
 - **a7** Consistent with similar solved problems elsewhere — search for the existing one before accepting a second way to do it.
@@ -29,7 +29,7 @@ IDs follow the source checklist, so gaps mark items dropped as redundant or host
 
 ## Code Quality
 
-- **q1** Names, responsibilities, constants, duplication, control flow, and comments make the domain rule understandable — report concrete ambiguity or maintenance cost, not every literal or a preferred function length. Comments should explain non-obvious constraints and why.
+- **q1** Names, including filenames in their directory context when added, renamed, or affected by a changed responsibility, communicate the domain rule and follow project conventions; constants, duplication, control flow, and comments aid understanding — report concrete ambiguity or maintenance cost, not personal naming taste, every literal, or a preferred function length. Comments should explain non-obvious constraints and why.
 - **q2** No dead code, commented-out blocks, or debug statements — version control already remembers deletions.
 - **q4** Error handling explicit, not swallowed, and not reported as success — an empty catch that still answers `ok` is a bug report waiting to happen.
 - **q10** Relevant empty, invalid, boundary, duplicate, concurrent, and partial-failure cases preserve the contract — the happy path gets demoed, the edge cases get paged. Related writes, retries, and cancellation must not leave unintended state.
