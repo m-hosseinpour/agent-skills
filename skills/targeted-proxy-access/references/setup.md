@@ -71,6 +71,13 @@ Data lives in the platform config directory (override with `PROXY_TUNNEL_HOME`):
 with `pool.txt`, `domains.txt`, `state.json`, `gateway.log`, and the cached xray under
 `bin/xray-<version>/`.
 
+`domains.txt` holds the domains routed through the tunnel, one entry per line; an entry
+covers its own subdomains. `allow` appends to it and `disallow` removes. It is per
+machine and per data directory, and `setup`/`seed` fill it from `SEED_DOMAINS` in
+`scripts/tunnel.py` only when it does not exist yet — so an entry added with `allow`
+does not follow you to another machine or to a fresh data directory. When a domain
+belongs in every install's starting set, add it to `SEED_DOMAINS` there.
+
 ### Where xray comes from
 
 1. `XRAY_BIN`, if set.
@@ -259,7 +266,7 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | `status` says `stopped` | run `up`; if the service is installed, `systemctl --user restart proxy-tunnel` |
 | `canary: FAILED (0/3)` | tunnel is dead: `up --refresh`; if that fails too, reseed the pool |
 | `canary: ok … (1/3 resets)` | normal for public configs; fetchers retry, nothing to do |
-| fetch works for one blocked site, fails for another | the second domain is not routed: `allow <domain>` |
+| fetch works for one blocked site, fails for another | the second domain is not routed: `allow <domain>` adds it to `domains.txt`; `domains` shows the current list |
 | every fetch fails, including normal sites | gateway is down and the tool insists on it: start the gateway, or unset the proxy env for that tool |
 | `pool is empty` | `seed --force`, or add links to `pool.txt` |
 | `xray binary not found` | run `setup` to download it, or set `XRAY_BIN` |

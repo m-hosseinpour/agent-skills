@@ -1,6 +1,6 @@
 ---
 name: targeted-proxy-access
-description: Use when a page fetch fails because the site is blocked, geo-restricted, or sanctioned in this network (timeouts, connection resets, 403 from the region), or when the user asks to reach a domain through their VLESS/Trojan configs without tunneling the whole system.
+description: Use when a page fetch fails because the site is blocked, geo-restricted, or sanctioned in this network (timeouts, connection resets, 403 from the region); when a domain routed through the tunnel still fails and the gateway, routed domains, or client wiring needs checking; or when the user asks to reach a domain through their VLESS/Trojan configs without tunneling the whole system.
 ---
 
 # Targeted Proxy Access
@@ -38,14 +38,24 @@ to refresh installed links and launch paths; existing pool and state files stay 
    the proxy on".
 3. **Retry once before diagnosing.** A single `fetch failed` is usually one reset
    from the public config, not a dead tunnel. Call the tool again.
-4. **If the domain was never routed**, the first attempt fails because it went
-   direct. Run `allow <domain>` and retry. Routing is by domain suffix, so
-   `allow x.com` covers `api.x.com`.
-5. **If the whole tunnel is down** (`status` shows `canary: FAILED`), run
-   `up --refresh` to rotate to another config, then retry.
-6. **If the tunnel is healthy but fetches still go direct**, the client was launched
-   without the wrapper: run `doctor`; it prints a note when no known client config
-   mentions the launcher, and `FAIL` when a known client is only half-wired.
+4. **Locate the failing layer, first match wins:**
+   - `status` reports `canary: FAILED` → the whole tunnel is down: `up --refresh`,
+     then retry.
+   - `python3 scripts/tunnel.py fetch <url>` returns a 2xx page where the client
+     tool fails → the client is not using the wrapper, or the tunnel is paused: run
+     `doctor`, which notes a paused tunnel and flags a client config that never
+     mentions the launcher. If doctor is all ok, restart that MCP server — a server
+     started before the config edit keeps running direct — or wire that server if its
+     config still carries the original command.
+   - Both fail and no listed entry covers the host → the request went direct. When
+     the direct path is blocked in this network, `allow <domain>` and retry: it
+     writes `domains.txt`, and an entry covers its subdomains (`allow x.com` handles
+     `api.x.com`). When it is not, leave the list alone — see *Ground rules*. If the
+     retry still fails, compare again with `tunnel.py fetch`: an unwired client is a
+     separate fault.
+   - Both fail and the host is already routed → rotate with `up --refresh`, then
+     call the tool again. If that does not help either, the site refuses these exits
+     or is down: report it unavailable rather than widening the route.
 
 ## Commands
 
@@ -102,8 +112,12 @@ and kept in the data dir (`bin/xray-<version>/`) for later runs.
 
 ## Ground rules
 
-- Add the **smallest** domain that works (`youtube.com`, not `google.com`). A wide
-  entry sends unrelated traffic through a shared public config.
+- **Route only what the tunnel fixes.** Unlisted domains go direct through the
+  gateway, so `domains.txt` is a list of exceptions, not a copy of the sites you
+  read: a site that already answers direct gains nothing from the hop, and one that
+  refuses datacenter addresses keeps refusing. Add the **smallest** domain that
+  works (`youtube.com`, not `google.com`); a wide entry sends unrelated traffic
+  through a shared public config.
 - Never edit `gateway.json`: it is generated on every `up` and `allow`.
 - Shared public configs reset roughly one request in three. Retry, then rotate; do not
   conclude the site is unreachable from one failure.
@@ -114,9 +128,11 @@ and kept in the data dir (`bin/xray-<version>/`) for later runs.
 - Do not route a search tool that only calls a local service through the tunnel (for
   example a local SearXNG): the proxy hop adds latency and a dependency without
   changing results.
-- Reddit answers a login/anti-bot wall to these datacenter exits, and Trustpilot or
-  Product Hunt answer 403 both ways. Report those as unavailable instead of retrying;
-  search snippets are the fallback.
+- Do not add sites that refuse datacenter exits: Reddit answers a login/anti-bot
+  wall, and Trustpilot or Product Hunt answer 403 both ways. Report those as
+  unavailable instead of retrying; search snippets are the fallback. The
+  [measured table](references/setup.md#sites-these-exits-do-not-unlock) is a snapshot
+  from one exit, and your configs leave from somewhere else.
 
 ## Setup and wiring (other agents, browser, systemd)
 
