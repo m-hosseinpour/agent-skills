@@ -28,15 +28,15 @@ Keep the implementation under review unchanged by default. A review request does
 
 ## File Choices: Necessity, Structure, and Names
 
-Review the choice of files as well as their contents. These are investigation prompts, not three mandatory questions or separate approvals for every file:
+Review the choice of files as well as their contents, using these prompts where relevant:
 
 - **Necessity and connection to the goal:** establish why added or touched files, including renames, moves, and deletions, belong to agreed behavior or necessary supporting work. Investigate unrelated or unexplained changes; a plausible author explanation or the file's type alone is not evidence.
 - **Structure and placement:** especially for new/moved files or changed responsibility boundaries, check whether the directory/module/layer fits and a split, merge, helper, or wrapper earns its boundary rather than duplicating an existing owner. Compare relevant neighboring files and project conventions before accepting a deviation.
 - **Name:** for new/renamed files or a changed responsibility, check whether the filename communicates its role in directory context and follows project conventions. Investigate concrete ambiguity or discoverability problems, not personal naming taste or unrelated historical names.
 
-Scale depth to the change and its risks. An evident supporting relationship can cover a group of tests, docs, or generated companions; inspect exceptions and do not dismiss files merely by type. Ordinary in-place edits need no fresh naming/layout approval when those choices are unaffected. Source relationships, callers, project rules, and generation inputs can establish rationale without questioning the author. Ask only when a material choice remains unclear after inspection.
+Scale depth to the change and its risks. An evident supporting relationship can cover a group of tests, docs, or generated companions; inspect exceptions and do not dismiss files merely by type. Ordinary in-place edits need no fresh naming/layout review when those choices are unaffected. Source relationships, callers, project rules, and generation inputs can establish rationale without questioning the author. Ask only when a material choice remains unclear after inspection.
 
-Report concrete concerns and material unresolved choices under the normal evidence, scope-mismatch, severity, and readiness rules. No per-file rationale ledger, approval table, or all-clear summary is required. A material evidence gap prevents unqualified approval; a stylistic alternative alone does not. Open [structural guidance](references/quality-bar.md) when these prompts expose a responsibility, boundary, or complexity issue.
+These prompts are not three mandatory questions or separate approvals for every file, and no per-file rationale table or routine all-clear summary is required. Report concrete concerns and material unresolved choices under the normal evidence, scope-mismatch, severity, and readiness rules. A material evidence gap prevents an unqualified Ready verdict; a stylistic alternative alone does not. Open [structural guidance](references/quality-bar.md) when these prompts expose a responsibility, boundary, or complexity issue.
 
 ## References
 

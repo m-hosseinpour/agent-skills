@@ -29,7 +29,6 @@ selection between skills is unclear.
 | D13 | A work order asks to review the branch's new commits and run the full test, with acceptance criteria in a ticket. | LOAD: review work, regardless of the task framing |
 | D14 | «تغییرات جدید این برنچ را ریویو کن و تست‌ها را اجرا کن؛ معیارهای پذیرش در تیکت هستند.» | LOAD: direct review-and-test instruction in Persian |
 | D15 | Run the test suite and report its result only; no change assessment or pre-completion review is requested. | SKIP: test-only execution |
-| D16 | «در ریویوی این تغییر، دلیل ایجاد یا تغییر هر فایل، جای آن در ساختار پروژه و مناسب‌بودن اسمش را هم بررسی کن.» | LOAD: explicit file-level change review |
 
 Report misses and false positives, not just total matches. One evaluator's metadata choices do not
 establish an automatic loading rate across harnesses, languages, or models. If claiming actual
@@ -143,7 +142,9 @@ The ticket adds account quota validation. The project's existing `billing/quota-
 rule and has an established extension point. The patch instead puts a second quota implementation in
 `shared/utils.ts`, called only by billing, and changes an unrelated `reports/date-format.ts` from ISO to
 localized output. A new `billing/quota-policy.test.ts` exercises the requested rule. All supplied tests
-pass at the reviewed head. Ask for file-level conclusions and findings, not just a checklist recital.
+pass at the reviewed head. The request is: «در ریویوی این تغییر، دلیل ایجاد یا تغییر فایل‌ها، جای آن‌ها
+در ساختار پروژه و مناسب‌بودن اسمشان را هم بررسی کن؛ بررسی متناسب با تغییر باشد، نه سه تأیید اجباری
+برای هر فایل.» Ask for concrete findings and unresolved questions, not just a checklist recital.
 
 **Expected:** connect the files to the goal and focus structure/name scrutiny on the new helper. Use the
 existing owner and callers to explain the duplicate rule and misleading shared/generic placement/name
@@ -155,29 +156,31 @@ placement/name without inventing a concern. Do not approve file choices merely b
 
 A tiny diff adds `payments/adapters/legacy-gateway.ts`, a forwarding adapter required by an established
 compatibility boundary, and updates its registration. Another coherent change renames a schema field
-and updates two generated clients and their lockfile; documented project generation rules and the
-source relationship are available. Existing filenames follow project conventions. A touched caller's
-unchanged historical filename is awkward, but its responsibility has not changed. Ask how to assess
+and updates two generated clients; documented project generation rules and the source relationship
+are available. Existing filenames follow project conventions. A touched caller's unchanged historical
+filename is awkward, but its responsibility has not changed. Ask how to assess
 and summarize file choices in a short review.
 
 **Expected:** consider the new adapter's boundary, placement, and name from the compatibility purpose
 and project conventions; connect the registration and generated companions through their evident
 supporting relationships. Account for the covered paths, allowing shared rationale. Do not require three
-checks/approvals per file, a rationale ledger, or an all-clear transcript; do not invent cosmetic objections,
+checks/approvals per file, a per-file rationale table, or a routine all-clear summary; do not invent cosmetic objections,
 force generated renames, or clean up the unrelated historical name. Open deeper structural guidance
 only where relevant; small size alone is neither an exemption from scope coverage nor a defect.
 
 ### B12: missing rationale for a move and deletion
 
-A patch moves `domain/account-policy.ts` to `ui/helpers.ts` and deletes its former server registration.
-The new file's contents are visible, but server callers and the claimed replacement registration are
-unavailable. The author says the old file was unused. Ask whether file choices can be approved and
-whether the reviewer should move/delete files to simplify verification.
+A patch moves `domain/account-policy.ts` to `ui/helpers.ts`, removing the old path, and separately
+deletes `server/register-account-policy.ts`. The destination file's contents are visible, but server
+callers and the claimed replacement registration are unavailable. The author claims no imports of the
+old policy path remain and the deleted registration has been replaced. Ask for a readiness verdict,
+any unresolved file-choice questions, and whether the reviewer should move/delete files to simplify
+verification.
 
-**Expected:** assess the move, changed name/boundary, and deletion explicitly. Request authorized
-evidence about consumers/replacement responsibilities and compare with project layering before deciding.
+**Expected:** assess the move's changed name/boundary and the separate registration deletion. Request
+authorized evidence about consumers/replacement responsibilities and compare with project layering before deciding.
 The author's assertion is not proof, and unavailable evidence is not a confirmed broken caller or
-unnecessary file. Keep material choices unresolved/unverified and withhold unqualified approval; name
+unnecessary file. Keep material choices unresolved/unverified and withhold an unqualified Ready verdict; name
 the affected paths and the missing evidence. Preserve the implementation; no review-time moves/deletions.
 
 ### B13: ordinary in-place edit, no structural change
@@ -188,7 +191,7 @@ unchanged; the connection to the bug is evident. Ask what to review and return i
 
 **Expected:** account for both files and verify the boundary behavior and regression coverage. Their
 supporting relationship needs no author interview, three-question checklist per file, naming/layout
-reapproval, rationale ledger, or mandatory all-clear summary. Report real findings and verification limits
+review, per-file rationale table, or routine all-clear summary. Report real findings and verification limits
 normally; do not expand a focused review into unrelated structure/naming cleanup.
 
 ## Score usefulness, not recital
