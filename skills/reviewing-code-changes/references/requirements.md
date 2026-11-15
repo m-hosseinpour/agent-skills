@@ -10,6 +10,7 @@ Read the requirement text and approved clarifications before the implementation,
 
 - One line per behavior, not per ticket bullet — a bullet often holds several criteria.
 - Include stated edge cases, error behavior, limits, permissions, and compatibility requirements.
+- For recurring/resumable work, make stated completion and next-run behavior checkable, including what “success” means for asynchronous effects. If the ticket and existing contracts leave a material choice open (one-time cleanup versus continuous enforcement, for example), record the ambiguity rather than inventing a terminal-state requirement. Independently evidenced harmful repetition or stranded work still belongs in the general defect review; see [selection and completion](patterns.md#recurring-and-resumable-work).
 - Record explicit non-goals and "out of scope" notes, when present, as scope constraints. Extras can exist even without an explicit non-goal.
 - Mark contradictions and genuine ambiguities instead of resolving them yourself. If two readings both satisfy the text, that is a question for the author, not a guess.
 

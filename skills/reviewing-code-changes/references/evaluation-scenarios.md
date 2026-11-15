@@ -194,6 +194,61 @@ supporting relationship needs no author interview, three-question checklist per 
 review, per-file rationale table, or routine all-clear summary. Report real findings and verification limits
 normally; do not expand a focused review into unrelated structure/naming cleanup.
 
+### B14: unchanged selector, narrowed cleanup action
+
+A nightly job selects `Parent.flagged.where(flagged_at: ...cutoff)` and previously deleted each
+selected parent. The patch changes only the action to synchronous deletion of its children.
+The parent remains flagged, and neither callbacks nor other paths update its selection fields or
+exclude empty parents. Each selected parent causes a query and log entry even with no children.
+The workload adds 100 eligible parents daily with no retirement or retention bound. The ticket
+requests the narrower deletion but does not specify later-run behavior; new child creation is
+not described. Existing tests assert only first-run deletion and no error on duplicate deletion.
+Ask for findings, open questions, and a discriminating verification approach.
+
+**Expected:** open `patterns.md` for recurring/resumable work and re-evaluate the unchanged selector.
+Trace the second run: previously processed parents remain eligible and the retained daily work/log
+set grows by 100 parents per day, despite idempotent deletion. Report the evidenced operational cost
+as Important with the changed action as its source; do not invent a terminal-status requirement or
+claim forbidden deletion of future children without a reachable creation path and contract. Use
+`requirements.md` to keep unspecified one-time versus continuous cleanup semantics as an ambiguity,
+not a confirmed missing requirement. Use `test-design.md` to retain state across runs and assert
+selection/work, not only child deletion or absence of an exception. A predicate/cursor/completion
+marker or an evidenced bounded continuous-cleanup design can be a remedy; no new enum is mandatory.
+
+### B15: intentional repeated selection and predicate-based completion
+
+Two small diffs are supplied. One updates a periodic reconciler whose documented contract selects
+the same fixed set of 20 tenants every minute to synchronize current external state; unchanged data
+produces no writes, and the scan and queue budgets remain within documented bounds. The other
+narrows a cleanup from deleting parents to deleting children, but the unchanged selector joins only
+parents with expired children; successful synchronous deletion removes those children from the
+join. Neither diff adds a terminal status. Ask for findings and appropriate next-run checks.
+
+**Expected:** no convergence finding merely for repeated selection or absence of a terminal enum.
+Recognize the reconciler's intentional bounded work and the cleanup's eligibility-changing predicate.
+Later runs should recheck the tenants or select only parents with newly expired children respectively,
+according to their contracts. Do not require a universal empty second run, a new marker, or questions
+already settled by the supplied contracts. Keep any readiness claim bounded to the supplied scope.
+
+### B16: exclusion after dispatch, with and without recovery
+
+A patch adds `done` to a nightly cleanup's parent states. The job selects old `pending` parents,
+enqueues one deletion worker per child, then marks the parent `done`. Worker retries are finite;
+one worker can exhaust retries and leave its child intact. No callback, pending-work ledger, dead-job
+replay, or reconciler recovers that child, and reporting treats `done` as completed deletion.
+Compare a second design that marks a parent `dispatched`: a durable ledger atomically records every
+child task and the dispatch state, an existing recovery worker retries outstanding entries, and only
+confirmed completion of all effects marks the parent `done`. Its reporting distinguishes the two
+states. Ask for findings and verification for both designs.
+
+**Expected:** the first design does not pass merely because the next sweep excludes the parent.
+Trace worker failure to stranded children and false completion; locate the early marker and report
+the confirmed incomplete cleanup under the normal contract/severity rules. For the second design,
+recognize the durable recovery owner and do not demand keeping the parent in the original selector
+or delaying a dispatch marker until all workers succeed. Use `test-design.md` to exercise worker
+failure/recovery and partial dispatch, not only successful enqueue calls; if implementation evidence
+for the ledger's atomicity or recovery is unavailable, state that limit rather than assuming it works.
+
 ## Score usefulness, not recital
 
 Check whether the evaluator selected the right reference at the decision point, followed the actual
