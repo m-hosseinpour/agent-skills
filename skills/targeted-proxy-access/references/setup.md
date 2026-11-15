@@ -220,6 +220,29 @@ when it starts.
    direct, so a newly blocked site needs `learn <url>` (or `allow <domain>`), not a config
    change.
 
+On Linux the common case is a systemd user service; the drop-in carries the same variables
+the process would get from a shell:
+
+```ini
+# ~/.config/systemd/user/<service>.service.d/proxy.conf
+[Service]
+Environment=HTTPS_PROXY=http://127.0.0.1:1080
+Environment=HTTP_PROXY=http://127.0.0.1:1080
+Environment=NO_PROXY=localhost,127.0.0.1,::1,<provider-host>
+```
+
+For a foreground run, put the same three variables in front of the command:
+
+```bash
+HTTPS_PROXY=http://127.0.0.1:1080 \
+HTTP_PROXY=http://127.0.0.1:1080 \
+NO_PROXY=localhost,127.0.0.1,::1,<provider-host> \
+<agent-command>
+```
+
+Scope this to the process whose reader needs the gateway; a shell profile sends every tool
+you launch through it as well.
+
 Unlike the launcher, the environment has no fallback: when the gateway is down, requests
 through these variables fail instead of going direct. That is why provider and other
 must-stay-direct hosts belong in `NO_PROXY`.
