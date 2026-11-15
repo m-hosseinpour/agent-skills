@@ -28,6 +28,20 @@ record. Note whether the disagreement is explained by scope/method, remains unre
 or changes the conclusion. A separate contradiction ledger is unnecessary unless volume
 makes one useful. Summaries must preserve qualifications and pointers to original detail.
 
+## Select Working Passages
+
+For long sources or a large corpus, keep a compact evidence set per material subquestion
+rather than carrying whole pages or cutting off their tails. Select passages that answer,
+challenge, or qualify the claim; a topically similar passage need not support it. Retain
+headings, source IDs and section/page locators, and enough neighboring text to preserve
+definitions, table units, footnotes, methods, and exceptions. Keep the original retrievable.
+
+Choose passage boundaries by meaning and source structure. A full section or document may
+be necessary when the argument depends on its structure. If retrieval/ranking tools are
+available, inspect what their selection omitted before relying on it for a decisive claim;
+do not adopt fixed chunk lengths or relevance cutoffs without task-specific evidence.
+Compression is a context/cost choice, not verification or proof of corpus-wide coverage.
+
 ## Choose the Output Size
 
 - **Short answer:** result, relevant citations, and material caveats. A source list is useful
@@ -93,8 +107,31 @@ page merely because its title sounds supportive, or attach one citation to a par
 claims it does not support. A source list is not a substitute for traceable claims.
 
 Verify the support for consequential claims and numbers, their relevant conditions and dates,
-and the connection from evidence to conclusions. Distinguish verified source statements
-from derived or unverified ones; a source being primary, or two sources agreeing, does not
-make a result certain. Preserve ranges and disagreement rather than substituting an
-unjustified midpoint. State what was inspected versus merely discovered, and do not imply
-whole-report validation if the check was sampled.
+and the connection from evidence to conclusions. For a substantial report or claim audit:
+
+1. **Identify checkable claims.** Split mixed assertions when one citation supports only
+   part of a sentence. Start with decisive premises, recommendations' factual foundations,
+   quantitative comparisons, disputed claims, and support weakened by extraction/compression.
+2. **Inspect the cited support.** Match each checked claim to the actual passage, table,
+   or observation and its conditions—not the title or a resolving link. Reuse adequate
+   inspected evidence; reopen the source when detail is missing or the claim has changed.
+   Record supported, partially supported, contradicted, unsupported, or unverifiable, with
+   a locator and reason. Missing access is unverifiable, not proof of falsity; a successfully
+   opened but unrelated passage is not supporting evidence. A prior check with no available
+   outcome or supporting evidence remains unverified; recover that record or check it again.
+3. **Bound sampling honestly.** Check every decisive premise. For a large supplied report
+   or an additional spot-check, sample remaining claims across sections, source types, and
+   claim types, not only easy citations. State the selection and omissions; sampling does
+   not replace support for consequential claims in your own answer. A failed check warrants
+   inspecting directly related claims or shared sources, not declaring the rest verified.
+4. **Correct and report.** Correct, narrow, or remove unsupported assertions in your own
+   draft; when auditing someone else's report, report the finding without rewriting it
+   unasked. If verification counts help or are requested, give the number supported out of
+   claims checked, with partial, contradicted, unsupported, and unverifiable outcomes distinct. State
+   whether counts describe the original audit or a corrected draft. Citation totals or a
+   sampled support fraction are not whole-report accuracy, completeness, or confidence.
+
+Distinguish verified source statements from derived or unverified ones; a source being
+primary, or two sources agreeing, does not make a result certain. Preserve ranges and
+disagreement rather than substituting an unjustified midpoint. State what was inspected
+versus merely discovered, and do not imply whole-report validation if the check was sampled.

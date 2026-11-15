@@ -33,9 +33,10 @@ not evidence that its claim is false.
 
 Choose sources that can resolve each material subquestion. When using web discovery or
 retrieval, open [web research](references/web-research.md) for capability selection,
-search refinement, multilingual coverage, and handling retrieval failures. No particular
-provider, tool, browser, API, or live-web access is required by this skill; if needed evidence
-is unavailable, bound the answer and name the gap rather than simulate a search.
+search refinement, multilingual coverage, extracted-content checks, and retrieval failures.
+No particular provider, tool, browser, API, or live-web access is required by this skill;
+if needed evidence is unavailable, bound the answer and name the gap rather than simulate
+a search.
 
 - **Fit beats a universal ranking.** Use official documentation for a product contract,
   original studies or data for empirical claims, and relevant independent observations for
@@ -80,9 +81,14 @@ work can carry this in the answer; for a substantial report or reusable record, 
 ## 4. Keep Context and Cost Proportionate
 
 Keep evidence that could change the answer in the working context, with locators for
-retrieving detail. Use one file or index only when volume, reuse, or handoff warrants it;
-retain qualifications rather than repeatedly compressing them away. Do not impose a file
-artifact on a short reply or lose critical caveats to a word limit.
+retrieving detail. For long sources, select passages by their contribution to the specific
+subquestion, not just shared keywords: retain direct support, counterevidence, and the
+definitions, methods, or qualifications that determine applicability. Keep enough surrounding
+structure to interpret them and reopen the original when needed; relevance is not truth.
+Use one file or index only when volume, reuse, or handoff warrants it; open
+[evidence and reporting](references/evidence-and-reporting.md#select-working-passages) for
+passage selection at that scale. Do not impose chunk sizes, score cutoffs, or a file artifact
+on a short reply, or lose critical caveats to a word limit.
 
 Delegate only when authorized and distinct substantial questions justify briefing and
 integration costs. If available, use `dispatching-parallel-agents` for the coordination
@@ -98,6 +104,12 @@ ending does not establish sufficiency: give a conditional answer or name missing
 
 ## 5. Deliver and Check
 
+If no usable evidence supports the requested research answer, state that inability rather
+than generate plausible findings or an evidence-backed report. Name the missing evidence
+and a useful next step; do not substitute unstated recollection or invented citations.
+With partial evidence, deliver only the supported or explicitly conditional conclusions
+and bound the affected gaps. An empty web search does not invalidate usable supplied evidence.
+
 Lead with the answer or assessment in the requested language; do not force a recommendation
 on an explanation or claim audit. Put source locators near consequential factual claims.
 Use links, document/page identifiers, or numbered references as appropriate; cite only
@@ -111,7 +123,9 @@ stronger than its decisive supporting premises. Distinguish findings from propos
 
 Before sending, check that consequential claims have supporting evidence or an explicit
 qualification; citations resolve to the right support; comparisons use compatible conditions;
-and material subquestions and access gaps are accounted for. Report method and effort only
+and material subquestions and access gaps are accounted for. For a substantial report or
+claim audit, use the [citation check](references/evidence-and-reporting.md#citation-and-final-consistency-check)
+to assess support, not just link resolution or citation counts. Report method and effort only
 to the detail useful or requested, using observed counts/timing rather than invented metrics.
 Do not imply exhaustive coverage, causal proof, or verification stronger than performed.
 

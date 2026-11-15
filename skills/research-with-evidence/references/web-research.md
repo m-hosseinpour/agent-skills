@@ -14,7 +14,7 @@ roles distinct even when they share an interface.
 - Discovery finds candidate sources. Prefer usable original URLs and clear metadata over
   redirect wrappers or snippets alone, without treating returned dates as verified facts.
 - Retrieval lets you inspect supporting text, tables, figures, and context. A successful
-  fetch can still be a login wall, truncated extraction, or an empty page; inspect the content.
+  fetch can still return unusable or partial content; apply the extracted-content check below.
 - For an exact API or product contract, use current official documentation or an authorized
   real request whose scope answers the question, not a guessed response schema.
 
@@ -45,6 +45,24 @@ searched, opened, or tested sources when you have not.
    the actual URL/document identifier and supporting section. Where a canonical URL is
    exposed, use it for deduplication; do not guess a cleaner URL. Check whether extraction
    omitted the table, footnote, figure, or date on which the conclusion depends.
+
+## Check Extracted Content Before Using It
+
+Confirm that the returned material is the intended source content, not just a successful
+response. Warning signs include a challenge/login/consent wall ("verify you are human",
+"checking your browser"), navigation or keyword lists in place of an article, broken encoding,
+or undecoded PDF/binary internals such as `%PDF-`, `endobj`, or `FlateDecode` instead of text.
+Classify by context, not a keyword alone: an article about CAPTCHAs can quote those phrases.
+
+Length and punctuation are clues, not universal rejection thresholds. A short official
+notice, table, code sample, or genuine word list can be relevant evidence. Verify source
+identity and whether the content actually supports the claim; irrelevant boilerplate cannot.
+For partial extraction, identify missing tables, footnotes, methods, or surrounding text
+that could change the interpretation. A usable excerpt supports only a bounded claim whose
+provenance and context limits are clear, not an assertion that the whole source was checked.
+
+Do not admit unusable content as support or cite its URL as if the source had been read.
+Use the recovery choices below for the affected source, retaining valid evidence elsewhere.
 
 ## Handle Failures Without Manufacturing Evidence
 
