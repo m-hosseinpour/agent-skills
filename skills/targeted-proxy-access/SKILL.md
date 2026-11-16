@@ -82,14 +82,15 @@ spot a block page that a CONNECT proxy cannot. When it fails on a page:
 
 | Command | Does |
 |---|---|
-| `status` | gateway pid/port, canary health, last-good config, pool and domain counts |
+| `status` | gateway pid/port, canary health, last-good config, last re-rank, pool and domain counts |
 | `up [--refresh]` | start the gateway; `--refresh` ignores the last-good config and rescans |
-| `serve [--interval N]` | keep the gateway running and rotate dead configs; the systemd service runs this |
+| `serve [--interval N]` | keep the gateway running, rotate dead configs, and re-rank by latency every 15 min; the systemd service runs this |
+| `rerank [--samples N] [--margin P]` | measure a window of the pool and put the fastest config first |
 | `down` | stop the gateway |
 | `allow <domain>...` | route these domains (and subdomains) through the tunnel and reload the gateway |
 | `disallow <domain>...` | stop routing them and reload the gateway |
 | `domains` | list routed domains |
-| `list` | pool entries in priority order |
+| `list` | pool entries in order, with the live and cooling ones marked |
 | `fetch <url> [--raw]` | fetch through the gateway without any MCP |
 | `learn <url>` | try direct, then the tunnel; route the domain only when only the tunnel works |
 | `relearn <url>` | `learn`, plus re-check a routed domain: remove its exact entry when direct now works, otherwise leave it routed |
@@ -150,8 +151,11 @@ and kept in the data dir (`bin/xray-<version>/`) for later runs.
   and `relearn`.
 - Shared public configs reset roughly one request in three. Retry, then rotate; do not
   conclude the site is unreachable from one failure.
-- The pool is ordered, and `up` tries from the top, so put preferred configs first in
-  `pool.txt`. Manual entries are just share links, one per line.
+- The pool is ordered, and `up` tries from the top. `rerank` (run by `serve` every
+  15 minutes) re-measures a window of it, switches only to a config at least 30% faster,
+  and rewrites `pool.txt` with the live config at the head, keeping the old file as
+  `pool.txt.bak`. Your order is the starting point, not a permanent promise. Manual
+  entries are just share links, one per line.
 - If `status` shows the pool empty or exhausted, reseed it (`seed --force`, or
   `seed --db PATH --force`) or ask the user for fresh links.
 - Do not route a search tool that only calls a local service through the tunnel (for

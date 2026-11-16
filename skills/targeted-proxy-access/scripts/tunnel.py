@@ -10,9 +10,11 @@ User data lives in the platform's config dir (override with PROXY_TUNNEL_HOME):
   ~/Library/Application Support/proxy-tunnel   macOS
   %APPDATA%\\proxy-tunnel        Windows
 
-  pool.txt      one share link per line, top of file tried first
+  pool.txt      one share link per line, top of file tried first; `rerank` keeps
+                it in measured-latency order and leaves the previous file as
+                pool.txt.bak
   domains.txt   one domain per line; subdomains match too
-  state.json    last good config, dead cooldowns
+  state.json    last good config, dead cooldowns, rerank cursor
   gateway.json  generated xray config (do not edit by hand)
 """
 
@@ -45,6 +47,13 @@ CANARY = os.environ.get("PROXY_TUNNEL_CANARY") or "https://www.youtube.com/"
 SCAN_TIMEOUT = 6
 GATEWAY_TIMEOUT = 10
 DEAD_COOLDOWN = 60
+# Re-ranking: a window of the pool is re-measured periodically and a candidate
+# only replaces a working config when it is meaningfully faster, so a noisy
+# measurement cannot flap the tunnel between two near-equal exits.
+RERANK_INTERVAL = 900
+RERANK_SAMPLES = 8
+RERANK_MARGIN = 0.30
+RERANK_ATTEMPTS = 2
 IS_WIN = os.name == "nt"
 BROWSER_UA = (
     "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
@@ -74,6 +83,7 @@ LOG_BACKUP = HOME / "gateway.log.1"
 LOG_MAX_BYTES = int(os.environ.get("PROXY_TUNNEL_LOG_MAX") or 2_000_000)
 LOG_KEEP_LINES = 200
 PIDFILE = HOME / "gateway.pid"
+POOL_BACKUP = HOME / "pool.txt.bak"
 BIN_DIR = HOME / "bin"
 XRAY_VERSION = os.environ.get("XRAY_VERSION") or "26.10.31"
 
@@ -384,6 +394,62 @@ def load_pool() -> list[str]:
         if line and not line.startswith("#"):
             out.append(line)
     return out
+
+
+def reorder_pool(order: list[str]) -> bool:
+    """Rewrite pool.txt in `order`, keeping each entry's comment lines with it.
+
+    Comment and blank lines above a link belong to that link, so annotations
+    travel with the config they describe; comment lines after the last link stay
+    at the end. Written through a temporary file and os.replace so no reader sees
+    a half-written pool, and the previous file is kept as pool.txt.bak because
+    this rewrites a file the user also edits by hand.
+    """
+    try:
+        raw = POOL.read_text(encoding="utf-8")
+    except FileNotFoundError:
+        return False
+    preambles: dict[str, list[str]] = {}
+    pending: list[str] = []
+    entries: list[str] = []
+    for line in raw.splitlines():
+        text = line.strip()
+        if not text or text.startswith("#"):
+            pending.append(line)
+            continue
+        if text in preambles:
+            print(f"pool: duplicate link, leaving {POOL} in place", file=sys.stderr)
+            return False
+        preambles[text] = pending
+        pending = []
+        entries.append(text)
+    if sorted(entries) != sorted(order):
+        print(f"pool: {POOL} changed during the rerank, leaving it in place", file=sys.stderr)
+        return False
+    out: list[str] = []
+    for uri in order:
+        out.extend(preambles.get(uri, []))
+        out.append(uri)
+    out.extend(pending)
+    text = "\n".join(out).rstrip("\n") + "\n"
+    if text == raw:
+        return False
+    try:
+        mode = POOL.stat().st_mode
+    except OSError:
+        mode = 0o600
+    HOME.mkdir(parents=True, exist_ok=True)
+    fd, name = tempfile.mkstemp(prefix=".pool-", suffix=".txt", dir=HOME)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as fh:
+            fh.write(text)
+        os.chmod(name, mode)
+        POOL_BACKUP.write_text(raw, encoding="utf-8")
+        os.chmod(POOL_BACKUP, mode)
+        os.replace(name, POOL)
+    finally:
+        Path(name).unlink(missing_ok=True)
+    return True
 
 
 def load_domains() -> list[str]:
@@ -733,6 +799,194 @@ def apply_config(uri: str, secs: float, idx: int, state: dict) -> None:
     raise RuntimeError(f"config #{idx} failed through the gateway")
 
 
+def service_managed() -> bool:
+    return (Path.home() / ".config/systemd/user/proxy-tunnel.service").exists()
+
+
+def apply_choice(uri: str, secs: float, idx: int, state: dict,
+                 internal: bool = False) -> None:
+    """Make this config live, through the unit when the unit owns xray.
+
+    A process inside the unit must start the gateway itself; a CLI run cannot,
+    or it leaves a second xray outside the unit's cgroup.
+    """
+    if not internal and service_managed():
+        state["last_good"] = {"uri": uri, "key": key_of(uri), "index": idx,
+                              "latency_s": round(secs, 2), "at": int(time.time())}
+        save_state(state)
+        if not restart_service():
+            raise RuntimeError("proxy-tunnel.service did not come back; "
+                               "check: journalctl --user -u proxy-tunnel")
+        # The unit applies last_good in its own first cycle, so wait for an answer
+        # through it: a listening port is not proof that the config works.
+        best, _fails = probe_best(gateway_port(), attempts=2)
+        if best is None:
+            raise RuntimeError(f"config #{idx} does not answer through "
+                               "proxy-tunnel.service")
+        return
+    apply_config(uri, secs, idx, state)
+
+
+def describe_rerank(result: dict) -> str:
+    def shown(value: float | None) -> str:
+        return "n/a" if value is None else f"{value:.2f}s"
+
+    index = result.get("index")
+    if result.get("failed"):
+        return (f"tried a faster config ({shown(result.get('best_s'))}) that failed "
+                f"through the gateway; rolled back to #{index} "
+                f"({shown(result.get('baseline_s'))})")
+    if result.get("switched"):
+        if result.get("baseline_s") is None:
+            return (f"switched to config #{index} ({shown(result.get('best_s'))}); "
+                    "the previous config did not answer")
+        return (f"switched to config #{index} ({shown(result.get('best_s'))}) "
+                f"from {shown(result.get('baseline_s'))}")
+    if index is None:
+        return "nothing in the window answered and no live config to keep"
+    if result.get("best_s") is None:
+        return (f"kept config #{index} ({shown(result.get('baseline_s'))}); "
+                "nothing else in the window answered")
+    margin = int(round(float(result.get("margin") or 0) * 100))
+    return (f"kept config #{index} ({shown(result.get('baseline_s'))}); best other "
+            f"{shown(result.get('best_s'))} is within the {margin}% margin")
+
+
+def rerank_once(state: dict, samples: int = RERANK_SAMPLES,
+                margin: float = RERANK_MARGIN, internal: bool = False) -> dict:
+    """Measure a window of the pool and put the fastest config at the top.
+
+    The live gateway keeps serving while each candidate is tried through its own
+    throwaway xray, so a rerank costs one short restart only when it switches.
+    The window advances through the pool between rounds: sampling only the head
+    would leave the tail unknown, and a config that wins moves up on its own.
+    """
+    pool = load_pool()
+    if not pool:
+        raise RuntimeError(f"pool is empty: {POOL} (run: tunnel.py setup, or paste links into it)")
+    now = int(time.time())
+    dead = state.get("dead", {})
+    alive = [uri for uri in pool if dead.get(key_of(uri), 0) <= now] or list(pool)
+    live = (state.get("last_good") or {}).get("uri") or ""
+    samples = max(2, samples)
+    cursor = int((state.get("rerank") or {}).get("cursor") or 0) % len(alive)
+
+    window: list[str] = []
+    if live in alive:
+        window.append(live)
+    for offset in range(len(alive)):
+        if len(window) >= samples:
+            break
+        uri = alive[(cursor + offset) % len(alive)]
+        if uri not in window:
+            window.append(uri)
+
+    measured: "dict[str, float | None]" = {}
+    for uri in window:
+        ok, secs = candidate_probe(uri, attempts=RERANK_ATTEMPTS)
+        measured[uri] = secs if ok else None
+    step = max(1, len(window) - (1 if live in window else 0))
+
+    # Rank in 100 ms buckets, keeping the current file order inside a bucket:
+    # re-measuring jitter would otherwise rewrite pool.txt on every round for a
+    # few milliseconds nobody can feel.
+    rank = {uri: i for i, uri in enumerate(pool)}
+    fast = sorted((uri for uri, secs in measured.items() if secs is not None),
+                  key=lambda uri: (round(measured[uri], 1), rank.get(uri, len(pool))))
+    baseline = measured.get(live) if live in measured else None
+    # Compare the live config with alternatives only: when it is already the
+    # fastest thing measured there is nothing to switch to, and the reported
+    # "best other" must not be its own number.
+    alternatives = [uri for uri in fast if uri != live]
+    target = alternatives[0] if alternatives else None
+    best_secs = measured[target] if target is not None else None
+    switch = (best_secs is not None
+              and (baseline is None or best_secs <= baseline * (1 - margin)))
+
+    # Reorder only the slots the measured configs already hold, so the file is a
+    # ranking without being rewritten just because the cursor reached a new
+    # entry. The head is what `up` uses after any restart, so it must be the
+    # config that is live now (or the one being promoted): a faster config inside
+    # the margin stays where it is instead of silently winning a later restart.
+    order = list(pool)
+    slots = [i for i, uri in enumerate(pool) if uri in fast]
+    for slot, uri in zip(slots, fast):
+        order[slot] = uri
+    head = target if switch else (live if baseline is not None and live in pool else None)
+    if head and order[0] != head:
+        order.remove(head)
+        order.insert(0, head)
+    reordered = reorder_pool(order) if order != pool else False
+    if reordered:
+        reindex_last_good(state)
+
+    result = {"at": now, "samples": len(measured), "margin": round(margin, 3),
+              "baseline_s": round(baseline, 2) if baseline is not None else None,
+              "best_s": round(best_secs, 2) if best_secs is not None else None,
+              "switched": False, "reordered": reordered,
+              "index": _pool_index(target if switch else live),
+              "cursor": (cursor + step) % len(alive)}
+    if switch:
+        best_idx = result["index"]
+        try:
+            apply_choice(target, best_secs, best_idx, state, internal=internal)
+        except RuntimeError as exc:
+            # start_gateway already replaced the serving config, so a failed
+            # verification would leave the tunnel on the broken one: go back.
+            mark_dead(state, key_of(target))
+            save_state(state)
+            if baseline is not None and live:
+                live_idx = _pool_index(live)
+                apply_choice(live, baseline, live_idx if live_idx is not None else -1,
+                             state, internal=internal)
+                # Recovered config back on top, the one that just failed at the
+                # bottom: the head is what the next `up` picks, dead cooldown or not.
+                if reorder_pool([live] + [u for u in load_pool()
+                                          if u not in (live, target)] + [target]):
+                    reindex_last_good(state)
+                    result["reordered"] = True
+                result["index"] = _pool_index(live)
+            result["failed"] = True
+            state["rerank"] = result
+            save_state(state)
+            raise RuntimeError(f"config #{best_idx} failed through the gateway; "
+                               "rolled back to the previous one") from exc
+        result["switched"] = True
+    state["rerank"] = result
+    save_state(state)
+    return result
+
+
+def _pool_index(uri: str) -> int | None:
+    try:
+        return load_pool().index(uri)
+    except ValueError:
+        return None
+
+
+def reindex_last_good(state: dict) -> None:
+    """Keep the recorded pool index truthful after pool.txt is reordered."""
+    last = state.get("last_good")
+    if not last or not last.get("uri"):
+        return
+    index = _pool_index(last["uri"])
+    if index is not None:
+        last["index"] = index
+
+
+def cmd_rerank(args: argparse.Namespace) -> None:
+    state = load_state()
+    try:
+        result = rerank_once(state, samples=args.samples,
+                             margin=args.margin / 100, internal=False)
+    except (RuntimeError, OSError) as exc:
+        sys.exit(f"rerank failed: {exc}")
+    print(f"rerank: measured {result['samples']} configs; {describe_rerank(result)}")
+    if result["reordered"]:
+        print(f"pool  : {POOL} reordered; config #{result['index']} leads "
+              f"(previous file: {POOL_BACKUP})")
+
+
 # ---------------------------------------------------------------- commands
 
 def seed_pool(db: Path, group: str, force: bool = False) -> int:
@@ -796,7 +1050,8 @@ def cmd_setup(args: argparse.Namespace) -> None:
     cmd_install_wrapper(args)
     if getattr(args, "service", False):
         if sys.platform.startswith("linux") and shutil.which("systemctl"):
-            cmd_install_service(argparse.Namespace(interval=args.interval))
+            cmd_install_service(argparse.Namespace(interval=args.interval,
+                                                  rerank_interval=args.rerank_interval))
         else:
             print("service   : no systemd here. Start the supervisor yourself:")
             print(f"            {sys.executable} {Path(__file__).resolve()} serve --interval 60")
@@ -826,8 +1081,7 @@ def restart_service() -> bool:
 
 def cmd_up(args: argparse.Namespace) -> None:
     internal = getattr(args, "internal", False)
-    unit = Path.home() / ".config/systemd/user/proxy-tunnel.service"
-    if unit.exists() and not internal:
+    if service_managed() and not internal:
         # The unit owns xray; launching it here would put a second gateway on the
         # port (SO_REUSEPORT) and leave a process outside the unit's cgroup.
         if args.refresh:
@@ -900,6 +1154,10 @@ def cmd_status(args: argparse.Namespace) -> None:
             print(f"          {host}  {last['uri'][:40]}...")
         except KeyError:
             pass
+    rerank = state.get("rerank") or {}
+    if rerank:
+        age = int(time.time()) - int(rerank.get("at", 0))
+        print(f"rerank  : {age}s ago, {describe_rerank(rerank)}")
     print(f"pool    : {len(load_pool())} configs in {POOL}")
     print(f"domains : {len(load_domains())} routed via tunnel")
     try:
@@ -912,16 +1170,21 @@ def cmd_list(args: argparse.Namespace) -> None:
     pool = load_pool()
     state = load_state()
     dead = state.get("dead", {})
+    live = (state.get("last_good") or {}).get("key")
     now = int(time.time())
     for idx, uri in enumerate(pool):
         key = key_of(uri)
-        cooling = dead.get(key, 0) > now
+        if key == live:
+            mark = "live"
+        elif dead.get(key, 0) > now:
+            mark = "dead"
+        else:
+            mark = "    "
         try:
             u = urlparse(uri)
             host = f"{u.hostname}:{u.port}"
         except ValueError:
             host = "?"
-        mark = "dead" if cooling else "   "
         print(f"{idx:3d} {mark} {u.scheme:6s} {host:45s} {unquote(u.fragment)[:40]}")
 
 
@@ -1253,10 +1516,11 @@ def cmd_env(args: argparse.Namespace) -> None:
 
 
 def cmd_serve(args: argparse.Namespace) -> None:
-    """Supervisor: keep the gateway alive and rotate configs when the tunnel dies."""
+    """Supervisor: keep the gateway alive, rotate dead configs, re-rank the pool."""
     state = load_state()
     failures = 0
     first = True
+    next_rerank = time.time() + args.rerank_interval
     while True:
         # Always (re)start on entry: a gateway left by an earlier run may still hold
         # the port from outside this unit's cgroup.
@@ -1286,6 +1550,19 @@ def cmd_serve(args: argparse.Namespace) -> None:
                 except SystemExit as exc:
                     print(f"rotate failed: {exc}", file=sys.stderr)
                 failures = 0
+        # Re-rank only a tunnel that answers: while the canary fails, rotation owns
+        # the choice and measuring through throwaway instances would fight it.
+        if best is not None and args.rerank_interval > 0 and time.time() >= next_rerank:
+            next_rerank = time.time() + args.rerank_interval
+            try:
+                state = load_state()
+                result = rerank_once(state, samples=args.samples,
+                                     margin=args.margin / 100, internal=True)
+                print(f"rerank: {describe_rerank(result)}", file=sys.stderr)
+                if result.get("switched"):
+                    failures = 0
+            except (RuntimeError, OSError, SystemExit) as exc:
+                print(f"rerank failed: {exc}", file=sys.stderr)
         if rotate_log():
             print(f"rotated gateway.log past {LOG_MAX_BYTES} bytes into {LOG_BACKUP.name}",
                   file=sys.stderr)
@@ -1299,7 +1576,7 @@ Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart={python} {script} serve --interval {interval}
+ExecStart={python} {script} serve --interval {interval} --rerank-interval {rerank_interval}
 Restart=always
 RestartSec=5
 Environment=PROXY_TUNNEL_PORT={port}
@@ -1412,7 +1689,8 @@ def cmd_install_service(args: argparse.Namespace) -> None:
     unit_dir.mkdir(parents=True, exist_ok=True)
     unit = unit_dir / "proxy-tunnel.service"
     unit.write_text(UNIT.format(python=sys.executable, script=Path(__file__).resolve(),
-                                interval=args.interval, port=gateway_port(),
+                                interval=args.interval, rerank_interval=args.rerank_interval,
+                                port=gateway_port(),
                                 home=HOME, canary=CANARY,
                                 path=os.environ.get("PATH", "/usr/local/bin:/usr/bin:/bin")),
                     encoding="utf-8")
@@ -1438,6 +1716,8 @@ def main() -> None:
     p.add_argument("--db", help="path to v2rayN's guiNDB.db")
     p.add_argument("--group", default="good")
     p.add_argument("--interval", type=int, default=60)
+    p.add_argument("--rerank-interval", type=int, default=RERANK_INTERVAL,
+                   help="seconds between latency re-ranks (0 disables; default 900)")
     p.add_argument("--service", action="store_true",
                    help="also install and start the systemd user unit (Linux only)")
     p.set_defaults(func=cmd_setup)
@@ -1448,12 +1728,19 @@ def main() -> None:
     p.add_argument("--force", action="store_true", help="overwrite an existing pool")
     p.set_defaults(func=cmd_seed)
 
-    p = sub.add_parser("up", help="start the gateway with the best config")
+    p = sub.add_parser("up", help="start the gateway with a working config")
     p.add_argument("--refresh", action="store_true", help="skip the last-good config and rescan")
     p.add_argument("--limit", type=int, help="stop scanning after N attempts")
     p.add_argument("--workers", type=int, default=1,
                    help="parallel probes (default 1: parallel trips the shared backend)")
     p.set_defaults(func=cmd_up)
+
+    p = sub.add_parser("rerank", help="measure a window of the pool and put the fastest first")
+    p.add_argument("--samples", type=int, default=RERANK_SAMPLES,
+                   help="configs measured per run, live one included (default 8)")
+    p.add_argument("--margin", type=int, default=round(RERANK_MARGIN * 100),
+                   help="switch only when this much faster, in percent (default 30)")
+    p.set_defaults(func=cmd_rerank)
 
     sub.add_parser("down", help="stop the gateway").set_defaults(func=cmd_down)
     sub.add_parser("status", help="show gateway and pool state").set_defaults(func=cmd_status)
@@ -1488,12 +1775,20 @@ def main() -> None:
     p.add_argument("--timeout", type=int, default=20)
     p.set_defaults(func=cmd_relearn)
 
-    p = sub.add_parser("serve", help="supervise the gateway and rotate dead configs")
+    p = sub.add_parser("serve", help="supervise the gateway, rotate dead configs, re-rank")
     p.add_argument("--interval", type=int, default=60)
+    p.add_argument("--rerank-interval", type=int, default=RERANK_INTERVAL,
+                   help="seconds between latency re-ranks (0 disables; default 900)")
+    p.add_argument("--samples", type=int, default=RERANK_SAMPLES,
+                   help="configs measured per re-rank, live one included (default 8)")
+    p.add_argument("--margin", type=int, default=round(RERANK_MARGIN * 100),
+                   help="switch only when this much faster, in percent (default 30)")
     p.set_defaults(func=cmd_serve)
 
     p = sub.add_parser("install-service", help="install and start the systemd user unit")
     p.add_argument("--interval", type=int, default=60)
+    p.add_argument("--rerank-interval", type=int, default=RERANK_INTERVAL,
+                   help="seconds between latency re-ranks (0 disables; default 900)")
     p.set_defaults(func=cmd_install_service)
 
     sub.add_parser("uninstall-service", help="remove the systemd user unit").set_defaults(

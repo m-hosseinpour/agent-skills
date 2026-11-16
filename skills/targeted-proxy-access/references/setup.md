@@ -57,7 +57,8 @@ python3 scripts/tunnel.py doctor         # required lines should say ok; optiona
 `setup` is idempotent: it downloads xray only if no binary is found, seeds the pool only
 if `pool.txt` is missing, and reinstalls the launcher each time. It deliberately installs
 no background service; add `--service` (Linux/systemd) when you want the supervisor that
-rotates dead configs on its own. It also never edits an agent's config — that edit is
+rotates dead configs and re-ranks the pool by latency on its own. It also never edits an
+agent's config — that edit is
 yours to make, once per MCP server, as described under
 [Wiring a fetch tool](#wiring-a-fetch-tool).
 
@@ -70,7 +71,7 @@ Data lives in the platform config directory (override with `PROXY_TUNNEL_HOME`):
 | Windows | `%APPDATA%\proxy-tunnel` |
 
 with `pool.txt`, `domains.txt`, `state.json`, `gateway.log`, and the cached xray under
-`bin/xray-<version>/`.
+`bin/xray-<version>/`. `rerank` keeps the file it replaced as `pool.txt.bak`.
 
 `domains.txt` holds the domains routed through the tunnel, one entry per line; an entry
 covers its own subdomains. `allow` appends to it and `disallow` removes. It is per
@@ -103,7 +104,8 @@ changing it.
 If v2rayN is present, `setup` (or `seed --group good`) reads
 `guiConfigs/guiNDB.db` and writes one share link per line in database order. Otherwise
 paste `vless://…` / `trojan://…` links into `pool.txt`, best first; lines starting with
-`#` are ignored. The parser understands ws, grpc, xhttp, and tcp+http-header transports
+`#` are ignored. Your order is the starting point: `rerank` measures the pool later and
+rewrites the order (see [how latency re-ranking works](#how-latency-re-ranking-works)). The parser understands ws, grpc, xhttp, and tcp+http-header transports
 with tls/reality/none, plus `flow`, `sni`, `alpn`, `fp`, `pbk`, `sid`, `spx`, and the
 post-quantum VLESS `encryption` value (`mlkem768x25519plus…`).
 
@@ -118,7 +120,7 @@ auto-detects the default per platform.
   (`command: python`, `args: ['C:\\path\\to\\launch.py', '--url-reader', ...]`).
 - There is no systemd. Run `python tunnel.py serve --interval 60` in a terminal, or let
   the client start the gateway with `up`; the supervisor is only needed for automatic
-  rotation.
+  rotation and re-ranking.
 - The gateway still listens on loopback only, so the Windows firewall needs no rule.
 
 ## Wiring a fetch tool
@@ -263,7 +265,7 @@ network path, and `NO_PROXY` keeps must-stay-direct APIs out of it.
 ## Running as a service
 
 `setup` never installs one; opt in explicitly when you want the supervisor that rotates
-dead configs. Linux (systemd user unit, `Restart=always`):
+dead configs and re-ranks the pool. Linux (systemd user unit, `Restart=always`):
 
 ```bash
 python3 scripts/tunnel.py install-service
@@ -274,12 +276,13 @@ python3 scripts/tunnel.py uninstall-service
 
 macOS and Windows have no equivalent here: run `serve` in a terminal, or add the same
 command to launchd / Task Scheduler yourself. Without a supervisor the gateway still
-works; it just will not rotate a dead config on its own.
+works; it just will not rotate a dead config or re-rank the pool on its own.
 
 The service runs `serve`: it restarts the gateway if xray dies, probes the canary every
 60 s, and rotates to the next working config after three consecutive failed checks.
 Rotation is deliberately slow — these configs reset occasionally and a rotation on the
-first blip would thrash.
+first blip would thrash. Every 15 minutes it also re-ranks the pool by latency
+(`--rerank-interval 0` turns that off).
 
 ## How a config is chosen
 
@@ -293,6 +296,32 @@ first blip would thrash.
 Probing is sequential by default on purpose: the pool usually points at one backend,
 and parallel probes trip its rate limit and produce false failures. `--workers N`
 exists for pools with independent servers.
+
+## How latency re-ranking works
+
+`rerank` — and `serve`, every 15 minutes — measures a window of the pool and writes the
+resulting order back into `pool.txt`:
+
+1. The window is the live config plus `--samples - 1` others (default 8), taken from
+   `pool.txt` starting where the previous round stopped, so every config is reached in
+   turn instead of the head being measured over and over. Each one runs through its own
+   throwaway xray while the gateway keeps serving, with two attempts and the best time
+   kept.
+2. A switch happens only when an alternative is at least `--margin` percent faster
+   (default 30), so two exits within noise of each other do not flap the tunnel. When the
+   live config does not answer at all, the fastest measured one is used.
+3. Measured entries are reordered among the slots they already hold, in 100 ms buckets,
+   and the live (or newly promoted) config is pinned to the head — the head is what the
+   next `up` picks. Measurement jitter therefore leaves the file alone; whenever it is
+   rewritten, the previous version stays as `pool.txt.bak`.
+4. A promoted config is verified through the gateway before the switch counts. One that
+   answered a standalone probe but resets through the gateway is cooled down, moved to
+   the end of `pool.txt`, and the previous config is put back, so a bad promotion never
+   leaves the tunnel on a broken exit.
+5. `status` reports the last re-rank and its decision; `list` marks the live entry.
+
+The margin is a floor, not a promise of perpetual order: the head is the live config, so
+an alternative takes over only when it earns the switch.
 
 ## Sites these exits do not unlock
 
@@ -316,6 +345,7 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | `status` says `stopped` | run `up`; if the service is installed, `systemctl --user restart proxy-tunnel` |
 | `canary: FAILED (0/3)` | tunnel is dead: `up --refresh`; if that fails too, reseed the pool |
 | `canary: ok … (1/3 resets)` | normal for public configs; fetchers retry, nothing to do |
+| `rerank` says it rolled back | the faster config answered a standalone probe but reset through the gateway; it is cooled down and moved to the end, and the previous config is live again — nothing to fix unless every config does it |
 | fetch works for one blocked site, fails for another | the second domain is not routed: `learn <url>` tests direct, then the tunnel, and routes the domain only if that is what fixed it; `allow <domain>` adds one by hand; `domains` shows the current list |
 | a routed domain now works without the proxy | `relearn <url>` on it: an exact entry that answers direct is removed from `domains.txt`; one that is still blocked there stays routed and is not re-tested through the tunnel |
 | gateway `fetch` works, the harness's own reader fails | that process has no proxy in its environment, or started before one was set: check `/proc/<pid>/environ`, then restart it |
