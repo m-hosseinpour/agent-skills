@@ -925,9 +925,10 @@ def cmd_list(args: argparse.Namespace) -> None:
         print(f"{idx:3d} {mark} {u.scheme:6s} {host:45s} {unquote(u.fragment)[:40]}")
 
 
-def covered(host: str, domains: list[str]) -> bool:
-    """True when an entry already routes this host (an entry covers subdomains)."""
-    return any(host == d or host.endswith("." + d) for d in domains)
+def covering_entry(host: str, domains: list[str]) -> str | None:
+    """The most specific entry that routes this host, or None (an entry covers subdomains)."""
+    matches = [d for d in domains if host == d or host.endswith("." + d)]
+    return max(matches, key=len, default=None)
 
 
 def _domain_lines() -> list[str]:
@@ -1145,12 +1146,37 @@ def cmd_learn(args: argparse.Namespace) -> None:
 
     proxy = f"http://127.0.0.1:{gateway_port()}"
     domains = load_domains()
+    entry = covering_entry(host, domains)
 
-    if covered(host, domains):
-        status, error = _fetch_once(args.url, proxy, args.timeout)
-        print(f"{host} is already routed")
-        print(f"tunnel: {status}" if status else f"tunnel: failed ({error})")
-        sys.exit(0 if _ok(status) else 1)
+    if entry:
+        # A routed entry can outlive the block that justified it. Check the direct path
+        # first: a host that answers direct again no longer needs the route, while one
+        # that is still blocked stays as it is, without spending a tunnel attempt to
+        # prove what the entry already assumes.
+        status, error = _direct_attempt(args.url, args.timeout)
+        if _ok(status):
+            print(f"direct: {status}")
+            if entry != host:
+                print(f"not removed: {host} is routed by {entry}, a broader entry that "
+                      "may cover other hosts; use disallow if it is unused")
+                return
+            if not remove_domains({host}):
+                sys.exit(f"not removed: {host} was no longer in domains.txt")
+            remaining = load_domains()
+            still = covering_entry(host, remaining)
+            print(f"direct works; removed {host} from domains.txt")
+            if still:
+                # The wider entry already routed this host the same way, so the
+                # running gateway needs no restart; only the file got tidier.
+                print(f"note: {still} still routes it, so the gateway needs no reload")
+                return
+            if not reload_gateway(remaining):
+                sys.exit(f"removed {host} from domains.txt, but the running gateway "
+                         "was not reloaded")
+            return
+        print(f"direct: {status}" if status else f"direct: failed ({error})")
+        print(f"{host} is already routed and direct did not serve it; leaving it routed")
+        return
 
     status, error = _direct_attempt(args.url, args.timeout)
     if _answered(status):
@@ -1432,7 +1458,10 @@ def main() -> None:
     p.add_argument("--timeout", type=int, default=40)
     p.set_defaults(func=cmd_fetch)
 
-    p = sub.add_parser("learn", help="route a domain only when only the tunnel makes it work")
+    p = sub.add_parser(
+        "learn",
+        help="route a domain only when only the tunnel makes it work, "
+             "and unroute one that now works direct")
     p.add_argument("url")
     p.add_argument("--timeout", type=int, default=20)
     p.set_defaults(func=cmd_learn)
