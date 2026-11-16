@@ -70,17 +70,13 @@ spot a block page that a CONNECT proxy cannot. When it fails on a page:
 
 1. `learn <url>` — tries direct, then through the tunnel, and keeps the route only when
    the tunnel is what made the URL work. It reverts and fails if neither route works.
-   On a host that is already routed, it checks direct first: if direct now answers, the
-   exact entry is removed; one covered only by a broader entry is reported, not removed,
-   because that entry may serve other hosts. If direct still does not serve the URL, the
-   list is left alone and no tunnel attempt is spent on it.
 2. Retry the reader once.
 3. A 2xx block or consent page is the site's answer, not a route fault: report it and
    leave the list alone. `learn` compares status, not content, so it cannot make that
-   call; the reader's content can. The same blindness applies when it prunes a routed
-   host: a 2xx block page reads as direct access, so if the reader still shows a block,
-   `allow <domain>` restores the route. It also refuses a 429 or 451 outright: a rate
-   limit or a legal block is the site's answer, not a route fault.
+   call; the reader's content can. `relearn` inherits the same blindness: a 2xx block
+   page reads as direct access, so if it removes an entry and the reader still shows a
+   block, `allow <domain>` restores the route. The learning path also refuses a 429 or
+   451 outright: a rate limit or a legal block is the site's answer, not a route fault.
 
 ## Commands
 
@@ -95,7 +91,8 @@ spot a block page that a CONNECT proxy cannot. When it fails on a page:
 | `domains` | list routed domains |
 | `list` | pool entries in priority order |
 | `fetch <url> [--raw]` | fetch through the gateway without any MCP |
-| `learn <url>` | try direct first; route an unlisted domain only when only the tunnel works, and unroute a listed one that now works direct |
+| `learn <url>` | try direct, then the tunnel; route the domain only when only the tunnel works |
+| `relearn <url>` | `learn`, plus re-check a routed domain: remove its exact entry when direct now works, otherwise leave it routed |
 | `env` | print raw proxy settings (only for clients that cannot use the launcher) |
 | `pause` / `resume` | stop/restart injecting the proxy at launch, without touching any client config |
 | `doctor` | check pool, service, launcher, and client wiring in one go |
@@ -103,8 +100,8 @@ spot a block page that a CONNECT proxy cannot. When it fails on a page:
 | `seed [--db PATH] [--group good] [--force]` | rebuild `pool.txt` from a v2rayN database |
 | `install-wrapper` / `install-service` | the two `setup` steps, separately |
 
-`allow`, `disallow` and `learn` rewrite entry lines only: whole-line comments and blank
-lines in `domains.txt` stay.
+`allow`, `disallow`, `learn` and `relearn` rewrite entry lines only: whole-line comments
+and blank lines in `domains.txt` stay.
 
 Run these commands from this skill's directory, or use the absolute path to
 `scripts/tunnel.py`. Data lives in the platform config dir
@@ -149,7 +146,8 @@ and kept in the data dir (`bin/xray-<version>/`) for later runs.
   through a shared public config. A routed entry carries everything that process does
   on the domain — including credentialed requests — through that exit, and a plain
   `http://` page travels in clear through it.
-- Never edit `gateway.json`: it is generated on every `up`, `allow`, `disallow` and `learn`.
+- Never edit `gateway.json`: it is generated on every `up`, `allow`, `disallow`, `learn`
+  and `relearn`.
 - Shared public configs reset roughly one request in three. Retry, then rotate; do not
   conclude the site is unreachable from one failure.
 - The pool is ordered, and `up` tries from the top, so put preferred configs first in

@@ -317,11 +317,13 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | `canary: FAILED (0/3)` | tunnel is dead: `up --refresh`; if that fails too, reseed the pool |
 | `canary: ok … (1/3 resets)` | normal for public configs; fetchers retry, nothing to do |
 | fetch works for one blocked site, fails for another | the second domain is not routed: `learn <url>` tests direct, then the tunnel, and routes the domain only if that is what fixed it; `allow <domain>` adds one by hand; `domains` shows the current list |
-| a routed domain now works without the proxy | `learn <url>` on it: a listed domain that answers direct is removed from `domains.txt`; one that is still blocked there stays routed and is not re-tested through the tunnel |
+| a routed domain now works without the proxy | `relearn <url>` on it: an exact entry that answers direct is removed from `domains.txt`; one that is still blocked there stays routed and is not re-tested through the tunnel |
 | gateway `fetch` works, the harness's own reader fails | that process has no proxy in its environment, or started before one was set: check `/proc/<pid>/environ`, then restart it |
 | `learn` says `not learned` | check `status` first: a FAILED canary means the tunnel is down (`up --refresh`), not that the site refuses the exit. With a healthy canary, the tunnel genuinely does not fix that host: leave it direct and report it unavailable |
 | `learn` refuses with 429 or 451 | the site's answer, not a route fault: wait, or use another source; do not add the domain by hand |
-| `learn` on a routed host says `not removed` | direct does not serve the URL, so the entry stays as it is; a broader entry (`x.com` for `api.x.com`) is reported rather than removed, because it may cover other hosts — use `disallow` if it is unused |
+| `relearn` on a routed host says `leaving it routed` | direct did not serve the URL, so the entry stays as it is and no tunnel request is made |
+| `relearn` on a routed host says `not removed` | direct now works, but only a broader entry covers the host (`x.com` for `api.x.com`); it is reported rather than removed because it may cover other hosts — use `disallow` if it is unused |
+| `relearn` removed an entry but the site still blocks | a 2xx block or consent page counted as direct access; `allow <domain>` restores the route |
 | every fetch fails, including normal sites | gateway is down and the tool insists on it: start the gateway, or unset the proxy env for that tool |
 | `pool is empty` | `seed --force`, or add links to `pool.txt` |
 | `xray binary not found` | run `setup` to download it, or set `XRAY_BIN` |
@@ -331,7 +333,8 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | gateway starts then exits | read `~/.config/proxy-tunnel/gateway.log`; a bad link makes xray refuse the config |
 
 `gateway.json` is rewritten from `pool.txt`, `domains.txt`, and the chosen config on
-every `up`, `allow`, `disallow` and `learn`; edit the inputs, never the generated file.
+every `up`, `allow`, `disallow`, `learn` and `relearn`; edit the inputs, never the
+generated file.
 
 ## Log size
 

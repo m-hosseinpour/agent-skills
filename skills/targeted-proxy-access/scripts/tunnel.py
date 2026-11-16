@@ -1129,55 +1129,26 @@ def _exit_on_termination() -> None:
             pass  # not the main thread, or the platform refuses the handler
 
 
-def cmd_learn(args: argparse.Namespace) -> None:
+def _learn_target(args: argparse.Namespace, command: str) -> tuple[str, str]:
+    """Validate a learn-style URL and return its host and the gateway's proxy URL."""
     _exit_on_termination()
     parsed = urlparse(args.url)
     host = (parsed.hostname or "").lower().strip(".")
     if parsed.scheme not in ("http", "https") or not host:
-        sys.exit("learn needs an http:// or https:// URL")
+        sys.exit(f"{command} needs an http:// or https:// URL")
     try:
         ipaddress.ip_address(host)
     except ValueError:
         pass
     else:
-        sys.exit("learn needs a hostname, not an IP address")
+        sys.exit(f"{command} needs a hostname, not an IP address")
     if not gateway_pid():
         sys.exit("gateway is stopped; run: tunnel.py up")
+    return host, f"http://127.0.0.1:{gateway_port()}"
 
-    proxy = f"http://127.0.0.1:{gateway_port()}"
-    domains = load_domains()
-    entry = covering_entry(host, domains)
 
-    if entry:
-        # A routed entry can outlive the block that justified it. Check the direct path
-        # first: a host that answers direct again no longer needs the route, while one
-        # that is still blocked stays as it is, without spending a tunnel attempt to
-        # prove what the entry already assumes.
-        status, error = _direct_attempt(args.url, args.timeout)
-        if _ok(status):
-            print(f"direct: {status}")
-            if entry != host:
-                print(f"not removed: {host} is routed by {entry}, a broader entry that "
-                      "may cover other hosts; use disallow if it is unused")
-                return
-            if not remove_domains({host}):
-                sys.exit(f"not removed: {host} was no longer in domains.txt")
-            remaining = load_domains()
-            still = covering_entry(host, remaining)
-            print(f"direct works; removed {host} from domains.txt")
-            if still:
-                # The wider entry already routed this host the same way, so the
-                # running gateway needs no restart; only the file got tidier.
-                print(f"note: {still} still routes it, so the gateway needs no reload")
-                return
-            if not reload_gateway(remaining):
-                sys.exit(f"removed {host} from domains.txt, but the running gateway "
-                         "was not reloaded")
-            return
-        print(f"direct: {status}" if status else f"direct: failed ({error})")
-        print(f"{host} is already routed and direct did not serve it; leaving it routed")
-        return
-
+def _learn_host(args: argparse.Namespace, host: str, proxy: str) -> None:
+    """Try direct, then the tunnel; route the host only when only the tunnel works."""
     status, error = _direct_attempt(args.url, args.timeout)
     if _answered(status):
         print(f"direct: {status}")
@@ -1218,6 +1189,53 @@ def cmd_learn(args: argparse.Namespace) -> None:
             if not reload_gateway(load_domains()):
                 print(f"warning: {host} was removed from domains.txt but the running "
                       "gateway may still route it; restart the gateway", file=sys.stderr)
+
+
+def cmd_learn(args: argparse.Namespace) -> None:
+    host, proxy = _learn_target(args, "learn")
+    if covering_entry(host, load_domains()):
+        status, error = _fetch_once(args.url, proxy, args.timeout)
+        print(f"{host} is already routed")
+        print(f"tunnel: {status}" if status else f"tunnel: failed ({error})")
+        sys.exit(0 if _ok(status) else 1)
+    _learn_host(args, host, proxy)
+
+
+def cmd_relearn(args: argparse.Namespace) -> None:
+    host, proxy = _learn_target(args, "relearn")
+    entry = covering_entry(host, load_domains())
+
+    if not entry:
+        _learn_host(args, host, proxy)
+        return
+
+    # A routed entry can outlive the block that justified it. Check the direct path
+    # first: a host that answers direct again no longer needs the route, while one
+    # that is still blocked stays as it is, without spending a tunnel attempt to
+    # prove what the entry already assumes.
+    status, error = _direct_attempt(args.url, args.timeout)
+    if _ok(status):
+        print(f"direct: {status}")
+        if entry != host:
+            print(f"not removed: {host} is routed by {entry}, a broader entry that "
+                  "may cover other hosts; use disallow if it is unused")
+            return
+        if not remove_domains({host}):
+            sys.exit(f"not removed: {host} was no longer in domains.txt")
+        remaining = load_domains()
+        still = covering_entry(host, remaining)
+        print(f"direct works; removed {host} from domains.txt")
+        if still:
+            # The wider entry already routed this host the same way, so the
+            # running gateway needs no restart; only the file got tidier.
+            print(f"note: {still} still routes it, so the gateway needs no reload")
+            return
+        if not reload_gateway(remaining):
+            sys.exit(f"removed {host} from domains.txt, but the running gateway "
+                     "was not reloaded")
+        return
+    print(f"direct: {status}" if status else f"direct: failed ({error})")
+    print(f"{host} is already routed and direct did not serve it; leaving it routed")
 
 
 def cmd_env(args: argparse.Namespace) -> None:
@@ -1458,13 +1476,17 @@ def main() -> None:
     p.add_argument("--timeout", type=int, default=40)
     p.set_defaults(func=cmd_fetch)
 
-    p = sub.add_parser(
-        "learn",
-        help="route a domain only when only the tunnel makes it work, "
-             "and unroute one that now works direct")
+    p = sub.add_parser("learn", help="route a domain only when only the tunnel makes it work")
     p.add_argument("url")
     p.add_argument("--timeout", type=int, default=20)
     p.set_defaults(func=cmd_learn)
+
+    p = sub.add_parser(
+        "relearn",
+        help="learn a domain, or unroute a listed one that now works direct")
+    p.add_argument("url")
+    p.add_argument("--timeout", type=int, default=20)
+    p.set_defaults(func=cmd_relearn)
 
     p = sub.add_parser("serve", help="supervise the gateway and rotate dead configs")
     p.add_argument("--interval", type=int, default=60)
