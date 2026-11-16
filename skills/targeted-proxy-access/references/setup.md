@@ -352,7 +352,7 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | `canary: FAILED (0/3)` | tunnel is dead: `up --refresh`; if that fails too, reseed the pool |
 | `canary: ok … (1/3 resets)` | normal for public configs; fetchers retry, nothing to do |
 | `rerank` says it rolled back | the faster config answered a standalone probe but reset through the gateway; it is cooled down for an hour and moved to the end, and the previous config is live again — nothing to fix unless every config does it |
-| `rerank` says the tunnel is down | the promoted config failed and the previous one could not be restarted either: `up --refresh` picks another, and `serve` will also recover on its next cycle |
+| `rerank` says the tunnel is down | the promoted config failed and the previous one could not be restarted either: `up --refresh` picks another; without that, `serve` rotates away after three failed canary checks (about three minutes) |
 | `rerank` skips a `vmess://` or `ss://` line | only `vless` and `trojan` links are supported; the line stays in `pool.txt` and is skipped by both `up` and `rerank` — remove it or convert it |
 | fetch works for one blocked site, fails for another | the second domain is not routed: `learn <url>` tests direct, then the tunnel, and routes the domain only if that is what fixed it; `allow <domain>` adds one by hand; `domains` shows the current list |
 | a routed domain now works without the proxy | `relearn <url>` on it: an exact entry that answers direct is removed from `domains.txt`; one that is still blocked there stays routed and is not re-tested through the tunnel |

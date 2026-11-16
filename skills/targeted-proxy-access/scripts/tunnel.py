@@ -478,12 +478,23 @@ def load_state() -> dict:
 def save_state(state: dict) -> None:
     """Write state.json atomically: a CLI run and the unit can both save."""
     HOME.mkdir(parents=True, exist_ok=True)
+    # Write through a symlink and keep its mode: state.json sits in a config dir
+    # people back up or symlink like pool.txt.
+    try:
+        target = STATE.resolve()
+    except OSError:
+        target = STATE
+    try:
+        mode = target.stat().st_mode
+    except OSError:
+        mode = 0o600
     data = json.dumps(state, indent=2, ensure_ascii=False) + "\n"
-    fd, name = tempfile.mkstemp(prefix=".state-", suffix=".json", dir=HOME)
+    fd, name = tempfile.mkstemp(prefix=".state-", suffix=".json", dir=target.parent)
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as fh:
             fh.write(data)
-        os.replace(name, STATE)
+        os.chmod(name, mode)
+        os.replace(name, target)
     finally:
         Path(name).unlink(missing_ok=True)
 
@@ -840,10 +851,20 @@ def apply_choice(uri: str, secs: float, idx: int, state: dict,
         while time.time() < deadline:
             current = (load_state().get("last_good") or {}).get("uri")
             if current and current != uri:
-                break
-            if current == uri and probe(gateway_port(), timeout=GATEWAY_TIMEOUT)[0]:
-                return
-            time.sleep(1)
+                # The unit fell back to another config: ours did not work.
+                raise RuntimeError(f"config #{idx} does not answer through "
+                                   "proxy-tunnel.service")
+            if current == uri:
+                # Re-read after a success: the unit may be finishing the same
+                # probe and about to record a fallback of its own.
+                if probe(gateway_port(), timeout=GATEWAY_TIMEOUT)[0]:
+                    if (load_state().get("last_good") or {}).get("uri") == uri:
+                        return
+                # One request per two seconds: the unit is probing the same config,
+                # and a burst of canary requests can trip a shared backend.
+                time.sleep(2)
+            else:
+                time.sleep(1)
         raise RuntimeError(f"config #{idx} does not answer through proxy-tunnel.service")
     apply_config(uri, secs, idx, state)
 
@@ -854,9 +875,10 @@ def describe_rerank(result: dict) -> str:
 
     index = result.get("index")
     if result.get("failed"):
+        where = f"#{index}" if index is not None else "the previous config"
         if result.get("restored", True):
             return (f"tried a faster config ({shown(result.get('best_s'))}) that failed "
-                    f"through the gateway; rolled back to #{index} "
+                    f"through the gateway; rolled back to {where} "
                     f"({shown(result.get('baseline_s'))})")
         return (f"tried a faster config ({shown(result.get('best_s'))}) that failed "
                 "through the gateway and could not be rolled back; the tunnel is down")
@@ -973,12 +995,13 @@ def rerank_once(state: dict, samples: int = RERANK_SAMPLES,
         best_idx = result["index"]
         try:
             apply_choice(target, best_secs, best_idx, state, internal=internal)
-        except (RuntimeError, SystemExit) as exc:
+        except (RuntimeError, SystemExit, OSError) as exc:
             # apply_config already replaced the serving config before it failed,
             # so without this the tunnel would stay on the broken one.
             mark_dead(state, key_of(target), PROMOTION_FAIL_COOLDOWN)
             save_state(state)
             restored = False
+            rollback_error: BaseException | None = None
             if live:
                 restore_secs = baseline if baseline is not None else 0.0
                 live_idx = _pool_index(live)
@@ -987,34 +1010,39 @@ def rerank_once(state: dict, samples: int = RERANK_SAMPLES,
                                  live_idx if live_idx is not None else -1,
                                  state, internal=internal)
                     restored = True
-                except (RuntimeError, SystemExit) as rollback_exc:
-                    raise RuntimeError(
-                        f"config #{best_idx} failed through the gateway and the "
-                        f"previous config could not be restored ({rollback_exc}); "
-                        "the tunnel is down, run: tunnel.py up --refresh") from exc
-                # Recovered config back on top, the one that just failed at the
-                # bottom: the head is what the next `up` picks, dead cooldown or not.
-                if reorder_pool([live] + [u for u in load_pool()
-                                          if u not in (live, target)] + [target]):
-                    reindex_last_good(state)
-                    result["reordered"] = True
-                result["index"] = _pool_index(live)
+                except (RuntimeError, SystemExit, OSError) as rollback_exc:
+                    rollback_error = rollback_exc
+                if restored:
+                    # Recovered config back on top, the one that just failed at
+                    # the bottom: the head is what the next `up` picks, dead
+                    # cooldown or not.
+                    if reorder_pool([live] + [u for u in load_pool()
+                                              if u not in (live, target)] + [target]):
+                        reindex_last_good(state)
+                        result["reordered"] = True
+                    result["index"] = _pool_index(live)
             result["failed"] = True
             result["restored"] = restored
             state["rerank"] = result
             save_state(state)
-            reason = ("rolled back to the previous config" if restored
-                      else "the tunnel is down, run: tunnel.py up --refresh")
+            if not restored:
+                detail = f" ({rollback_error})" if rollback_error else ""
+                raise RuntimeError(
+                    f"config #{best_idx} failed through the gateway and could not "
+                    f"be rolled back{detail}; the tunnel is down, "
+                    "run: tunnel.py up --refresh") from exc
             raise RuntimeError(f"config #{best_idx} failed through the gateway; "
-                               f"{reason}") from exc
+                               "rolled back to the previous config") from exc
         result["switched"] = True
     if internal or not service_managed():
         state["rerank"] = result
         save_state(state)
     else:
         # The unit restarted itself during the switch and owns the newer state;
-        # saving this snapshot would revert its last_good/dead marks.
+        # saving this snapshot would revert its last_good/dead marks. Re-derive
+        # the pool index from the file instead of trusting the pre-round one.
         fresh = load_state()
+        reindex_last_good(fresh)
         fresh["rerank"] = result
         save_state(fresh)
     return result
