@@ -58,8 +58,7 @@ python3 scripts/tunnel.py doctor         # required lines should say ok; optiona
 if `pool.txt` is missing, and reinstalls the launcher each time. It deliberately installs
 no background service; add `--service` (Linux/systemd) when you want the supervisor that
 rotates dead configs and re-ranks the pool by latency on its own. It also never edits an
-agent's config — that edit is
-yours to make, once per MCP server, as described under
+agent's config — that edit is yours to make, once per MCP server, as described under
 [Wiring a fetch tool](#wiring-a-fetch-tool).
 
 Data lives in the platform config directory (override with `PROXY_TUNNEL_HOME`):
@@ -105,7 +104,8 @@ If v2rayN is present, `setup` (or `seed --group good`) reads
 `guiConfigs/guiNDB.db` and writes one share link per line in database order. Otherwise
 paste `vless://…` / `trojan://…` links into `pool.txt`, best first; lines starting with
 `#` are ignored. Your order is the starting point: `rerank` measures the pool later and
-rewrites the order (see [how latency re-ranking works](#how-latency-re-ranking-works)). The parser understands ws, grpc, xhttp, and tcp+http-header transports
+rewrites the order (see [how latency re-ranking works](#how-latency-re-ranking-works)).
+The parser understands ws, grpc, xhttp, and tcp+http-header transports
 with tls/reality/none, plus `flow`, `sni`, `alpn`, `fp`, `pbk`, `sid`, `spx`, and the
 post-quantum VLESS `encryption` value (`mlkem768x25519plus…`).
 
@@ -309,16 +309,22 @@ resulting order back into `pool.txt`:
    kept.
 2. A switch happens only when an alternative is at least `--margin` percent faster
    (default 30), so two exits within noise of each other do not flap the tunnel. When the
-   live config does not answer at all, the fastest measured one is used.
+   live config's own probe fails while the gateway is still serving, the comparison uses
+   the latency recorded when it was applied; with nothing recorded the round keeps the
+   live config and leaves the decision to rotation, because one failed probe is not proof
+   that a working config is gone.
 3. Measured entries are reordered among the slots they already hold, in 100 ms buckets,
-   and the live (or newly promoted) config is pinned to the head — the head is what the
-   next `up` picks. Measurement jitter therefore leaves the file alone; whenever it is
-   rewritten, the previous version stays as `pool.txt.bak`.
+   and the live (or newly promoted) config is pinned to the head — the head is what `up`
+   falls back to after a restart. Measurement jitter therefore leaves the file alone;
+   whenever it is rewritten, the previous version stays as `pool.txt.bak`.
 4. A promoted config is verified through the gateway before the switch counts. One that
-   answered a standalone probe but resets through the gateway is cooled down, moved to
-   the end of `pool.txt`, and the previous config is put back, so a bad promotion never
-   leaves the tunnel on a broken exit.
-5. `status` reports the last re-rank and its decision; `list` marks the live entry.
+   answered a standalone probe but resets through the gateway is cooled down for an hour
+   (so the next round does not promote it again), moved to the end of `pool.txt`, and the
+   previous config is put back, so a bad promotion does not leave the tunnel on a broken
+   exit.
+5. Pool lines that are not `vless://` or `trojan://` are skipped with a note instead of
+   aborting the round.
+6. `status` reports the last re-rank and its decision; `list` marks the live entry.
 
 The margin is a floor, not a promise of perpetual order: the head is the live config, so
 an alternative takes over only when it earns the switch.
@@ -345,7 +351,9 @@ Treat the table as a snapshot: your configs exit somewhere else, so results diff
 | `status` says `stopped` | run `up`; if the service is installed, `systemctl --user restart proxy-tunnel` |
 | `canary: FAILED (0/3)` | tunnel is dead: `up --refresh`; if that fails too, reseed the pool |
 | `canary: ok … (1/3 resets)` | normal for public configs; fetchers retry, nothing to do |
-| `rerank` says it rolled back | the faster config answered a standalone probe but reset through the gateway; it is cooled down and moved to the end, and the previous config is live again — nothing to fix unless every config does it |
+| `rerank` says it rolled back | the faster config answered a standalone probe but reset through the gateway; it is cooled down for an hour and moved to the end, and the previous config is live again — nothing to fix unless every config does it |
+| `rerank` says the tunnel is down | the promoted config failed and the previous one could not be restarted either: `up --refresh` picks another, and `serve` will also recover on its next cycle |
+| `rerank` skips a `vmess://` or `ss://` line | only `vless` and `trojan` links are supported; the line stays in `pool.txt` and is skipped by both `up` and `rerank` — remove it or convert it |
 | fetch works for one blocked site, fails for another | the second domain is not routed: `learn <url>` tests direct, then the tunnel, and routes the domain only if that is what fixed it; `allow <domain>` adds one by hand; `domains` shows the current list |
 | a routed domain now works without the proxy | `relearn <url>` on it: an exact entry that answers direct is removed from `domains.txt`; one that is still blocked there stays routed and is not re-tested through the tunnel |
 | gateway `fetch` works, the harness's own reader fails | that process has no proxy in its environment, or started before one was set: check `/proc/<pid>/environ`, then restart it |
