@@ -1,16 +1,14 @@
 # Agent Skills for AI Coding Agents
 
-Give your coding agent a repeatable workflow for code review, debugging, research, planning, and more. This modular collection follows the open [Agent Skills format](https://agentskills.io): install one skill, a few, or the whole catalog with the [`skills` CLI](https://github.com/vercel-labs/skills), without cloning the repository. It is designed for compatible coding tools including Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, and OpenCode.
+Give your coding agent a repeatable workflow for code review, debugging, research, planning, and more. This modular collection follows the open [Agent Skills format](https://agentskills.io): install one skill, a few, or the whole catalog with the [`skills` CLI](https://github.com/vercel-labs/skills), without cloning the repository. It works with compatible coding tools including Claude Code, Codex, Cursor, GitHub Copilot, Gemini CLI, and OpenCode.
 
-Each skill focuses on a specific kind of work, so you can add a practical workflow when you need it instead of installing a one-size-fits-all bundle.
-
-If these workflows are useful, consider starring the repository or opening an issue with what you would like to see next.
+Each skill covers one kind of work, so you add the workflows you need instead of a one-size-fits-all bundle. A skill is a folder of instructions: a `SKILL.md` entry point, plus optional references and helper scripts. Its `SKILL.md` opens with a name and a "use when …" description, and that line is what your agent matches against. Install the skills you want, and the right one loads when a task fits.
 
 **Choose a starting point:** [review code changes](skills/reviewing-code-changes/SKILL.md) · [debug a tricky failure](skills/systematic-debugging/SKILL.md) · [research with evidence](skills/research-with-evidence/SKILL.md) · [plan implementation work](skills/writing-implementation-plans/SKILL.md) · [browse all skills](#skills)
 
 ## Get started
 
-Install interactively, or choose a skill and agent explicitly. Skills can be installed per project or globally.
+The `skills` CLI requires Node.js 22.20 or later. Installs go into the current project unless you pass `-g`.
 
 ```bash
 # see what is here, without installing
@@ -21,7 +19,16 @@ npx skills add m-hosseinpour/agent-skills
 
 # one skill, into this project, for OpenCode
 npx skills add m-hosseinpour/agent-skills --skill reviewing-code-changes -a opencode
+```
 
+Check what landed with `npx skills list` (add `-g` for global installs).
+
+Installation makes a real copy when every selected agent shares a skills directory — a single agent always does — and keeps one copy with symlinks when the agents use different directories; `--copy` always copies. Global installs go to each agent's configured directory, which some agents share and others keep separate. See the [supported agents and install paths](https://github.com/vercel-labs/skills/blob/main/docs/agents.md).
+
+<details>
+<summary>More commands</summary>
+
+```bash
 # several, for every agent detected in this project
 npx skills add m-hosseinpour/agent-skills --skill structured-reasoning --skill writing-implementation-plans -a '*'
 
@@ -32,9 +39,13 @@ npx skills add m-hosseinpour/agent-skills --skill '*' -g
 npx skills use m-hosseinpour/agent-skills@systematic-debugging
 ```
 
-Installs are symlinks by default, so there is one copy on disk; `--copy` puts a real file in place instead. Global installs use each agent's configured skills directory; some agents share a directory, while others use their own. See the [`skills` CLI supported agents and install paths](https://github.com/vercel-labs/skills/blob/main/docs/agents.md). `npx skills update` refreshes skills installed from this repo.
+`npx skills update` refreshes the skills you installed from this repo.
+
+</details>
 
 ## Skills
+
+Each link opens the skill's `SKILL.md` — the instructions your agent reads.
 
 | Skill | What it helps with |
 | --- | --- |
@@ -55,42 +66,23 @@ Installs are symlinks by default, so there is one copy on disk; `--copy` puts a 
 | [writing-skills](skills/writing-skills/SKILL.md) | Create or improve reusable agent skills. |
 | [writing-task-briefs-and-guides](skills/writing-task-briefs-and-guides/SKILL.md) | Turn a long task brief into an estimate-ready summary and full guide. |
 
-## How the catalog is organized
-
-Each skill lives in `skills/<skill-name>/` with a `SKILL.md` entry point. Optional `references/` hold supporting guidance and `scripts/` hold helpers. This keeps each workflow self-contained and lets you install only what you need.
-
 ## Contributing
 
-Suggestions, corrections, and new skills are welcome. [Open an issue](https://github.com/m-hosseinpour/agent-skills/issues/new/choose) to discuss an idea, or send a pull request with the change and how you checked it.
+Suggestions, corrections, and new skills are welcome. [Open an issue](https://github.com/m-hosseinpour/agent-skills/issues/new) to discuss an idea, or send a pull request with the change and how you checked it.
 
-When adding or rewriting a skill:
-
-- Keep the folder name and frontmatter `name` identical.
-- Use the `writing-skills` workflow in this catalog to shape and check the skill.
-- Confirm the installer discovers it with `npx skills add . --list`.
-- Link any new supporting files from the skill's `SKILL.md`.
+Each skill is `skills/<name>/` with a `SKILL.md` entry point; optional `references/` hold guidance read on demand and `scripts/` hold helpers, so a skill stays self-contained and you install only what you need. Repository rules — the folder name must match the frontmatter `name`, and every new file must be linked from `SKILL.md` — are in [AGENTS.md](AGENTS.md). Use the [writing-skills](skills/writing-skills/SKILL.md) workflow to shape a skill, then confirm the installer discovers it with `npx skills add . --list`.
 
 ## Acknowledgements
 
-Several skills started from someone else's work, and a few still carry it. Full license texts are in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
+Several skills started from other people's work, and some still adapt parts of it. Full file-level attribution and license texts are in [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md).
 
-**obra/superpowers** ([MIT](https://github.com/obra/superpowers), © 2025 Jesse Vincent) — five skills began as copies from that repository and have been rewritten since:
+- [obra/superpowers](https://github.com/obra/superpowers) (MIT, © 2025 Jesse Vincent) — `structured-reasoning`, `systematic-debugging`, `writing-skills`, `dispatching-parallel-agents`, and `writing-implementation-plans`; `reviewing-code-changes` also borrows a few review-process points
+- [PR Review Canvas](https://github.com/projekta2/pr-review-canvas) (MIT, © 2026 Alexandre Iglesias / Projekta2 Creative Studio) — the review checklist behind `reviewing-code-changes`
+- [cursor/plugins](https://github.com/cursor/plugins) (MIT, © 2026 Cursor) — the quality rubric in `reviewing-code-changes` and the explanation approach in `understanding-code-changes`
+- [wshobson/agents](https://github.com/wshobson/agents) (MIT, © 2024 Seth Hobson) — the language traps in `reviewing-code-changes`
+- [anthropics/skills](https://github.com/anthropics/skills/blob/main/skills/frontend-design/LICENSE.txt) (Apache 2.0) — `designing-persian-rtl-web-ui` is my own skill, but its anti-default guidance and copywriting section follow the `frontend-design` skill
 
-- `structured-reasoning` (originally `brainstorming`) — began with the upstream subject; the former upstream visual-companion scripts and guide have been removed
-- `systematic-debugging` — its tracing, safeguards, and waiting guides in `references/`, and helper examples in `scripts/`, have been rewritten from the original supporting files
-- `writing-skills` — rewritten descendants in `references/`: `anthropic-best-practices.md`, `discipline-wording.md` (formerly `persuasion-principles.md`), `testing-skills.md` (formerly `testing-skills-with-subagents.md`), `instruction-files-testing.md` (formerly the example test plan), and `graphviz-conventions.dot`; `scripts/render-graphs.mjs` replaces the original renderer; evaluation scenarios are new
-- `dispatching-parallel-agents` — the name and the subject, nothing else
-- `writing-implementation-plans` (originally `writing-plans`) — the subject, nothing else
-
-`reviewing-code-changes` also borrows a few review-process points from `requesting-code-review`.
-
-**PR Review Canvas** ([MIT](https://github.com/projekta2/pr-review-canvas), © 2026 Alexandre Iglesias / Projekta2 Creative Studio) — `reviewing-code-changes` is built on its review checklist: `references/checklist.md` keeps the categories and item numbering, reworded, for 35 of the 51 items.
-
-**cursor/plugins** ([MIT](https://github.com/cursor/plugins), © 2026 Cursor) — the rubric in `reviewing-code-changes/references/quality-bar.md` is distilled from its `thermo-nuclear-code-quality-review` skill, and three checklist items come from its `thermos` plugin. `understanding-code-changes` adapts the comprehension-first grouping, pseudocode, traces, callouts, and choice of representation from [its `pr-review-canvas` skill](https://github.com/cursor/plugins/tree/main/pr-review-canvas), with independently written guidance for portable Markdown and project-context investigation rather than the Canvas SDK.
-
-**wshobson/agents** ([MIT](https://github.com/wshobson/agents), © 2024 Seth Hobson) — the language traps in `reviewing-code-changes/references/patterns.md` adapt its `code-review-excellence` skill.
-
-**anthropics/skills** ([Apache 2.0](https://github.com/anthropics/skills/blob/main/skills/frontend-design/LICENSE.txt)) — `designing-persian-rtl-web-ui` is my own skill, but its anti-default guidance and copywriting section follow the `frontend-design` skill.
+If these workflows are useful, consider starring the repository — it helps others find the catalog.
 
 ## License
 
