@@ -82,6 +82,8 @@ Several skills started from other people's work, and some still adapt parts of i
 - [wshobson/agents](https://github.com/wshobson/agents) (MIT, © 2024 Seth Hobson) — the language traps in `reviewing-code-changes`
 - [anthropics/skills](https://github.com/anthropics/skills/blob/main/skills/frontend-design/LICENSE.txt) (Apache 2.0) — `designing-persian-rtl-web-ui` is my own skill, but its anti-default guidance and copywriting section follow the `frontend-design` skill
 
+The [TinyFish integration skills](https://github.com/tinyfish-io/tinyfish-web-agent-integrations) also inspired operational ideas in `research-with-evidence`: freshness and access-context checks, structured entity collection, partial-batch handling, and server-job recovery. This guidance is independently written and requires no TinyFish tools; no upstream text or code is bundled for these additions.
+
 If these workflows are useful, consider starring the repository — it helps others find the catalog.
 
 ## License

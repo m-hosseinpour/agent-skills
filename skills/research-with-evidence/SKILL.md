@@ -59,8 +59,9 @@ a search.
 Keep a compact evidence record for consequential claims: an exact source locator and
 supporting passage or observation, relevant conditions, and remaining uncertainty. Separate
 source statements, measured results, calculations, interpretation, and assumptions. Short
-work can carry this in the answer; for a substantial report or reusable record, open
-[evidence and reporting](references/evidence-and-reporting.md) for an adaptable format.
+work can carry this in the answer; for a substantial report, reusable record, or structured
+collection of entities, open [evidence and reporting](references/evidence-and-reporting.md)
+for claim records and collection checks.
 
 1. **Check quantitative meaning.** Preserve units, denominators, baselines, ranges, filters,
    sample conditions, and limitations. Verify dataset meaning, provenance, and freshness

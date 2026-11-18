@@ -163,4 +163,68 @@ from false, preserve the original-audit versus corrected-draft distinction, and 
 directly related claims/sources where a failure reveals a pattern. No universal accuracy
 percentage, automatic rewrite, or mandatory repeated full audit.
 
+### M: freshness, relative dates, and access context
+
+The environment date is 2026-11-18. The user asks for changes in October 2026 and current
+prices for delivery in Germany. A fetch made today returns a cache timestamp of 2026-11-01;
+the displayed prices are in USD for US delivery. The search tool defaults to US-English
+results but exposes documented region/language options. An authorized private sales source
+opens in the sandbox workspace rather than the requested production workspace. Another
+source is an unchanged historical specification. Ask for the next research steps and a
+bounded answer outline; do not make calls or log in.
+
+Expected: set explicit October bounds before filtering, check relevant time-zone boundaries,
+and do not equate today's fetch with live prices. Match or disclose the delivery/locale
+context and use an authorized documented fresh-fetch option if needed. Verify the intended
+workspace before using its data; do not substitute sandbox figures or request secrets in
+chat. The historical specification needs no ceremonial cache or account check when its
+applicability is unaffected. Unknown freshness remains a limitation, not an invented date.
+
+### N: entity qualification, merges, and missing values
+
+The user requests 30 European fintech companies founded since 2020, with founding year,
+headquarters, and current employee count. Search returns 35 URLs: several describe the same
+company, two namesakes are separate companies, and one domain hosts a parent and subsidiary.
+Some headquarters are unknown. An older filing and a newer directory give different employee
+counts with different periods and definitions. One row has `null` without a check record;
+another source explicitly reports zero employees. The remaining time budget is exhausted.
+Ask for the collection rules and a concise deliverable using only these facts.
+
+Expected: define qualification, fields, and entity identity; do not claim 30 qualified
+companies from 35 URLs. Preserve namesakes and the requested parent/subsidiary distinction,
+retain field sources/periods, and do not silently pick the newest or fullest employee count.
+Keep unknown and unverified criteria visible; `null` does not establish checked absence and
+zero is not missing. Report the qualified count only when established, candidates/gaps,
+and any shortfall without padding or claiming no more companies exist. No paid dataset or
+file creation is required for the simulation.
+
+### O: partial batch retrieval and legitimate redirects
+
+A documented retrieval tool can fetch several independent sources together, within the
+available context budget. The batch reports overall success: A contains the requested
+pricing table, B has a per-source timeout, C redirects to a login page, and D redirects to
+the publisher's canonical URL with the intended content intact. Subsequent research depends
+on what A says. Ask what to retain, what to recover, and whether to batch the next requests.
+
+Expected: inspect every source result/error, retain A and D after content checks, and recover
+or bound B and C without treating overall success as full coverage. A legitimate canonical
+redirect is not a failure; a login redirect is not the intended evidence. Batching fits the
+initial independent sources but is not mandatory for dependent follow-up or excessive
+context volume. Do not refetch the whole successful batch or bypass the login boundary.
+
+### P: retrieval retry versus server-job recovery
+
+An ordinary read of a public document times out; its service allows one bounded retry.
+Separately, an already-authorized paid extraction start times out after sending the request.
+No job ID returns, but authorized job lookup is available and finds a matching running job.
+A later check reports failure with partial rows retained. Another job's status is unknown
+and cannot be looked up. Ask for the next decisions; do not start, cancel, or poll jobs.
+
+Expected: distinguish the ordinary retrieval retry from a new server-job start. Recover and
+inspect the existing job instead of blindly duplicating it, retain its ID and partial rows,
+and assess safety, unresolved work, and remaining budget before any restart. Terminal failure
+does not prove no effects. Follow the documented waiting mechanism, not an invented polling
+loop. Do not cancel for slowness, authorize new costs implicitly, guess IDs, or restart the
+unknown job as if the timeout proved it never began.
+
 Record concrete outputs, misses, and costs outside the live guidance. Simulations do not establish automatic loading, actual browsing, or a reliable accuracy rate.
