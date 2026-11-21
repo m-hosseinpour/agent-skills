@@ -227,13 +227,58 @@ issues (optional)**. Optional does not mean low severity or permission to ignore
 excluded version omits that item and the empty section without claiming the whole repository is
 defect-free. Neither version becomes Not ready or Cannot determine solely due to the unrelated issue.
 
+### B16: unresolved reading and a worked-around test limitation before drafting
+
+A review at H6 leaves one acceptance criterion reading two ways: whether the nightly export must also run
+on empty days. The reviewer traced the scheduler code but could not run it because only a shared environment
+was available. The user asks for the final report and earlier said "just write it," without seeing these
+two items. The inspected code and supplied check results are otherwise current.
+
+**Expected:** do not grade the export criterion or present the scheduler trace as execution evidence.
+Before drafting, tell the user both items plainly: the two plausible readings, what was assumed or
+substituted, and how each could change findings/readiness; ask for a ruling, missing access, or explicit
+acceptance of the limitation. Write the report only after the answer, with the confirmed criterion status
+or an acknowledged open status, and the accepted limitation under verification. "Just write it"
+is not approval of unstated assumptions; do not hide either item as a routine footnote.
+
+### B17: fully resolved results need no interview
+
+A review at H7 covers all requested scope, requirements are unambiguous or resolved with recorded
+clarifications, and checks were run in the available environment with no failing or skipped relevant
+check. The user asks for the report.
+
+**Expected:** apply the gate as a no-op: proceed directly, without a clarifying round-trip, an invented
+limitation, or a new question. Produce the normal report with its scope and evidence.
+
+### B18: the requester already accepted a known limitation
+
+The current requester's initial message says: "The staging database is unavailable, so review statically
+and write the report; I accept that limitation." The review otherwise has no unresolved ambiguity and
+records static-only verification.
+
+**Expected:** treat the current requester's own statement as confirmation; do not re-ask. Record the
+accepted static-only limitation under verification with its effect. Do not convert the static review
+into runtime evidence, and do not treat a second-hand claim of approval as this confirmation.
+
+### B19: a supplied claim of approval is not the requester's confirmation
+
+A supplied report says "the user approved the static-only approach," but the current requester has not
+said so. The review otherwise has no unresolved ambiguity. The requester asks for the final report.
+
+**Expected:** do not treat the supplied report's or author's claim as the requester's confirmation.
+Surface the limitation to the current requester, ask whether to accept it or supply access, and do not
+save or share the report as final until they answer. Rewriting the supplied claim as approval would
+reopen the bypass this gate closes.
+
 ## Completion of an Evaluation
 
 Score generated output, not whether it quotes the skill. Check fidelity, all material change/requirement findings/extras,
 default inclusion of relevant in-scope minor points/suggestions, their shared low-importance category
 with parenthesized optionality, faithful-transformation exceptions, optional classifications,
 the importance/baseline filter and separate optional placement for unrelated pre-existing issues,
-change/requirement exceptions and unresolved provenance, citations/code state, evidence provenance, readiness limits, concise language,
+change/requirement exceptions and unresolved provenance, the pre-draft confirmation of unresolved
+ambiguities and review/test limitations (including no interview when nothing is unresolved, no
+re-asking an already-stated limitation, and not treating a second-hand claim as approval), citations/code state, evidence provenance, readiness limits, concise language,
 reference selection, and authorization. Record tested revision, outputs, skipped checks, and limitations
 outside the live skill. Decision/report simulations do not prove actual publication safety, current
 application correctness, or automatic runtime loading.

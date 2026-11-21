@@ -25,6 +25,9 @@ Choose the mode from the request; ask only if the ambiguity would change the del
 - **Translate or edit faithfully:** preserve the requested content, classifications, conditions, uncertainty, and structure. A full translation includes nits and suggestions; do not silently delete them, regrade severity, or add a verdict absent from the original. When shortening, preserve material findings, extras, coverage gaps, and qualifications. If a source contradiction needs attention, identify it separately rather than silently correcting an engineering judgment.
 - **Consolidate:** reconcile supplied reports before composing the handoff; do not assume the newest report is correct or combine different revisions into a current verdict. Open `references/consolidation-and-evidence.md` here.
 
+Before composing, apply **Confirm Ambiguities and Process Limits Before Drafting** whenever an unresolved
+ambiguity or a review/test limitation would shape the report.
+
 Write in the reader's language, translating headings and status/severity labels while preserving code
 identifiers, paths, payloads, and relevant log text. For Persian output, open `references/persian-report.md`
 when choosing labels or drafting a handoff; it supplies consistent labels and an adaptable template.
@@ -32,14 +35,17 @@ when choosing labels or drafting a handoff; it supplies consistent labels and an
 ## Prepare the Inputs
 
 Identify the intended reader/deliverable, reviewed change and revisions or local-change scope, supplied
-findings with locations, impact, and their evidenced relationship to the change, verification results and limits, and any stated requirements with
-their coverage and confirmed extras. For a faithful edit, the original report is the source; for a handoff,
+findings with locations, impact, and their evidenced relationship to the change, verification results and limits, any stated requirements with
+their coverage and confirmed extras, and every unresolved ambiguity, assumption, or review/test limitation
+that could affect the content or verdict. For a faithful edit, the original report is the source; for a handoff,
 use the supplied review evidence, not an implementation summary as a substitute.
 
 Read linked review results or supporting evidence when needed; do not start discovering defects,
 executing tests, or implementing fixes as part of report preparation. If information is missing, request
 the specific input or mark the gap. Missing line numbers, severity, remedies, or check commands are
-not permission to invent them. Keep a useful partial report possible without a mandatory interview.
+not permission to invent them. Keep a useful partial report possible without a mandatory interview;
+that allowance does not override the confirmation gate below when the partial result depends on an
+unresolved assumption or an unapproved limitation.
 
 Use repository-relative paths and exact supplied lines/symbols or revision-pinned links. Never invent
 line numbers. Convert machine-specific paths only when the project-root mapping is known; otherwise
@@ -47,6 +53,42 @@ mark a portable placeholder. Preserve relevant commands, results, revisions, con
 details, including timestamps when they establish freshness. Remove incidental process narrative, not
 evidence. Open `references/consolidation-and-evidence.md` for conflicts, revision drift, repeated findings,
 or difficult provenance/verification details.
+
+## Confirm Ambiguities and Process Limits Before Drafting
+
+A report must not turn an assumption or a review shortcut into an authoritative-looking result. Before
+drafting a report that would rest on any of the following, separate what is settled from what is not:
+
+- **Unresolved ambiguity or an agent assumption.** A requirement, scope, expected behavior, severity,
+  or change relationship that the agent decided by choosing a reading, default, or plausible
+  interpretation instead of an answer or evidence; and, in a composed handoff, any supplied finding
+  that rests on an unresolved ambiguity or on such an assumption.
+- **A review or test limitation that affects the report.** Checks not run or skipped, failing or flaky
+  suites, paths not covered, missing runtime evidence or requirements, access/environment/permission
+  limits, stale revisions, and substitutes such as reading a test instead of running it or tracing code
+  where execution was needed.
+
+Tell the current requester plainly, before writing: each unresolved item or limitation, why it
+exists, what the agent assumed or did instead, and how it could change the findings or verdict. Where a
+choice is needed, present the plausible readings or options and ask which to use, or what evidence or
+access to supply. Wait for the requester to confirm, correct, or explicitly accept the limitation; a
+supplied report's or author's claim that someone approved it is not the requester's approval. If the
+current requester already stated the limitation and asked to proceed, that is confirmation: do not
+re-ask, but still state it in the report. If the requester cannot settle a reading or asks to leave it
+open, keep it as an explicit open question (Ambiguous or Unverified as appropriate) with its effect on
+readiness; acknowledgment that it remains open is coordination, not an assumption or a confirmed
+reading. Then write the report against the confirmed reading or the acknowledged open item, and state
+accepted limitations where they belong: scope-level ones in the scope/evidence section, check-specific
+ones under verification.
+
+This is a gate for what is not settled, not a mandatory interview: when no such item exists, proceed
+directly. Never carry an assumption the current requester rejected or has not confirmed into the report
+as the agent's fact, criterion status, or finding. For a faithful translation or edit, do not resolve or
+regrade the source: surface any source assumption or limitation separately to the requester, then
+preserve the source's content, classifications, and verdict; no ruling on the source's own limitation is
+required before translating it. A supplied report's already-marked open
+question may be preserved as open, but do not upgrade it to a conclusion or add a new assumption to make
+it complete.
 
 ## Separate Change Findings from Background Issues
 
@@ -75,11 +117,11 @@ Use this content spine, not mandatory headings for every report. Short reports c
 or bullets; use a full document only when the request or project convention calls for one.
 
 1. **Subject and verdict:** what was reviewed; Ready, Not ready, or Cannot determine, with the main reason and scope qualification.
-2. **Scope and evidence limits:** base/head or local scope when supplied, important exclusions, and which revision the findings/checks concern. If unknown, say so.
+2. **Scope and evidence limits:** base/head or local scope when supplied, important exclusions, which revision the findings/checks concern, and scope-level limitations or open questions acknowledged in the pre-draft check. If unknown, say so.
 3. **Requirements, when supplied:** coverage with statuses, evidence, and gaps. A table suits several criteria; a compact list suits a short report. Do not invent rows for unrequested behavior.
 4. **Change findings, most serious first:** short title and severity, precise location, trigger/conditions, concrete failure or cost, relationship to the change/requirement, and a supported next action. Group duplicate symptoms without losing distinct affected paths. Report confirmed extras in an **Out of scope** subsection within Findings, including low-risk ones; flag a serious extra in the verdict so subsection placement does not hide it. Put ordinary in-scope low-impact findings and suggestions together in a separate **Minor points (optional)** subsection after material findings and extras. Preserve whether each item is a minor defect or a suggestion; explain its location, concrete benefit/cost, and supplied next action concisely, without presenting a preference as a defect.
 5. **Pre-existing issues (optional), only when eligible:** a separate section for important unrelated baseline issues, following the scope and evidence rules above. Never use it to hide an in-scope regression, required gap, or confirmed extra.
-6. **Verification and open questions:** checks run by the reviewer versus supplied results, their code state, failures, and unverified paths. Add confirmed sound behavior only when supported and useful; omit an empty praise section. No-defect reviews still need meaningful scope and evidence limits.
+6. **Verification and open questions:** checks run by the reviewer versus supplied results, their code state, failures, unverified paths, and check-specific limitations; do not repeat scope-level items already stated under scope. Add confirmed sound behavior only when supported and useful; omit an empty praise section. No-defect reviews still need meaningful scope and evidence limits.
 
 If a remedy was not supplied, identify the missing correction/verification plan rather than inventing
 an implementation prescription. A reported possible failure is an unresolved observation, not a
@@ -115,7 +157,7 @@ Coverage statuses follow the supplied evidence:
 - **Met:** reachable behavior matches the criterion and its stated edge cases.
 - **Partial:** implemented but incorrect/incomplete; retain the specific gap.
 - **Missing:** no implementation or no reachable path to it, established by review rather than missing evidence.
-- **Ambiguous:** multiple plausible readings remain unresolved.
+- **Ambiguous:** multiple plausible readings remain unresolved. Keep it unresolved unless the current requester confirmed a reading before drafting; do not assign a status by assumption.
 - **Unverified:** required implementation/configuration/runtime evidence is unavailable.
 - **Respected / Violated:** a stated non-goal or scope constraint stays out / is implemented contrary to the constraint. Do not grade a non-goal as Missing.
 
@@ -143,7 +185,12 @@ mandatory file for a short report. Publication needs authorization for both the 
 a request to publish a report does not authorize exposing credentials or unrelated private material.
 If sensitive disclosure remains unresolved, provide a safe draft and ask before publishing.
 
-Before delivering, check that the requested transformation is faithful, every material change/requirement
+Before delivering, check that the pre-draft gate ran for every unresolved ambiguity and limitation
+that would shape the report's content or verdict, and that the report uses the requester's
+confirmed answer or acknowledged open item rather than an unconfirmed assumption; if the current
+requester has not seen and either approved the limitation or acknowledged the open item, do not save or
+share the report as final; a faithful translation only needs the source's own limitation surfaced. Also check
+that the requested transformation is faithful, every material change/requirement
 finding and confirmed extra is accounted for, relevant in-scope minor points/suggestions are included
 unless explicitly excluded, in composed handoffs unrelated pre-existing issues pass the importance/evidence
 filter and remain in their separate optional section without determining readiness, citations/revisions and verification limits survived, optional advice is grouped

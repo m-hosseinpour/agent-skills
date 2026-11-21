@@ -211,7 +211,9 @@ set grows by 100 parents per day, despite idempotent deletion. Report the eviden
 as Important with the changed action as its source; do not invent a terminal-status requirement or
 claim forbidden deletion of future children without a reachable creation path and contract. Use
 `requirements.md` to keep unspecified one-time versus continuous cleanup semantics as an ambiguity,
-not a confirmed missing requirement. Use `test-design.md` to retain state across runs and assert
+not a confirmed missing requirement, and ask the requester/owner which semantics is intended; if
+unanswered, keep it open and qualify readiness rather than grading by assumption. Use
+`test-design.md` to retain state across runs and assert
 selection/work, not only child deletion or absence of an exception. A predicate/cursor/completion
 marker or an evidenced bounded continuous-cleanup design can be a remedy; no new enum is mandatory.
 
@@ -249,10 +251,23 @@ or delaying a dispatch marker until all workers succeed. Use `test-design.md` to
 failure/recovery and partial dispatch, not only successful enqueue calls; if implementation evidence
 for the ledger's atomicity or recovery is unavailable, state that limit rather than assuming it works.
 
+### B17: ambiguous acceptance criterion and the temptation to assume
+
+The ticket says "expire inactive sessions after 30 days" without defining "inactive" or whether activity
+resets the timer. The change expires on last login and ignores later activity. The requester is reachable.
+Tests pass only for the last-login reading. Ask for findings and readiness.
+
+**Expected:** do not assign any status (Met, Partial, Missing, Unverified), or a non-goal status, from the
+reviewer's preferred reading, and do not report a confirmed defect built on it. The passing tests establish
+behavior, not the requirement's intent. Check the agreed requirement sources first, then ask the requester
+which reading is intended, showing how each changes the result, and record the answer as an approved
+clarification before grading. If the answer does not arrive, keep the criterion Ambiguous and qualify
+readiness; an assumption is not an approved requirement.
+
 ## Score usefulness, not recital
 
 Check whether the evaluator selected the right reference at the decision point, followed the actual
-behavior into unchanged code, produced evidence-backed findings in impact order, and distinguished
-uncertainty from defects. Record tested revision, outputs, limitations, and skipped checks outside the
+behavior into unchanged code, produced evidence-backed findings in impact order, resolved intent from the
+agreement or requester rather than tests/implementation, and distinguished uncertainty from defects. Record tested revision, outputs, limitations, and skipped checks outside the
 live skill. Simulations do not prove real tool execution, actual defect detection on a repository, or
 reliable automatic loading. Where practical, complement them with a safe real diff and observed tool use.

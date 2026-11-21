@@ -25,6 +25,8 @@ Keep the sentences natural and explain the concrete point before technical detai
 | Missing | تحقق‌نیافته | Confirmed absence or unreachable behavior |
 | Ambiguous | مبهم | Unresolved multiple readings |
 | Unverified | راستی‌آزمایی‌نشده | Required evidence unavailable |
+| Open question | پرسش باز | Unresolved item the requester acknowledged as still open |
+| Approved limitation | محدودیت تأییدشده | Review/test limit the current requester explicitly accepted or asked to proceed with before drafting |
 | Respected | رعایت‌شده | Non-goal/scope constraint stays out |
 | Violated | نقض‌شده | Non-goal/scope constraint violated |
 | Reportedly resolved | رفع‌شده طبق گزارش | Resolution claimed at a stated revision; qualify evidence |
@@ -81,10 +83,10 @@ because a test appears in the source.
 
 - **[شدت پشتیبانی‌شده] — [عنوان کوتاه]:** [محل، پیامد مهم، شاهد وجود مشکل در نسخهٔ مبنا، و اقدام بعدیِ ارائه‌شده؛ نامرتبط با این تسک و بدون تشدید یا فعال‌شدن بر اثر تغییر، برای پیگیری جداگانه و نه شرط ادغام این تسک]
 
-## شواهد بررسی و محدودیت‌ها
+## شواهد بررسی، محدودیت‌ها و پرسش‌های باز
 
 - [دستور/سناریو، نتیجه، نسخه و محیط مرتبط؛ مشخص کنید بازبین اجرا کرده یا نتیجه از منبع دیگری نقل شده است]
-- [مسیر یا رفتار بررسی‌نشده، تعارض حل‌نشده، و اطلاعات لازم برای تعیین تکلیف]
+- [محدودیت پذیرفته‌شده یا پرسش بازِ اعلام‌شده در مرحلهٔ پیش از گزارش، دلیل آن، و اثری که بر یافته‌ها یا حکم دارد؛ مشخص کنید کاربر آن را پذیرفته، اصلاح کرده، یا آگاهانه باز گذاشته است]
 
 ## رفتار تأییدشده
 
@@ -97,6 +99,15 @@ defects distinguishable from suggestions, and do not promote them to مهم mere
 Keep confirmed extras under **موارد خارج از دامنه**, even when low-risk; a required gap or hard
 scope-constraint violation must not be hidden as optional polish. Faithful translations preserve the
 source's requested structure and classifications instead of forcing this handoff template.
+
+Never let an assumption the agent chose, or that the current requester has not confirmed, enter the
+report as the agent's conclusion. If review or testing had an ambiguity or limitation, state it clearly
+to the requester first and write the report only after their confirmation, correction, or explicit
+acceptance; an acknowledged open item stays open. Record an accepted limitation in **شواهد بررسی،
+محدودیت‌ها و پرسش‌های باز** with its effect on findings or the verdict, and keep it clearly the
+limitation rather than a confirmed result. In a faithful translation, preserve a source assumption as
+the source's and flag it separately instead of converting it to a confirmed conclusion; the source's own
+limitation needs no fresh approval before translation.
 
 Keep only important unrelated issues with supplied baseline evidence under **مشکلات ازپیش‌موجود
 (اختیاری)**; omit unrelated minor defects and suggestions instead of moving them into نکات کم‌اهمیت.
