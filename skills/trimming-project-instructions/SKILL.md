@@ -2,11 +2,12 @@
 name: trimming-project-instructions
 description: Use when a project's instruction file — CLAUDE.md, AGENTS.md or whatever plays that role — has grown past what a session can hold, or when asked to shrink, split or reorganize one.
 disable-model-invocation: true
+triggers: [user]
 ---
 
 # Trimming Project Instructions
 
-**Manual only.** Harnesses that support it hide this skill from automatic selection — `disable-model-invocation: true` here, plus `agents/openai.yaml` for Codex — so invoke it by name (`/name`, `$name`, or `@name`).
+**Manual only.** Where the harness supports it, this skill is hidden from automatic selection — `disable-model-invocation: true` in the frontmatter, `triggers: [user]` for Devin/Windsurf, and `agents/openai.yaml` for Codex — so ask for it by name.
 
 A project instruction file is loaded at the start of every session *in that project*. Its length is a tax paid there, on every task, whether or not the task touches the area a section covers.
 

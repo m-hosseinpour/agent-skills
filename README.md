@@ -49,7 +49,7 @@ Each link opens the skill's `SKILL.md` — the instructions your agent reads.
 
 | Skill | What it helps with |
 | --- | --- |
-| [curating-global-instructions](skills/curating-global-instructions/SKILL.md) | Manual-only. Decide what belongs in always-loaded agent instructions and keep them maintainable. |
+| [curating-global-instructions](skills/curating-global-instructions/SKILL.md) | Manual-only where supported. Decide what belongs in always-loaded agent instructions and keep them maintainable. |
 | [designing-persian-rtl-web-ui](skills/designing-persian-rtl-web-ui/SKILL.md) | Build and review Persian right-to-left web interfaces. |
 | [dispatching-parallel-agents](skills/dispatching-parallel-agents/SKILL.md) | Decide when and how to delegate substantial work to parallel agents. |
 | [research-with-evidence](skills/research-with-evidence/SKILL.md) | Research complex questions and produce evidence-backed findings. |
@@ -58,13 +58,15 @@ Each link opens the skill's `SKILL.md` — the instructions your agent reads.
 | [structured-reasoning](skills/structured-reasoning/SKILL.md) | Work through nontrivial questions, uncertainty, and trade-offs. |
 | [systematic-debugging](skills/systematic-debugging/SKILL.md) | Find the cause of bugs before choosing a fix. |
 | [targeted-proxy-access](skills/targeted-proxy-access/SKILL.md) | Route selected blocked domains through a user-configured proxy. |
-| [trimming-project-instructions](skills/trimming-project-instructions/SKILL.md) | Manual-only. Shorten oversized project instructions without losing essential guidance. |
+| [trimming-project-instructions](skills/trimming-project-instructions/SKILL.md) | Manual-only where supported. Shorten oversized project instructions without losing essential guidance. |
 | [understanding-code-changes](skills/understanding-code-changes/SKILL.md) | Explain unfamiliar diffs in their project context. |
 | [validating-completed-tasks](skills/validating-completed-tasks/SKILL.md) | Check a completed task against its requirements and real acceptance paths. |
 | [writing-code-review-reports](skills/writing-code-review-reports/SKILL.md) | Turn completed review findings into a clear author-facing report. |
 | [writing-implementation-plans](skills/writing-implementation-plans/SKILL.md) | Create actionable plans for implementation and migrations. |
 | [writing-skills](skills/writing-skills/SKILL.md) | Create or improve reusable agent skills. |
-| [writing-task-briefs-and-guides](skills/writing-task-briefs-and-guides/SKILL.md) | Manual-only. Turn a long task brief into an estimate-ready summary and full guide. |
+| [writing-task-briefs-and-guides](skills/writing-task-briefs-and-guides/SKILL.md) | Manual-only where supported. Turn a long task brief into an estimate-ready summary and full guide. |
+
+**Manual-only skills** are never offered for automatic selection where the harness has a control for it: `disable-model-invocation: true` covers Claude Code, Cursor, GitHub Copilot, OpenCode, DeepSeek Harness, Pi, Qwen Code, Kimi Code and Droid, `triggers: [user]` covers Devin (including Windsurf), and `agents/openai.yaml` covers Codex. Ask for one by name — `/name` in most harnesses, `/skill:name` in Pi and Kimi Code, `$name` in Codex, or by name in OpenCode and DeepSeek Harness. Gemini CLI, Cline and harnesses without that control may still offer these skills automatically.
 
 ## Contributing
 

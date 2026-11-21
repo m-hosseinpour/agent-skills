@@ -2,11 +2,12 @@
 name: curating-global-instructions
 description: Use when adding to, trimming or reorganizing the instruction file loaded into every session whatever the project — the global CLAUDE.md, AGENTS.md, or whatever plays that role — or when it has grown past what a session can hold.
 disable-model-invocation: true
+triggers: [user]
 ---
 
 # Curating Global Instructions
 
-**Manual only.** Harnesses that support it hide this skill from automatic selection — `disable-model-invocation: true` here, plus `agents/openai.yaml` for Codex — so invoke it by name (`/name`, `$name`, or `@name`).
+**Manual only.** Where the harness supports it, this skill is hidden from automatic selection — `disable-model-invocation: true` in the frontmatter, `triggers: [user]` for Devin/Windsurf, and `agents/openai.yaml` for Codex — so ask for it by name.
 
 The global instruction file is read at the start of every session, whatever the project. Its length is a cost paid by every session that follows, so it should hold what **governs the work**: rules, invariants and decisions that must not be re-derived.
 

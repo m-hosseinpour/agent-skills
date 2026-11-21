@@ -2,11 +2,12 @@
 name: writing-task-briefs-and-guides
 description: Use when a long task or issue description needs a concise team-facing version for estimation while preserving full requirements in a standalone developer guide.
 disable-model-invocation: true
+triggers: [user]
 ---
 
 # Writing Task Briefs and Guides
 
-**Manual only.** Harnesses that support it hide this skill from automatic selection — `disable-model-invocation: true` here, plus `agents/openai.yaml` for Codex — so invoke it by name (`/name`, `$name`, or `@name`).
+**Manual only.** Where the harness supports it, this skill is hidden from automatic selection — `disable-model-invocation: true` in the frontmatter, `triggers: [user]` for Devin/Windsurf, and `agents/openai.yaml` for Codex — so ask for it by name.
 
 ## Overview
 
