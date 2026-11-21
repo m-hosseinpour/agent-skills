@@ -33,6 +33,8 @@ Should not select:
 - «موارد گزارش ریویو را اصلاح و بعد تست کن.» — implementation/fixes, not review-only follow-up.
 - “Rerun only the three blocked tests now that disk space is available and paste results.” — test-only retry, not whole-task acceptance.
 - “Verify just these two fix commits for regressions; no completed-task context or acceptance assessment.” — ordinary change review; named fixes alone don't select this coordinator.
+- “I just finished this implementation in this session; independently review my changes before I report the task done.” — pre-completion self-review gate, ordinary change review.
+- “You are the independent reviewer for the branch your session just delivered; check it against the ticket and run the tests.” — the deliverer is your own session, so this is still a change-review gate, not another author's handover.
 
 ## Application Cases
 

@@ -1,6 +1,6 @@
 ---
 name: validating-completed-tasks
-description: "Use when validating a completed task or a colleague's deliverable for task acceptance, initially or after prior review and revisions: whether the work is correct, complete, and trustworthy, including review plus real acceptance/edge-case testing, re-reviewing fixes against earlier findings and current task requirements, or checking a research/security report and its evidence. Not for defect-only or merge-readiness review without task-completion validation even if a ticket is cited; test-only execution; reporting settled findings; explanation-only walkthroughs; implementing the task; or fixing findings."
+description: "Use when validating work someone else delivered and handed over for acceptance — a colleague's or another team's implementation, fix round, or research/security report — against its agreed task or brief, initially or after prior review and revisions: whether it is correct, complete, and trustworthy, including review plus real acceptance/edge-case testing, revalidating revised fixes against earlier findings and current requirements, or checking a report's claims and evidence. Not for reviewing changes you or your delegating session produced, including a pre-completion independent-review gate before reporting them done (use reviewing-code-changes); defect-only or merge-readiness review without task-acceptance intent even if a ticket is cited; test-only execution; reporting settled findings; explanation-only walkthroughs; implementing the task; or fixing findings."
 ---
 
 # Validating Completed Tasks
@@ -34,6 +34,10 @@ deciding merge readiness. A ticket reference alone does not select this workflow
 file. Task-linked code inspection can use both skills: this one owns acceptance coordination and
 `reviewing-code-changes` owns the inspection method. The user need not literally say “acceptance” when
 asking whether the colleague's work is correctly and fully done, with real tests and edge cases.
+
+Only another author's handover selects this workflow. A pre-completion check of your own or your
+session's changes, including one delegated to an independent reviewer, is ordinary change review
+(`reviewing-code-changes`), not task acceptance.
 
 Preserve the colleague's implementation and original report. Validation does not authorize fixes,
 commits, publication, deployment, destructive resets, paid calls, or access outside permitted targets.
