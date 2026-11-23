@@ -18,7 +18,7 @@ Identify the supplied PR/MR, refs, patch, or local-change scope. Inspect current
 
 Use the changed-file list as a coverage inventory, not just the text diff. Do not stage files to make them appear in a diff. Never reset, stash, or checkout over user work to simplify review. Do not silently fetch remote refs; use already authorized sources, or ask if fetching is necessary. A stale local target cannot prove compatibility with the current remote target.
 
-For branch review, target divergence can also create integration risk not visible in the feature diff. Inspect changed contracts on the target when relevant; report untested merge/integration behavior without pretending the branch diff is a merged build.
+For branch review, target divergence can also create integration risk not visible in the feature diff, including changed contracts or colliding migration numbers/ordering on the target branch. Inspect those when relevant; report untested merge/integration behavior without pretending the branch diff is a merged build.
 
 ## Hosted changes and omitted content
 

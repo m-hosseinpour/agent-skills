@@ -33,7 +33,7 @@ IDs follow the source checklist, so gaps mark items dropped as redundant or host
 - **q2** No dead code, commented-out blocks, or debug statements — version control already remembers deletions.
 - **q4** Error handling explicit, not swallowed, and not reported as success — an empty catch that still answers `ok` is a bug report waiting to happen.
 - **q10** Relevant empty, invalid, boundary, duplicate, concurrent, and partial-failure cases preserve the contract — the happy path gets demoed, the edge cases get paged. Related writes, retries, and cancellation must not leave unintended state.
-- **q11** Ordering, defaults, activation, and compatibility are supported by neighboring contracts — inspect old clients/new servers, migrations, flags, and deployment sequence when affected; a claimed refactor still needs behavior-equivalence evidence.
+- **q11** Ordering, defaults, activation, and compatibility are supported by neighboring contracts — inspect old clients/new servers, migrations (including lock/backfill cost and rollback safety), flags, and deployment sequence when affected; a claimed refactor still needs behavior-equivalence evidence.
 
 ## Testing
 
@@ -45,7 +45,7 @@ IDs follow the source checklist, so gaps mark items dropped as redundant or host
 
 ## Performance & Security
 
-- **p1** Query count and work per request remain appropriate for realistic cardinality — investigate N+1 queries, repeated I/O, and unbounded scans; a necessary bounded loop is not a defect merely because it loops.
+- **p1** Query count and work per request remain appropriate for realistic cardinality — investigate N+1 queries (including lazy loading during iteration or serialization), repeated per-item I/O, over-fetching large records, and unbounded scans; a necessary bounded loop is not a defect merely because it loops.
 - **p2** User input validated before touching anything sensitive — frontend validation is not a security boundary.
 - **p3** Secrets not hardcoded or logged — once a secret hits version control, rotation is the only fix.
 - **p4** New endpoints respect existing authorization rules — bypassing a permission check is privilege escalation.

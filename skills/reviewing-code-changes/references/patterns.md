@@ -57,6 +57,7 @@ Other affected paths:
 
 - Unawaited promises, incomplete `Promise.all` failure handling, or missing cancellation can leave background work running after the caller fails. Check ownership and observable consequences.
 - Render-time mutation of props or external state can make UI behavior depend on repeated rendering. Use the established event/effect flow only when it matches the intended trigger; moving a mutation to an effect is not automatically correct and may still duplicate it.
+- Duplicating derivable state (from props/inputs, store, URL, or query cache) into local mutable state and synchronizing it through watchers or effects can leave stale data on updates or resets; distinguish an intentional editable draft from state meant to stay derived.
 - An unchecked `fetch` status may interpret a parseable error body as success; inspect the surrounding response handling before reporting it.
 
 ## Test quality: would a realistic mistake fail?
@@ -76,8 +77,8 @@ Open this pass when auth, input, storage, uploads, or public endpoints change. A
 actual threat model and existing contracts, not as universal requirements for every endpoint.
 
 - **Identity and access:** distinguish authentication from authorization; verify tenant/object ownership and allowed operation before sensitive reads or side effects, including fallback/background paths. Validate token signature, issuer/audience, and expiry when the system uses tokens.
-- **Input and output:** validate untrusted data server-side at its real boundary, including partner API data. Parameterize SQL; constrain uploads and file paths; escape output for the target context. A cast, frontend check, or authenticated caller does not establish data safety.
-- **Sensitive data:** follow password-storage and encryption requirements, avoid secrets/PII in logs and error bodies, and inspect transport/config changes. Do not quote a discovered secret into the report; identify its location and required containment/rotation.
+- **Input and output:** validate untrusted data server-side at its real boundary, including partner API data, and guard against mass-assignment or internal-field exposure when binding or serializing storage models directly. Parameterize SQL; constrain uploads and file paths; escape output for the target context. A cast, frontend check, or authenticated caller does not establish data safety.
+- **Sensitive data:** follow password-storage and encryption requirements, avoid secrets, PII, or internal stack traces in logs and client-facing error bodies, and inspect transport/config changes. Do not quote a discovered secret into the report; identify its location and required containment/rotation. For sensitive-action audit logs, verify that denied, failed, or rolled-back attempts still leave a durable record rather than writing only on the success path or inside a rolled-back transaction.
 - **Conditional protections:** assess CSRF for cookie-authenticated state changes, rate/size limits for abuse-prone public paths, and injection/sandbox risks for dynamic execution. Do not demand CSRF where its threat does not apply, or call a controlled execution facility a defect solely because it executes code.
 
 ## Recurring and resumable work
@@ -97,10 +98,10 @@ and exercise a relevant asynchronous failure when completion depends on downstre
 
 Use when changes own resources, start asynchronous work, retry operations, or update related state.
 
-- Who owns each connection, file, timer, listener, task, or subscription, and who releases it on success, failure, and cancellation?
-- Can concurrent requests, retries, duplicates, or reordered events violate a limit or apply an operation twice? Look for a concrete race, missing idempotency, or incorrect ordering; do not infer one just from asynchronous syntax.
-- For stateful UI or client flows, what happens when the active target, item, user, or route changes, a component unmounts or a dialog dismisses, or overlapping operations settle out of order? Verify that stale completions or retries cannot overwrite a newer owner's state, lose in-progress edits, or leave visible state inconsistent with persisted state.
-- Can a multi-step write leave partial state? Inspect transaction boundaries, compensation, and recovery; check authorization before any side effect.
+- Who owns each connection, file, timer, listener, task, or subscription, and who releases it on success, failure, and cancellation? Conversely, are heavyweight shared clients or connection pools reused rather than recreated per request or loop iteration?
+- Can concurrent requests, retries, duplicates, or reordered events violate a limit, apply an operation twice, or overwrite request/user state stored on a shared singleton, service instance, or module field? Look for a concrete race, shared mutable state, missing idempotency, or incorrect ordering; do not infer one just from asynchronous syntax.
+- For stateful UI or client flows (including live search or filter inputs that trigger requests), what happens on rapid input, when the active target, item, user, or route changes, a component unmounts or a dialog dismisses, or overlapping operations settle out of order? Verify rate control or cancellation where needed and check that stale completions or retries cannot overwrite a newer owner's state, lose in-progress edits, or leave visible state inconsistent with persisted state.
+- Can a multi-step write leave partial state, or does a database transaction/lock stay open across external HTTP/RPC calls, queues, or slow I/O (holding locks/connections and leaving external side effects committed if the transaction rolls back)? Inspect transaction boundaries, compensation, and recovery; check authorization before any side effect.
 - When a change introduces an early return, clamp, `null`/empty fallback, or new thrown error, do all unchanged callers and downstream consumers handle that result shape safely?
-- Are timeouts, work queues, caches, and retry budgets bounded for plausible loads? Use current cardinality/contract evidence for performance claims rather than invented thresholds.
+- Are timeouts, work queues, caches, and retry budgets bounded for plausible loads? When data is cached, check how writes invalidate or refresh it, whether transient failures get cached, and whether cache keys include the full scope (such as tenant, user, or parameters). Use current cardinality/contract evidence for performance claims rather than invented thresholds.
 - Does deployment/activation make the path reachable, and can mixed versions safely read/write the changed format? Missing rollout evidence is a limit; a demonstrated incompatible consumer is a finding.

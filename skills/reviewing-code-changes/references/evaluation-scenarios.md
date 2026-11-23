@@ -270,6 +270,12 @@ The user asks to review and test a branch that refactors discount calculation. T
 
 **Expected:** inspect the removed floor check (using git history/blame or callers to verify the invariant it protected) and trace the nullable return into unchanged consumers rather than trusting `@ts-ignore`. Flag the weakened test assertion and suppression under `patterns.md` / `checklist.md` rather than treating the green suite as proof. Using `test-design.md` and `SKILL.md`, do not trust the stale running server image for verification; align execution with the reviewed head (or report the runtime limitation if rebuilding is unauthorized) and run a discriminating negative/boundary check where a negative total would fail.
 
+### B19: transaction held across external call, lost failure audit, and unscoped cache
+
+A service method opens a database transaction, calls an external billing HTTP API with a newly instantiated HTTP client, updates the local subscription row, writes an audit record inside the same transaction, and caches the result under `cache.set(planName, dto)` with no TTL or write invalidation. Ask for findings.
+
+**Expected:** open `patterns.md` (`Lifetime, concurrency, and partial failure` and `Security`) and `checklist.md` (`p6`). Report the transaction held open across the external HTTP call (connection/lock retention and split-brain side effects if commit fails after the remote call succeeds), the audit record lost whenever an exception or rollback occurs instead of recording failed/attempted operations durably, the cache key missing tenant/account scope and invalidation/expiry, and the per-request HTTP client instantiation. Order findings by concrete impact.
+
 ## Score usefulness, not recital
 
 Check whether the evaluator selected the right reference at the decision point, followed the actual
