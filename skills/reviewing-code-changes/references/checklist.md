@@ -15,7 +15,7 @@ IDs follow the source checklist, so gaps mark items dropped as redundant or host
 
 - **c1** Intent is recoverable from the description, requirements, or commit history where available — missing intent limits interpretation; an unhelpful branch name alone is not a code defect.
 - **c3** The diff does one thing, and its files have a supported connection to that goal or necessary supporting work — scope creep hides the change that needed the attention. Use the proportionate file-choice guidance in `SKILL.md`, including moves, renames, and deletions; a file type alone is not a justification.
-- **c5** Deliberate breakage is stated and bounded — a removed feature, flag, or safeguard says what stops working and for whom; unannounced removal is indistinguishable from a bug.
+- **c5** Deliberate breakage is stated and bounded — a removed feature, flag, or safeguard says what stops working and for whom; unannounced removal is indistinguishable from a bug. When a non-obvious guard, validation, or check is removed in deleted lines, inspect git history or blame if available to see what invariant or fix it protected.
 
 ## Architecture & Design
 
@@ -38,7 +38,7 @@ IDs follow the source checklist, so gaps mark items dropped as redundant or host
 ## Testing
 
 - **t1** New behavior has a test when the project's existing test setup can cover it; do not require new tests or scaffolding a framework against project norms.
-- **t2** Tests verify behavior, not implementation details — internals break on every refactor.
+- **t2** Tests verify behavior, not implementation details, and existing assertions or lint/type/CI gates were not weakened, skipped, or suppressed just to turn the suite green — internals break on every refactor, and a weakened assertion hides the regression.
 - **t3** Relevant failure and boundary cases have evidence through the existing test setup or a recorded check — a token unhappy-path test does not establish coverage, and no new framework is required.
 - **t4** Tests deterministic, no flaky timing or randomness.
 - **t5** Bug fixes include a regression test when the project's test setup supports it; otherwise verify with a recorded reproduction and relevant available checks.

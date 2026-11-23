@@ -7,7 +7,7 @@ Language traps adapted from wshobson/agents `code-review-excellence` (MIT, Seth 
 
 ## Dependencies and external APIs: plausible is not installed
 
-For new or changed imports, library calls, or service integrations, verify the package/path and API against the project's installed or locked version and authoritative documentation. The latest release's API is not proof that the deployed version supports it. Check that the reachable implementation uses the dependency and follows the project's existing conventions; do not add speculative adapters or flag an intentional local module solely because it is absent from a package manifest.
+For new or changed imports, library calls, or service integrations, verify the package/path and API against the project's installed or locked version and authoritative documentation. The latest release's API is not proof that the deployed version supports it. Check that the reachable implementation uses the dependency and follows the project's existing conventions; do not add speculative adapters or flag an intentional local module solely because it is absent from a package manifest. For dependency upgrades or lockfile changes, inspect release notes or migration guides for breaking behavior and default changes across the actual version range, check transitive lockfile diffs and affected consumers, and verify with relevant tests; a clean installation or semantic version bump alone does not establish compatibility.
 
 These boundary, failure, and lifetime checks apply to generated code as well as human code. Line count, the absence of a literal `finally`, or compiling successfully is not a safety test: establish ownership, existing safeguards, and a reachable failure before reporting a defect. Avoid duplicate full audits just because code was AI-written.
 
@@ -64,7 +64,8 @@ Other affected paths:
 Read assertions, fixtures, and mocks, not just test names. A passing test may mock away the very
 authorization, transaction, parser, or network boundary the change needs to exercise.
 
-- Derive expected outcomes from requirements and contracts, independently of the implementation. Confirm that a plausible wrong behavior would fail an assertion.
+- Derive expected outcomes from requirements and contracts, independently of the implementation. Confirm that a plausible wrong behavior would fail an assertion. Watch for circular tests that copy the implementation's formula or assert only what a mock was configured to return instead of verifying the post-condition and absence of forbidden side effects.
+- Inspect diffs to existing tests, test configs, and lint/type/CI rules for weakened assertions (such as replacing an exact expected value with a truthiness or status-only check), deleted or newly skipped tests, lowered coverage/check thresholds, or suppressions (`@ts-ignore`, `eslint-disable`, `# noqa`) that turn checks green by hiding a failure.
 - Prefer observable results at the appropriate boundary: returned values, persisted state, emitted events, or UI behavior. Testing a genuine low-level contract is legitimate; incidental private state or source-text matching usually is not.
 - Cover relevant failure and boundary cases, including no forbidden side effects after rejection. Use existing project norms; lack of a framework calls for a recorded focused check, not compulsory scaffolding.
 - Check order independence, deterministic timing, and whether mocks/fixtures hide integration mistakes. Distinguish reading a test from executing it.
@@ -98,6 +99,8 @@ Use when changes own resources, start asynchronous work, retry operations, or up
 
 - Who owns each connection, file, timer, listener, task, or subscription, and who releases it on success, failure, and cancellation?
 - Can concurrent requests, retries, duplicates, or reordered events violate a limit or apply an operation twice? Look for a concrete race, missing idempotency, or incorrect ordering; do not infer one just from asynchronous syntax.
+- For stateful UI or client flows, what happens when the active target, item, user, or route changes, a component unmounts or a dialog dismisses, or overlapping operations settle out of order? Verify that stale completions or retries cannot overwrite a newer owner's state, lose in-progress edits, or leave visible state inconsistent with persisted state.
 - Can a multi-step write leave partial state? Inspect transaction boundaries, compensation, and recovery; check authorization before any side effect.
+- When a change introduces an early return, clamp, `null`/empty fallback, or new thrown error, do all unchanged callers and downstream consumers handle that result shape safely?
 - Are timeouts, work queues, caches, and retry budgets bounded for plausible loads? Use current cardinality/contract evidence for performance claims rather than invented thresholds.
 - Does deployment/activation make the path reachable, and can mixed versions safely read/write the changed format? Missing rollout evidence is a limit; a demonstrated incompatible consumer is a finding.

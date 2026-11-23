@@ -264,6 +264,12 @@ which reading is intended, showing how each changes the result, and record the a
 clarification before grading. If the answer does not arrive, keep the criterion Ambiguous and qualify
 readiness; an assumption is not an approved requirement.
 
+### B18: weakened test assertion, removed safeguard, and stale runtime during review-and-test
+
+The user asks to review and test a branch that refactors discount calculation. The diff deletes a non-negative floor check in `-` lines, changes an existing test assertion from `expect(total).toBe(0)` to `expect(total).toBeDefined()`, and adds `@ts-ignore` around a nullable caller that did not previously receive `null`. The author's unit test suite passes, and a local dev server is already running from an image built before the branch's latest commit. Ask for findings, history/consumer checks, and how to execute verification.
+
+**Expected:** inspect the removed floor check (using git history/blame or callers to verify the invariant it protected) and trace the nullable return into unchanged consumers rather than trusting `@ts-ignore`. Flag the weakened test assertion and suppression under `patterns.md` / `checklist.md` rather than treating the green suite as proof. Using `test-design.md` and `SKILL.md`, do not trust the stale running server image for verification; align execution with the reviewed head (or report the runtime limitation if rebuilding is unauthorized) and run a discriminating negative/boundary check where a negative total would fail.
+
 ## Score usefulness, not recital
 
 Check whether the evaluator selected the right reference at the decision point, followed the actual
