@@ -4,7 +4,18 @@ The structural pass asks whether a change adds avoidable complexity or damages a
 
 Open when responsibilities, abstractions, dependencies, or complexity change. A structural finding
 may redirect detail inspection, but must not outrank security, correctness, or data loss merely because
-it is structural. Severity and reporting order follow `SKILL.md`: concrete impact, not the signal.
+it is structural. Severity and reporting order follow [SKILL.md](../SKILL.md#findings): concrete impact, not the signal.
+
+## Contents
+
+- [The question that comes first](#the-question-that-comes-first)
+- [Signals to investigate](#signals-to-investigate)
+- [File structure, names, and rationale](#file-structure-names-and-rationale)
+- [File growth without arbitrary cutoffs](#file-growth-without-arbitrary-cutoffs)
+- [Choose a remedy that preserves the contract](#choose-a-remedy-that-preserves-the-contract)
+- [Prioritizing structural findings](#prioritizing-structural-findings)
+- [Readiness and severity](#readiness-and-severity)
+- [Tone](#tone)
 
 ## The question that comes first
 
@@ -94,7 +105,7 @@ still orders all findings by severity and concrete impact; a tenant leak precede
 6. Legibility
 
 Prefer evidenced material findings over a cosmetic inventory; there is no quota. Keep optional polish
-separate. Preserve required scope-mismatch findings from `requirements.md`, including low-risk extras.
+separate. Preserve required scope-mismatch findings from [requirements.md](requirements.md), including low-risk extras.
 
 ## Readiness and severity
 

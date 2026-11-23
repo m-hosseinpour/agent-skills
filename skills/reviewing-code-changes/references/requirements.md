@@ -6,13 +6,13 @@ When only a vague description exists, do not invent acceptance criteria or choos
 
 ## 1. Build the requirement list
 
-Read the requirement text and approved clarifications before the implementation, so the code does not frame what you look for. Use the reviewed scope/revisions established with `scope-and-evidence.md` when applicable. Keep requirement sources identifiable; the author's implementation summary cannot silently expand the agreed scope. Turn the requirements into separate, checkable statements:
+Read the requirement text and approved clarifications before the implementation, so the code does not frame what you look for. Use the reviewed scope/revisions established with [scope-and-evidence.md](scope-and-evidence.md) when applicable. Keep requirement sources identifiable; the author's implementation summary cannot silently expand the agreed scope. Turn the requirements into separate, checkable statements:
 
 - One line per behavior, not per ticket bullet — a bullet often holds several criteria.
 - Include stated edge cases, error behavior, limits, permissions, and compatibility requirements.
 - For recurring/resumable work, make stated completion and next-run behavior checkable, including what “success” means for asynchronous effects. If the ticket and existing contracts leave a material choice open (one-time cleanup versus continuous enforcement, for example), ask the owner instead of inventing a terminal-state requirement or choosing the reading that happens to match the code. Independently evidenced harmful repetition or stranded work still belongs in the general defect review; see [selection and completion](patterns.md#recurring-and-resumable-work).
 - Record explicit non-goals and "out of scope" notes, when present, as scope constraints. Extras can exist even without an explicit non-goal.
-- Do not resolve contradictions or genuine ambiguities by preference, silence, or assumption: apply **Resolve Ambiguity Before Relying on It** in the main skill. If two readings both satisfy the text, ask the author or requirement owner and leave the criterion ungraded until answered; a later answer becomes an approved clarification.
+- Do not resolve contradictions or genuine ambiguities by preference, silence, or assumption: apply [Resolve Ambiguity Before Relying on It](../SKILL.md#resolve-ambiguity-before-relying-on-it) in the main skill. If two readings both satisfy the text, ask the author or requirement owner and leave the criterion ungraded until answered; a later answer becomes an approved clarification.
 
 ## 2. Find evidence for each
 

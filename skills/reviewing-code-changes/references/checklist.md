@@ -6,7 +6,7 @@
 Use for substantive or multi-category reviews. Consider affected categories, prioritize by concrete
 risk, and expand when evidence reveals another affected path. These are investigation prompts,
 not mandatory findings or a checklist to paste into the report. A tiny focused review needs no full sweep;
-a long diff is not a reason to silently skip risky paths. Apply `SKILL.md` for evidence and severity.
+a long diff is not a reason to silently skip risky paths. Apply [SKILL.md](../SKILL.md#findings) for evidence and severity.
 
 IDs follow the source checklist, so gaps mark items dropped as redundant or hosted-PR-only.
 `c5`, `a10` and `s5` are additions from the `thermos` review rubric (cursor/plugins, MIT).
@@ -14,7 +14,7 @@ IDs follow the source checklist, so gaps mark items dropped as redundant or host
 ## Context & Purpose
 
 - **c1** Intent is recoverable from the description, requirements, or commit history where available — missing intent limits interpretation; an unhelpful branch name alone is not a code defect.
-- **c3** The diff does one thing, and its files have a supported connection to that goal or necessary supporting work — scope creep hides the change that needed the attention. Use the proportionate file-choice guidance in `SKILL.md`, including moves, renames, and deletions; a file type alone is not a justification.
+- **c3** The diff does one thing, and its files have a supported connection to that goal or necessary supporting work — scope creep hides the change that needed the attention. Use the proportionate [file-choice guidance in SKILL.md](../SKILL.md#file-choices-necessity-structure-and-names), including moves, renames, and deletions; a file type alone is not a justification.
 - **c5** Deliberate breakage is stated and bounded — a removed feature, flag, or safeguard says what stops working and for whom; unannounced removal is indistinguishable from a bug. When a non-obvious guard, validation, or check is removed in deleted lines, inspect git history or blame if available to see what invariant or fix it protected.
 
 ## Architecture & Design
@@ -63,6 +63,6 @@ IDs follow the source checklist, so gaps mark items dropped as redundant or host
 ## Standards Compliance
 
 - **s1** Follows the team's style guide and ADRs — a settled decision should not be re-litigated per change.
-- **s2** Test/build evidence applies to the reviewed state — when evidence is absent, stale, or contradicted, use safe, authorized focused checks that could change the assessment. State supplied versus executed results and unverified behavior; follow `SKILL.md` for safety and existing failures.
+- **s2** Test/build evidence applies to the reviewed state — when evidence is absent, stale, or contradicted, use safe, authorized focused checks that could change the assessment. State supplied versus executed results and unverified behavior; follow [SKILL.md](../SKILL.md#verification-evidence) for safety and existing failures.
 - **s4** Accessibility basics respected for user-facing changes — labels, contrast, keyboard navigation decide who it works for.
 - **s5** Local run and build still work — a renamed env var, a moved secret, a remapped port, or a new required setup step breaks every developer, and is not an implementation detail.

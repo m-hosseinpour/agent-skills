@@ -1,9 +1,17 @@
 # Review Patterns
 
-Open for affected Python/JS/TS code, external-data boundaries, tests, authentication, storage,
-public endpoints, recurring/resumable work, or asynchronous/resource-owning changes. These are traps to investigate, not
-automatic findings. Establish the actual contract, reachable path, and impact before reporting.
+Open for affected dependencies/imports and locked APIs, Python/JS/TS code, external-data boundaries, test/gate diffs, authentication/authorization and audit logs, storage, public endpoints, recurring/resumable work, or asynchronous, transactional, cached, and resource-owning changes. These are traps to investigate, not automatic findings. Establish the actual contract, reachable path, and impact before reporting.
 Language traps adapted from wshobson/agents `code-review-excellence` (MIT, Seth Hobson).
+
+## Contents
+
+- [Dependencies and external APIs: plausible is not installed](#dependencies-and-external-apis-plausible-is-not-installed)
+- [Python: accidental shared state and swallowed failures](#python-accidental-shared-state-and-swallowed-failures)
+- [TypeScript / JavaScript: static types are not runtime validation](#typescript--javascript-static-types-are-not-runtime-validation)
+- [Test quality: would a realistic mistake fail?](#test-quality-would-a-realistic-mistake-fail)
+- [Security: follow the trust boundary](#security-follow-the-trust-boundary)
+- [Recurring and resumable work](#recurring-and-resumable-work)
+- [Lifetime, concurrency, and partial failure](#lifetime-concurrency-and-partial-failure)
 
 ## Dependencies and external APIs: plausible is not installed
 
@@ -69,7 +77,7 @@ authorization, transaction, parser, or network boundary the change needs to exer
 - Inspect diffs to existing tests, test configs, and lint/type/CI rules for weakened assertions (such as replacing an exact expected value with a truthiness or status-only check), deleted or newly skipped tests, lowered coverage/check thresholds, or suppressions (`@ts-ignore`, `eslint-disable`, `# noqa`) that turn checks green by hiding a failure.
 - Prefer observable results at the appropriate boundary: returned values, persisted state, emitted events, or UI behavior. Testing a genuine low-level contract is legitimate; incidental private state or source-text matching usually is not.
 - Cover relevant failure and boundary cases, including no forbidden side effects after rejection. Use existing project norms; lack of a framework calls for a recorded focused check, not compulsory scaffolding.
-- Check order independence, deterministic timing, and whether mocks/fixtures hide integration mistakes. Distinguish reading a test from executing it.
+- Check order independence, deterministic timing, and whether mocks/fixtures hide integration mistakes. Distinguish reading a test from executing it; when designing or running a verification check, open [test design](test-design.md).
 
 ## Security: follow the trust boundary
 

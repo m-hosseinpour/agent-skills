@@ -1,6 +1,6 @@
 # Designing Verification that Can Catch a Mistake
 
-Open when designing a focused reproduction/test or judging whether existing tests cover a changed behavior. This expands verification within a review; it does not authorize fixes, a new framework, or writing outside approved paths.
+Open when designing a focused reproduction/test or judging whether existing tests cover a changed behavior (for weakened assertions, circular mocks, or lint/type suppressions in test and config diffs, also see [test quality in patterns.md](patterns.md#test-quality-would-a-realistic-mistake-fail)). This expands verification within a review; it does not authorize fixes, a new framework, or writing outside approved paths.
 
 ## Choose the Behavior Before the Test
 
