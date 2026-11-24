@@ -16,9 +16,9 @@ Read the requirement text and approved clarifications before the implementation,
 
 ## 2. Find evidence for each
 
-A requirement is met only when the shipped path reaches behavior matching the criterion. Inspect the resulting implementation and relevant unchanged code, not just added lines: a requirement may already be satisfied in the base. Evidence can be a traced code path, a test's actual assertions, or a migration, config, or doc when the requirement concerns those. Distinguish static inspection from executed checks; do not imply a test ran merely because you read it.
+A requirement is met only when the shipped path reaches behavior matching the criterion. Inspect the resulting implementation and relevant unchanged code, not just added lines: a requirement may already be satisfied in the base. Evidence can be a traced code path, a test's actual assertions, or a migration, config, or doc when the requirement concerns those. For a PoC, operational proof, or mixed R&D/analytical task, evidence can also be an executed operational check (such as multi-role policy/query results or a demonstrated security PoC), an analytical or comparative section verified with `research-with-evidence` when available, or — only when the task explicitly allows documenting why a step is infeasible — an evidenced technical blocker establishing the concrete limitation rather than an unverified claim that it could not be done. Distinguish static inspection from executed checks; do not imply a test ran merely because you read it.
 
-Commit messages, branch names, and test titles are claims, not evidence. Record the evidence location (file:line) as you go; the report needs it.
+Commit messages, branch names, and test titles are claims, not evidence. Record the evidence location (`file:line`, or exact document section, policy/config identifier, and executed query/command for non-code deliverables) as you go; the report needs it.
 
 ## 3. Classify
 

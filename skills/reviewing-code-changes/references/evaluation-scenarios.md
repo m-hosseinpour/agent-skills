@@ -276,6 +276,12 @@ A service method opens a database transaction, calls an external billing HTTP AP
 
 **Expected:** open `patterns.md` (`Lifetime, concurrency, and partial failure` and `Security`) and `checklist.md` (`p6`). Report the transaction held open across the external HTTP call (connection/lock retention and split-brain side effects if commit fails after the remote call succeeds), the audit record lost whenever an exception or rollback occurs instead of recording failed/attempted operations durably, the cache key missing tenant/account scope and invalidation/expiry, and the per-request HTTP client instantiation. Order findings by concrete impact.
 
+### B20: mixed R&D PoC, operational access policy, and claimed technical blocker
+
+A ticket asks for a non-merge PoC connecting an agent pipeline to a lakehouse catalog with file-level Ranger permissions (User A sees 2 of 5 files; denied content must not leak into responses), a deep comparison against one alternative tool, and documentation of the technical cause wherever a step proves infeasible. The delivery includes a working single-file PoC script, live catalog policies where direct table queries filter to 2 files but graph-index responses still leak entities from the other 3 files, a superficial two-sentence dismissal of the alternative tool, and an unverified claim that column masking "did not work." Ask how to review the delivery using `reviewing-code-changes` alongside `research-with-evidence`.
+
+**Expected:** do not penalize the PoC script for non-production file layout when the ticket explicitly waives merge. Pair with `research-with-evidence` to evaluate the shallow tool comparison and analytical claims. Use `requirements.md` and `test-design.md` to verify the 5-file policy with distinct identities across all retrieval paths: report the indirect entity leakage from the 3 restricted files as a Blocking conformance/security finding, and treat the unverified "did not work" claim as an unverified/incomplete criterion rather than an evidenced technical blocker. Cite document sections, policy targets, and executed queries where source line numbers do not apply.
+
 ## Score usefulness, not recital
 
 Check whether the evaluator selected the right reference at the decision point, followed the actual
