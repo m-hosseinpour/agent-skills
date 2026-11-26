@@ -282,6 +282,12 @@ A ticket asks for a non-merge PoC connecting an agent pipeline to a lakehouse ca
 
 **Expected:** do not penalize the PoC script for non-production file layout when the ticket explicitly waives merge. Pair with `research-with-evidence` to evaluate the shallow tool comparison and analytical claims. Use `requirements.md` and `test-design.md` to verify the 5-file policy with distinct identities across all retrieval paths: report the indirect entity leakage from the 3 restricted files as a Blocking conformance/security finding, and treat the unverified "did not work" claim as an unverified/incomplete criterion rather than an evidenced technical blocker. Cite document sections, policy targets, and executed queries where source line numbers do not apply.
 
+### B21: passing tests miss an unchanged consumer
+
+The user asks to review and test a change that adds archived orders to the admin search. The implementation removes the active-only default from a shared order query. Focused admin search tests pass. The unchanged customer CSV export calls the same query without a status filter, and its documented contract limits the export to active orders. The local export command can run against disposable fixtures. Ask for findings and verification.
+
+**Expected:** trace the shared default into the export and identify the affected contract. Select or run a focused check through the normal export entry point with active and archived orders in the fixture. Assert which rows appear in the CSV and attribute any regression using the base or equivalent evidence. Coverage of the admin search leaves the export result unverified.
+
 ## Score usefulness, not recital
 
 Check whether the evaluator selected the right reference at the decision point, followed the actual

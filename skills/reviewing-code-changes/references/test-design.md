@@ -1,12 +1,14 @@
 # Designing Verification that Can Catch a Mistake
 
-Open when designing a focused reproduction/test or judging whether existing tests cover a changed behavior (for weakened assertions, circular mocks, or lint/type suppressions in test and config diffs, also see [test quality in patterns.md](patterns.md#test-quality-would-a-realistic-mistake-fail)). This expands verification within a review; it does not authorize fixes, a new framework, or writing outside approved paths.
+Open when designing a focused reproduction/test or judging whether existing tests cover behavior affected by a change (for weakened assertions, circular mocks, or lint/type suppressions in test and config diffs, also see [test quality in patterns.md](patterns.md#test-quality-would-a-realistic-mistake-fail)). This expands verification within a review; it does not authorize fixes, a new framework, or writing outside approved paths.
 
 ## Choose the Behavior Before the Test
 
 Derive expected results from the requirement, external contract, or independent working example before reading the implementation's output. Identify the shipped entry point and the relevant observable result: response, denied side effect, saved state, event, or user interaction. A helper's low-level contract can deserve its own test, but cannot by itself prove the feature reaches that helper.
 
 Choose only cases that can change the assessment: the intended flow, a plausible failure, and an important boundary where applicable. For authorization, include the forbidden operation and absence of its side effects; for retry/concurrency changes, include the relevant duplicate/order behavior. Do not create a Cartesian product of imaginary inputs or require every category for a tiny change.
+
+For behavior that should be preserved, follow the dependency exposed by the source trace. When a shared contract, state, or configuration changes, choose an existing caller or workflow whose result could materially change. Exercise its normal entry point and assert the result it should still produce, using the agreed contract or an independently established baseline consistent with that contract.
 
 ## Make the Check Discriminating
 
