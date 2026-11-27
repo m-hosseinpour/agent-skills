@@ -31,6 +31,8 @@ For performance, measure a baseline before changing code: same workload, environ
 
 ## Handoff
 
-Keep it proportionate: **symptom → evidence and cause (or current hypothesis) → correction or mitigation → scope and coverage → relevant revision/environment → checks run (and skipped, with reasons) → remaining limits**. Distinguish observed facts from inference, implemented from verified, and restored service from a permanent fix. If blocked, name the next evidence or permission needed, not a guessed cause.
+Keep it proportionate: **symptom → evidence and cause (or current hypothesis) → correction or mitigation → checks and results → remaining limits**. Distinguish observed facts from inference, implemented from verified, and restored service from a permanent fix. If blocked, name the next evidence or permission needed, not a guessed cause.
+
+For material investigations, state what the checks covered and what limited that coverage. Distinguish what you inspected from what you ran. Name the revision or environment when it affects confidence, and explain why any relevant checks were skipped.
 
 Maintainers revising this skill can use [evaluation scenarios](references/evaluation-scenarios.md) to check metadata selection and application separately. They are not part of ordinary debugging. The optional dependency-free [waiting example](scripts/condition-based-waiting-example.ts) is linked from the timing guide; prefer existing project waiters over copying it.
