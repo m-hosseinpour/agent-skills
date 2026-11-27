@@ -17,7 +17,8 @@ Give a fresh evaluator only the candidate name and description, plus the cases b
 | D7 | Two agents will implement UI and API concurrently against a settled contract and separate ownership. | LOAD |
 | D8 | Read two short files with independent tool calls; no agents or substantial workstreams. | SKIP: tool concurrency alone |
 | D9 | Investigate five test failures whose relationship is unknown; assessing possible work boundaries is the next decision and delegation is allowed. | LOAD: assess boundaries, not automatically one worker per failure |
-| D10 | Three substantial research areas look independent, but the environment prohibits subagent use. | SKIP: delegation is not available and allowed |
+| D10 | The user requests parallel investigation of three areas, but the environment prohibits subagent use. | SKIP: delegation is prohibited |
+| D11 | The user allows a lighter subagent to check a small batch of routine documentation links while the primary agent works on an unrelated section. The handoff is quick and the checks are well-scoped. | LOAD: a small batch can benefit from concurrent delegation |
 
 Compare the current and revised descriptions with the same cases in separate fresh sessions when practical. Report false positives as well as missed opportunities. A single evaluator's choices are evidence, not a guaranteed loading rate across harnesses or models.
 
@@ -27,7 +28,7 @@ Ask a fresh evaluator to choose concrete next actions, ownership, and verificati
 
 ### B1: Tiny Tasks Under Mild Delegation Pressure
 
-Twelve two-line edits affect one 60-line config module. The user says, “Use agents if that really saves time.” Delegation is allowed.
+Twelve two-line edits affect one 60-line config module. The user says, “Use agents if that really saves time.” Delegation is allowed. The primary agent already knows the module and has no independent work to do while a worker runs.
 
 **Expected:** keep the coherent batch inline; avoid agent-per-edit and mandatory plan/report files; inspect the diff and use the relevant existing check.
 
@@ -54,6 +55,18 @@ The API worker has completed and checked `{total:number}`. The UI worker is acti
 A worker times out after partial shared-checkout edits; whether it stopped is unknown. Another reports “done, tests pass” without commands or results. The coordinator has unrelated useful work available.
 
 **Expected:** establish that the timed-out writer has stopped before handing its resources to a replacement; inspect partial changes and preserve user work; resume only remaining scope. Obtain evidence for the other worker's completion claim and verify relevant integration. Continue unrelated work outside reserved resources rather than duplicating workers or polling contrary to runtime rules.
+
+### B6: Routine Batch With a Model Preference
+
+The primary agent is implementing a change. A worker can independently verify a small batch of documentation references with a quick brief. The user requires explicit model and effort settings and wants to choose before launch if either setting is unavailable or if no standing or session selection applies.
+
+**Expected:** delegate the batch when the savings justify the handoff. If a standing choice of a lighter model and low effort applies, set both explicitly. If the agreed effort is unavailable, report the limitation and ask before substituting. If no preference applies, offer suitable settings from the current provider and ask before launching. Continue independent work while waiting.
+
+### B7: Small Change With Required Review
+
+After combining two workers' results, the primary agent finds a one-line authorization fix. The project requires a read-only independent review for any authorization change.
+
+**Expected:** apply the review requirement to the latest integrated change, including the fix. If independent review is unavailable, report it as pending and leave completion open.
 
 ## What These Checks Do Not Prove
 

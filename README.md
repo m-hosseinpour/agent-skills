@@ -51,7 +51,7 @@ Each link opens the skill's `SKILL.md` — the instructions your agent reads.
 | --- | --- |
 | [curating-global-instructions](skills/curating-global-instructions/SKILL.md) | Manual-only where supported. Decide what belongs in always-loaded agent instructions and keep them maintainable. |
 | [designing-persian-rtl-web-ui](skills/designing-persian-rtl-web-ui/SKILL.md) | Build and review Persian right-to-left web interfaces. |
-| [dispatching-parallel-agents](skills/dispatching-parallel-agents/SKILL.md) | Decide when and how to delegate substantial work to parallel agents. |
+| [dispatching-parallel-agents](skills/dispatching-parallel-agents/SKILL.md) | Decide when concurrent delegation helps and coordinate the assignments. |
 | [research-with-evidence](skills/research-with-evidence/SKILL.md) | Research complex questions and produce evidence-backed findings. |
 | [reviewing-code-changes](skills/reviewing-code-changes/SKILL.md) | Review code changes for defects, regressions, and requirement gaps. |
 | [session-handoff](skills/session-handoff/SKILL.md) | Preserve decisions, evidence, and next steps across sessions. |

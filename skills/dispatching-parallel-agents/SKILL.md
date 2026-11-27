@@ -1,18 +1,18 @@
 ---
 name: dispatching-parallel-agents
-description: Use when delegation is available and allowed and a task has multiple substantial workstreams that may be independent, when parallel agent work is requested, or before running a subagent alongside your own work or other subagents. Not for small multi-step tasks, parallel tool calls, or one delegate you will simply wait for.
+description: Use when deciding how to split work that may benefit from concurrent subagents, when parallel agent work is requested, or before coordinating a subagent alongside the primary agent or other workers, provided delegation is available and allowed. Skip routine inline steps, parallel tool calls, and a single delegation that runs entirely in sequence.
 ---
 
 # Dispatching Parallel Agents
 
-Parallel agents help when substantial work can proceed independently and their findings or changes can be combined safely. Use this guide to decide whether to split the work, not to assume that more agents are better. One subagent working alongside the coordinator also counts as parallel work.
+Parallel agents help when work can proceed independently and its results can be combined safely. One subagent working alongside the primary agent also counts as parallel work. The primary agent retains responsibility for scope, consequential decisions, integration, and verification.
 
-This skill does not grant permission to delegate or expand the task. Follow the user's and environment's limits; if subagents are unavailable or prohibited, work directly. Parallel tool calls alone do not need this workflow.
+Stay within the user's and environment's delegation limits. If subagents are unavailable or prohibited, continue the authorized work directly and report any required delegation or independent review that remains pending.
 
 ## Decide Whether Splitting Helps
 
 1. Inspect enough of the problem to identify meaningful questions or deliverables. Several symptoms may have one cause; do not assign an agent per symptom before a quick dependency check.
-2. Compare the benefit of concurrent work or specialized investigation with briefing, duplicated exploration, and integration costs. Keep small, local work inline; batch related questions into one assignment.
+2. Compare the expected savings in time and primary-model work with briefing, coordination, verification, and likely rework. Batch related steps into one assignment. Prefer a lighter subagent for a well-scoped, low-risk batch when delegation is worthwhile. Keep trivial steps inline when a handoff would cost more than it saves.
 3. Identify each unit's inputs, output, files, and mutable resources. If it needs another unit's result, sequence that part. If an interface is undecided, settle it first or keep the dependent work together.
 4. Choose only enough workers to cover useful independent units, within the available limits. Keep a task yourself when that avoids an unnecessary delegate. A short in-chat split is enough for a short task; no mandatory plan or report files.
 
@@ -22,7 +22,7 @@ This skill does not grant permission to delegate or expand the task. Follow the 
 | Two investigations read the same stable files | Parallel is fine; shared reading is not competing writing |
 | UI and API implementation with an agreed contract | Parallel if file and mutable-resource ownership are separate |
 | Schema design followed by updating its consumer | Sequence until the contract is settled |
-| Several tiny edits in one module | One agent, one coherent batch |
+| Several tiny edits in one module | Keep them in one batch. Delegate it when the handoff is worthwhile. |
 
 ## Set Ownership Before Launch
 
@@ -41,7 +41,7 @@ For each subagent, state:
 - **Goal and acceptance:** the question or deliverable, and what evidence would resolve it.
 - **Scope and mode:** relevant paths or subsystem; read-only or implementation; owned files/resources and exclusions. Include the starting revision or existing user changes when relevant.
 - **Context and inputs:** requirements, verified facts, settled interfaces, dependencies, and relevant project instructions. Provide focused excerpts or exact references, not irrelevant conversation history.
-- **Checks and limits:** meaningful verification under project norms, shared resources it must not mutate, and actions requiring further permission. Delegation does not authorize commits, publishing, destructive cleanup, or further delegation.
+- **Checks and limits:** meaningful verification under project norms, shared resources it must not mutate, and actions requiring further permission. Delegation does not authorize commits, publishing, destructive cleanup, or further delegation. If further delegation is authorized, pass on the applicable model, effort, and escalation rules.
 - **Return:** findings or changed files, checks actually run with commands and outcomes, uncertainties, blockers, and any follow-up needed. A suggested check is not a completed check.
 
 Make the brief self-contained enough for the task. If a missing decision, required out-of-scope edit, or shared-state collision blocks progress, ask the worker to stop that part and report it rather than guess or widen its scope.
@@ -56,7 +56,9 @@ Preserve source locators, important scope gaps, and the code state/environment b
 
 ## Run, Adjust, and Recover
 
-Launch independent assignments in the same round using the tool's actual concurrent/background mechanism; repeated blocking calls are sequential. While workers run, do useful work outside their ownership instead of redoing their assignments. Follow the runtime's notification/waiting rules; wait when your next action really requires a result.
+Before each launch, apply the user's model and reasoning-effort rules for the current runtime and provider. Reuse applicable standing preferences or agreed session settings. Configure both values explicitly where required. For routine assignments, favor the lightest settings that can reliably do the work within those preferences. If a choice is missing or a setting is unavailable, follow the user's rules for resolving it before launching. When user input is required, the primary agent asks.
+
+Launch ready, independent assignments together when concurrency helps and ownership is clear. Use the tool's concurrent or background mechanism. Schedule dependent assignments in later rounds as results arrive. While workers run, do useful work outside their ownership. Follow the runtime's notification and waiting rules.
 
 When requirements or interfaces change, identify all affected outputs, including completed work. Update pending briefs, notify active workers and establish the revised scope before they continue dependent work, and reopen or schedule follow-up for completed outputs. Old checks do not verify the new contract; unaffected work can continue.
 
@@ -68,7 +70,7 @@ If a worker fails or times out, do not assume it made no changes or has stopped.
 2. Check coverage of the original goal, overlapping edits, inconsistent assumptions, and interface mismatches. Resolve these before dependent work proceeds or results are combined.
 3. Integrate using the established ownership and checkout arrangement. Do not reset or overwrite unfamiliar changes to make integration easier.
 4. Run checks for the combined behavior and integration seams. Trust reported checks when their evidence is adequate and the artifact is unchanged; run missing checks or those invalidated by integration. Use the full suite only when project practice or scope warrants it.
-5. Review consequential combined changes independently when appropriate; tiny local edits do not need another agent. Report what is complete, what was verified, and remaining gaps. The coordinator owns the final outcome.
+5. Apply the governing independent-review requirements to the latest integrated change, including small edits whose risk triggers review. When required, obtain the independent reviewer's verdict before declaring the work complete. Report what was verified and any remaining gaps, including a required review that could not be completed.
 
 ## Evaluating This Skill
 
